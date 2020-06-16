@@ -46,5 +46,18 @@ var numTS;
         return toReturn;
     }
     numTS.matrixElemtWiseMult = matrixElemtWiseMult;
+    function matrixTransposse(a) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < m; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < n; j++) {
+                toReturn[i][j] = a[j][i];
+            }
+        }
+        return toReturn;
+    }
+    numTS.matrixTransposse = matrixTransposse;
 })(numTS || (numTS = {}));
 exports.numTS = numTS;

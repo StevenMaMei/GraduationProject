@@ -17,3 +17,12 @@ console.log(numTS.matrixDotProduct(a,b));
 console.log(numTS.matrixSum(a,b));
 
 console.log(numTS.matrixElemtWiseMult(a,b));
+
+b= [[5],[6]];
+console.log("transpose-------------");
+console.log(numTS.matrixTransposse(a));
+console.log(numTS.matrixTransposse(b));
+b= [[5,6]];
+console.log(numTS.matrixTransposse(b));
+b= [[6]];
+console.log(numTS.matrixTransposse(b));
