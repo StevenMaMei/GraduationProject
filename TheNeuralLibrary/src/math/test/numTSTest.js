@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const numTS_1 = require("../numTS");
+let a = [[1, 2]];
+let b = [[2], [3]];
+console.log(numTS_1.numTS.matrixDotProduct(a, b));
+a = [[1, 2], [3, 4]];
+b = [[5], [6]];
+console.log(numTS_1.numTS.matrixDotProduct(a, b));
+a = [[1, 2], [3, 4]];
+b = [[5, 6], [7, 8]];
+console.log(numTS_1.numTS.matrixDotProduct(a, b));
+console.log(numTS_1.numTS.matrixSum(a, b));
+console.log(numTS_1.numTS.matrixElemtWiseMult(a, b));
