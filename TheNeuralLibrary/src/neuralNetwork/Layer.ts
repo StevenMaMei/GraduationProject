@@ -1,11 +1,11 @@
 
 interface Layer{
-    input: number[];
-    output: number[];
+    input: number[][];
+    output: number[][];
 
-    forwardPropagation(inputData:number[]):number[];
+    forwardPropagation(inputData:number[][]):number[][];
 
-    backPropagation(errorRespectToOutput: number[], learningRate: number):number[];
+    backPropagation(errorRespectToOutput: number[][], learningRate: number):number[][];
 }
 
 export{Layer};

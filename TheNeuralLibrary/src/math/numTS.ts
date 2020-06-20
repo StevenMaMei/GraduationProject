@@ -1,5 +1,5 @@
 
-module numTS{
+module NumTS{
     
     export function matrixDotProduct(a: number[][], b:number[][]):number[][]{
         let n: number= a.length;
@@ -46,6 +46,19 @@ module numTS{
         }
         return toReturn;
     }
+    export function matrixMultWithSingleValue(a: number[][], b:number):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+    
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=a[i][j]*b;
+            }
+        }
+        return toReturn;
+    }
     export function matrixTransposse(a: number[][]):number[][]{
         let n: number= a.length;
         let m: number = a[0].length;
@@ -62,4 +75,4 @@ module numTS{
 
 }
 
-export{numTS};
+export{NumTS};
