@@ -44,6 +44,7 @@ module NumTS{
                 toReturn[i][j]=a[i][j]*b[i][j];
             }
         }
+        
         return toReturn;
     }
     export function matrixMultWithSingleValue(a: number[][], b:number):number[][]{
@@ -72,7 +73,33 @@ module NumTS{
         }
         return toReturn;
     }
-
+    function tanhPrime(a: number):number{
+        return 1- Math.tanh(a)*Math.tanh(a);
+    }
+    export function matrixTanh(a:number[][]): number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=Math.tanh(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
+    export function matrixTanhPrime(a:number[][]):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=tanhPrime(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
 }
 
 export{NumTS};
