@@ -100,6 +100,25 @@ module NumTS{
         }
         return toReturn;
     }
+
+    export function mse(predictedOutput: number[][], targetOutput: number[][]):number{
+        let ans:number=0;
+        for(let i = 0; i<targetOutput[0].length;i++){
+            let square=Math.pow((targetOutput[0][i] - predictedOutput[0][i]),2);
+            ans += square;
+        }  
+        ans /= targetOutput[0].length;
+        return ans;
+    }
+
+    export function msePrime(predictedOutput: number[][], targetOutput: number[][]):number[][]{
+        let ans : number[][]=[];
+        ans[0]=[];
+        for(let i=0 ; i<targetOutput[0].length;i++){
+            ans[0][i]= 2*(predictedOutput[0][i] - targetOutput[0][i])/targetOutput[0].length;
+        }
+        return ans;
+    }
 }
 
 export{NumTS};

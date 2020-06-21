@@ -101,5 +101,24 @@ var NumTS;
         return toReturn;
     }
     NumTS.matrixTanhPrime = matrixTanhPrime;
+    function mse(predictedOutput, targetOutput) {
+        let ans = 0;
+        for (let i = 0; i < targetOutput[0].length; i++) {
+            let square = Math.pow((targetOutput[0][i] - predictedOutput[0][i]), 2);
+            ans += square;
+        }
+        ans /= targetOutput[0].length;
+        return ans;
+    }
+    NumTS.mse = mse;
+    function msePrime(predictedOutput, targetOutput) {
+        let ans = [];
+        ans[0] = [];
+        for (let i = 0; i < targetOutput[0].length; i++) {
+            ans[0][i] = 2 * (predictedOutput[0][i] - targetOutput[0][i]) / targetOutput[0].length;
+        }
+        return ans;
+    }
+    NumTS.msePrime = msePrime;
 })(NumTS || (NumTS = {}));
 exports.NumTS = NumTS;
