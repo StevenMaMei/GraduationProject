@@ -121,6 +121,26 @@ module NumTS{
         }
         return ans;
     }
+
+    export function binary_cross_entropy(predictedOutput: number[][], targetOutput: number[][]):number{
+        let sum_score:number=0;
+        for(let i = 0; i<targetOutput.length;i++){
+            for(let j = 0; j<targetOutput[i].length;j++){
+                sum_score += targetOutput[i][j] * Math.log(predictedOutput[i][j]);
+            }
+        }  
+        sum_score /= targetOutput.length;
+        return -sum_score;
+    }
+    export function binary_cross_entropyPrime(predictedOutput: number[][], targetOutput: number[][]):number[][]{
+        let ans : number[][]=[];
+        ans[0]=[];
+        for(let i=0 ; i<targetOutput[0].length;i++){
+            ans[0][i]=targetOutput[0][i]*(predictedOutput[0][i]-1)+(1-targetOutput[0][i])*predictedOutput[0][i] ;
+        }
+        return ans;
+    }
+   
 }
 
 export{NumTS};
