@@ -103,11 +103,13 @@ module NumTS{
 
     export function mse(predictedOutput: number[][], targetOutput: number[][]):number{
         let ans:number=0;
-        for(let i = 0; i<targetOutput[0].length;i++){
-            let square=Math.pow((targetOutput[0][i] - predictedOutput[0][i]),2);
-            ans += square;
+        for(let i = 0; i<targetOutput.length;i++){
+            for(let j = 0; j<targetOutput[i].length;j++){
+                let square=Math.pow((targetOutput[i][j] - predictedOutput[i][j]),2);
+                ans += square;
+            }
         }  
-        ans /= targetOutput[0].length;
+        ans /= targetOutput.length;
         return ans;
     }
 

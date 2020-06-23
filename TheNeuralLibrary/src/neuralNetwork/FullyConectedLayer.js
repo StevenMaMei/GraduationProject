@@ -14,6 +14,7 @@ class FullyConectedLayer {
                 this.weights[i][j] = Math.random();
             }
         }
+        this.bias[0] = [];
         for (let i = 0; i < outputSize; i++) {
             this.bias[0][i] = Math.random();
         }

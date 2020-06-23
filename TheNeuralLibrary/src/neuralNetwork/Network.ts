@@ -27,7 +27,7 @@ class  Network{
         let result: number[][][]=[];
         
         for(let i = 0; i< inputData.length;i++){
-            let output: number[][]=inputData;
+            let output: number[][]=[inputData[i]];
             for(let j = 0; j< this.layers.length; j++){
                 output = this.layers[j].forwardPropagation(output);
             }
@@ -43,12 +43,12 @@ class  Network{
                 let output: number[][]= [];
                 output[0]= x_train[j];
                 for(let k = 0; k < this.layers.length; k++){
-                    output = this.layers[i].forwardPropagation(output);
+                    output = this.layers[k].forwardPropagation(output);
                 }
+                let targetOutput:number[][]=[y_train[j]];
+                error += this.lossFunction(output, targetOutput);
 
-                error += this.lossFunction(output, y_train[j]);
-
-                let errorForBackwardProp: number[][] = this.lossFunctionPrime(output, y_train);
+                let errorForBackwardProp: number[][] = this.lossFunctionPrime(output, targetOutput);
                 for(let k = this.layers.length -1 ; k >= 0 ; k--){
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, learningRate);
                 }
@@ -58,6 +58,5 @@ class  Network{
         }
     }
 
-
-
 }
+export{Network}

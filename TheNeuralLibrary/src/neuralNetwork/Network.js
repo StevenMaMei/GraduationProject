@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Network = void 0;
 const NumTS_1 = require("../math/NumTS");
 class Network {
     constructor() {
@@ -17,7 +18,7 @@ class Network {
     predict(inputData) {
         let result = [];
         for (let i = 0; i < inputData.length; i++) {
-            let output = inputData;
+            let output = [inputData[i]];
             for (let j = 0; j < this.layers.length; j++) {
                 output = this.layers[j].forwardPropagation(output);
             }
@@ -32,10 +33,11 @@ class Network {
                 let output = [];
                 output[0] = x_train[j];
                 for (let k = 0; k < this.layers.length; k++) {
-                    output = this.layers[i].forwardPropagation(output);
+                    output = this.layers[k].forwardPropagation(output);
                 }
-                error += this.lossFunction(output, y_train[j]);
-                let errorForBackwardProp = this.lossFunctionPrime(output, y_train);
+                let targetOutput = [y_train[j]];
+                error += this.lossFunction(output, targetOutput);
+                let errorForBackwardProp = this.lossFunctionPrime(output, targetOutput);
                 for (let k = this.layers.length - 1; k >= 0; k--) {
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, learningRate);
                 }
@@ -45,3 +47,4 @@ class Network {
         }
     }
 }
+exports.Network = Network;
