@@ -101,6 +101,66 @@ module NumTS{
         return toReturn;
     }
 
+    function sigmoid(a: number):number{
+        return 1/(1+Math.exp(-a));
+    }
+
+    export function matrixSigmoid(a:number[][]):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=sigmoid(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
+
+    function sigmoidPrime(a: number):number{
+        return Math.exp(a)/(Math.pow((Math.exp(a)+1),2));
+    }
+
+    export function matrixSigmoidPrime(a:number[][]):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=sigmoidPrime(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
+
+    export function matrixLinear(a:number[][], c:number):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=c*a[i][j];
+            }
+        }
+        return toReturn;
+    }
+
+    export function matrixLinearPrime(a:number[][]):number[][]{
+        let n: number= a.length;
+        let m: number = a[0].length;
+        let toReturn: number[][]=[];
+        for(let i:number=0; i<n;i++){
+            toReturn[i]=[];
+            for(let j:number=0;j<m;j++){
+                toReturn[i][j]=a[i][j];
+            }
+        }
+        return toReturn;
+    }
+
     export function mse(predictedOutput: number[][], targetOutput: number[][]):number{
         let ans:number=0;
         for(let i = 0; i<targetOutput.length;i++){
