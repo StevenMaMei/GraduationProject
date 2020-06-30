@@ -122,5 +122,25 @@ var NumTS;
         return ans;
     }
     NumTS.msePrime = msePrime;
+    function binary_cross_entropy(predictedOutput, targetOutput) {
+        let sum_score = 0;
+        for (let i = 0; i < targetOutput.length; i++) {
+            for (let j = 0; j < targetOutput[i].length; j++) {
+                sum_score += targetOutput[i][j] * Math.log(predictedOutput[i][j]);
+            }
+        }
+        sum_score /= targetOutput.length;
+        return -sum_score;
+    }
+    NumTS.binary_cross_entropy = binary_cross_entropy;
+    function binary_cross_entropyPrime(predictedOutput, targetOutput) {
+        let ans = [];
+        ans[0] = [];
+        for (let i = 0; i < targetOutput[0].length; i++) {
+            ans[0][i] = (targetOutput[0][i] * (predictedOutput[0][i] - 1)) + ((1 - targetOutput[0][i]) * predictedOutput[0][i]);
+        }
+        return ans;
+    }
+    NumTS.binary_cross_entropyPrime = binary_cross_entropyPrime;
 })(NumTS || (NumTS = {}));
 exports.NumTS = NumTS;

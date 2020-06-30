@@ -132,11 +132,12 @@ module NumTS{
         sum_score /= targetOutput.length;
         return -sum_score;
     }
+
     export function binary_cross_entropyPrime(predictedOutput: number[][], targetOutput: number[][]):number[][]{
         let ans : number[][]=[];
         ans[0]=[];
         for(let i=0 ; i<targetOutput[0].length;i++){
-            ans[0][i]=targetOutput[0][i]*(predictedOutput[0][i]-1)+(1-targetOutput[0][i])*predictedOutput[0][i] ;
+            ans[0][i]=(targetOutput[0][i]*(predictedOutput[0][i]-1))+((1-targetOutput[0][i])*predictedOutput[0][i]);
         }
         return ans;
     }
