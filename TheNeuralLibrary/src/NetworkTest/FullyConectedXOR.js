@@ -11,12 +11,7 @@ fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(2, 3))
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
 fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(3, 1));
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
-
-// fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.mse, NumTS_1.NumTS.msePrime);
-// fullyConectedNetwork.fit(x_train, y_train, 300, 0.1);
-
 fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.binary_cross_entropy, NumTS_1.NumTS.binary_cross_entropyPrime);
-fullyConectedNetwork.fit(x_train, y_train, 1000, 0.1);
-
+fullyConectedNetwork.fit(x_train, y_train, 300, 0.1);
 let result = fullyConectedNetwork.predict(x_train);
 console.log(result);

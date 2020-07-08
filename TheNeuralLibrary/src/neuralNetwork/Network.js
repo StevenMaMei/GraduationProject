@@ -7,6 +7,10 @@ class Network {
         this.layers = [];
         this.lossFunction = NumTS_1.NumTS.mse;
         this.lossFunctionPrime = NumTS_1.NumTS.msePrime;
+        this.currEpoch = 0;
+        this.learningRate = 0.1;
+        this.x_train = [];
+        this.y_train = [];
     }
     addLayer(layer) {
         this.layers.push(layer);
@@ -25,6 +29,41 @@ class Network {
             result.push(output);
         }
         return result;
+    }
+    fitTo(targetEpoch) {
+        for (let i = this.currEpoch; i < targetEpoch; i++) {
+            let error = 0;
+            for (let j = 0; j < this.x_train.length; j++) {
+                let output = [];
+                output[0] = this.x_train[j];
+                for (let k = 0; k < this.layers.length; k++) {
+                    output = this.layers[k].forwardPropagation(output);
+                }
+                let targetOutput = [this.y_train[j]];
+                error += this.lossFunction(output, targetOutput);
+                let errorForBackwardProp = this.lossFunctionPrime(output, targetOutput);
+                for (let k = this.layers.length - 1; k >= 0; k--) {
+                    errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
+                }
+            }
+        }
+    }
+    goToNextEpoch() {
+        let error = 0;
+        for (let j = 0; j < this.x_train.length; j++) {
+            let output = [];
+            output[0] = this.x_train[j];
+            for (let k = 0; k < this.layers.length; k++) {
+                output = this.layers[k].forwardPropagation(output);
+            }
+            let targetOutput = [this.y_train[j]];
+            error += this.lossFunction(output, targetOutput);
+            let errorForBackwardProp = this.lossFunctionPrime(output, targetOutput);
+            for (let k = this.layers.length - 1; k >= 0; k--) {
+                errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
+            }
+        }
+        this.currEpoch++;
     }
     fit(x_train, y_train, epochs, learningRate) {
         for (let i = 0; i < epochs; i++) {
