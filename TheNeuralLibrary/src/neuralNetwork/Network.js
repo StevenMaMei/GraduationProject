@@ -31,7 +31,7 @@ class Network {
         return result;
     }
     fitTo(targetEpoch) {
-        for (let i = this.currEpoch; i < targetEpoch; i++) {
+        for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error = 0;
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
