@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Network = void 0;
 const NumTS_1 = require("../math/NumTS");
+const ActivationLayer_1 = require("./ActivationLayer");
+const FullyConectedLayer_1 = require("./FullyConectedLayer");
 class Network {
     constructor() {
         this.layers = [];
@@ -11,6 +13,23 @@ class Network {
         this.learningRate = 0.1;
         this.x_train = [];
         this.y_train = [];
+    }
+    buildCustomNeuralNetwork(dataSize, layers, actFunc, actFuncPrime, lossFunc, lossFuncPrime, neuronPerLayer) {
+        let net = new Network();
+        for (var i = 0; i < layers; i++) {
+            if (i == 0) {
+                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
+                net.addLayer(new ActivationLayer_1.ActivationLayer(actFunc, actFuncPrime));
+            }
+            else if (i == layers - 1) {
+                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], 1));
+                net.addLayer(new ActivationLayer_1.ActivationLayer(actFunc, actFuncPrime));
+            }
+            net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
+            net.addLayer(new ActivationLayer_1.ActivationLayer(actFunc, actFuncPrime));
+        }
+        net.setLossFunction(lossFunc, lossFuncPrime);
+        return net;
     }
     addLayer(layer) {
         this.layers.push(layer);
