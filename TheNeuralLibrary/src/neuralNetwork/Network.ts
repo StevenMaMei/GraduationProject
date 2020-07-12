@@ -21,6 +21,34 @@ class  Network{
         this.y_train = [];
     }
 
+    buildCustomNeuralNetwork(dataSize:number,layers:number, actFunc:Function, actFuncPrime:Function,lossFunc: Function, lossFuncPrime:Function, neuronPerLayer:Array<number>):Network{
+
+        let net:Network=new Network();
+
+        
+
+        for (var i = 0; i < layers; i++) {
+
+            if(i==0){
+            net.addLayer(new FullyConectedLayer(dataSize,neuronPerLayer[i+1]));
+            net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+
+            }else if(i==layers-1){
+            net.addLayer(new FullyConectedLayer(neuronPerLayer[i],1));
+            net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+                
+            }
+
+            net.addLayer(new FullyConectedLayer(neuronPerLayer[i],neuronPerLayer[i+1]));
+            net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+
+        }
+        net.setLossFunction(lossFunc,lossFuncPrime);
+
+        return net;
+
+    }
+
     addLayer(layer:Layer){
         this.layers.push(layer);
     }
@@ -101,6 +129,8 @@ class  Network{
             console.log("Epoch " + i + " error = "+ error);
         }
     }
+
+   
 
 }
 export{Network}
