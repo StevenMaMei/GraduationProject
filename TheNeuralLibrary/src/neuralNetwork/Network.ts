@@ -13,6 +13,7 @@ class Network {
     y_train: number[][];
     current_layer: number;
     current_error: number;
+    current_datapoint_index: number; // the position, in the x_train array, of the current data point that is being passed through the network
     current_outputs: number[][][]; //outputs for every sample on x_train
     current_output: number[][]; // output for a specific sample on x_train
     current_backProp_errors: number[][][]; //outputs for every sample on x_train
@@ -26,6 +27,7 @@ class Network {
         this.learningRate = 0.1;
         this.x_train = [];
         this.y_train = [];
+        this.current_datapoint_index = 0;
         this.current_layer = 0;
         this.direction = 0;
         this.current_error = 0;
@@ -36,7 +38,7 @@ class Network {
     }
 
 
-    
+
 
 
     layerStep() { // this method is in charge of doing a single step on a layer, taking into consideration if its a forward propagation step or a backwards propagation step
@@ -49,23 +51,22 @@ class Network {
             }
         }
 
+
+
         if (this.direction == 0) { //forward propagation
 
-            for (let j = 0; j < this.current_outputs.length; j++) {
+            this.current_output = this.current_outputs[this.current_datapoint_index];
 
-                this.current_output = this.current_outputs[j];
+            this.current_output = this.layers[this.current_layer].forwardPropagation(this.current_output); // does the forward propagation for the sample "j" in x_train
+            this.current_outputs[this.current_datapoint_index] = this.current_output; // assigns the new values
 
-                this.current_output = this.layers[this.current_layer].forwardPropagation(this.current_output); // does the forward propagation for the sample "j" in x_train
-                this.current_outputs[j] = this.current_output; // assigns the new values
-
-                if (this.current_layer == this.layers.length - 2) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
-                    let targetOutput: number[][] = [this.y_train[j]]; // calcuales the error comparing to the true expected value "j" in y_train
-                    this.current_error += this.lossFunction(this.current_output, targetOutput);
-                    let errorForBackwardProp: number[][] = this.lossFunctionPrime(this.current_output, targetOutput);
-                    this.current_backProp_errors[j] = errorForBackwardProp;
-                }
-
+            if (this.current_layer == this.layers.length - 2) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
+                let targetOutput: number[][] = [this.y_train[this.current_datapoint_index]]; // calculates the error comparing to the true expected value "j" in y_train
+                this.current_error += this.lossFunction(this.current_output, targetOutput);
+                let errorForBackwardProp: number[][] = this.lossFunctionPrime(this.current_output, targetOutput);
+                this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
             }
+
             this.current_layer++; // advances one layer
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
                 this.direction = 1;
@@ -73,27 +74,28 @@ class Network {
 
         } else if (this.direction == 1) { //backwards propagation
 
-            for (let j = 0; j < this.current_backProp_errors.length; j++) { 
-                this.current_backProp_error = this.current_backProp_errors[j];
-                this.current_backProp_errors[j] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
-            }
+            this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
+            this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
+ 
 
             this.current_layer = this.current_layer - 1;
             if (this.current_layer == 0) {
                 this.direction = 0;
-                this.currEpoch ++;
-                this.current_error /= this.x_train.length;
-                console.log("Epoch " + this.currEpoch + " error = " + this.current_error);
-
+                this.current_datapoint_index++;
                 // -- resets the values for the next epoch
-
-                this.current_outputs = [];
-                this.current_output = [];
-                this.current_backProp_errors = [];
-                this.current_backProp_error = [];
-                this.current_error = 0;
-
+                if (this.current_datapoint_index == this.x_train.length) {
+                    this.currEpoch++;
+                    this.current_error /= this.x_train.length;
+                    console.log("Epoch " + this.currEpoch + " error = " + this.current_error);
+                    this.current_outputs = [];
+                    this.current_output = [];
+                    this.current_backProp_errors = [];
+                    this.current_backProp_error = [];
+                    this.current_error = 0;
+                    this.current_datapoint_index = 0;
+                }
                 // --
+
             }
         }
     }
@@ -130,9 +132,18 @@ class Network {
         this.layers.push(layer);
     }
 
+    setLearningRate(lr: number){
+        this.learningRate = lr;
+    }
+
     setLossFunction(lossFunc: Function, lossFuncPrime: Function) {
         this.lossFunction = lossFunc;
         this.lossFunctionPrime = lossFuncPrime;
+    }
+
+    setTrainingSet(x: number[][], y:number[][]){
+        this.x_train = x;
+        this.y_train = y;
     }
 
     predict(inputData: number[][]): number[][][] {
