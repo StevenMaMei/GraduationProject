@@ -100,7 +100,7 @@ class Network {
         }
     }
 
-    buildCustomNeuralNetwork(dataSize: number, layers: number, actFunc: Function, actFuncPrime: Function, lossFunc: Function, lossFuncPrime: Function, neuronPerLayer: Array<number>): Network {
+    buildCustomNeuralNetwork(dataSize: number, layers: number, actFunc: Array<Function>, actFuncPrime: Array<Function>, lossFunc: Function, lossFuncPrime: Function, neuronPerLayer: Array<number>): Network {
 
         let net: Network = new Network();
 
@@ -110,16 +110,16 @@ class Network {
 
             if (i == 0) {
                 net.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
-                net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+                net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
 
             } else if (i == layers - 1) {
                 net.addLayer(new FullyConectedLayer(neuronPerLayer[i], 1));
-                net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+                net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
 
             }
 
             net.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-            net.addLayer(new ActivationLayer(actFunc, actFuncPrime));
+            net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
 
         }
         net.setLossFunction(lossFunc, lossFuncPrime);
