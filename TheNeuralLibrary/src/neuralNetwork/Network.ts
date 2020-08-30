@@ -3,6 +3,9 @@ import { ActivationLayer } from "./ActivationLayer"
 import { FullyConectedLayer } from "./FullyConectedLayer"
 import { Layer } from "./Layer"
 
+
+
+
 class Network {
     layers: Layer[];
     lossFunction: Function;
@@ -19,6 +22,9 @@ class Network {
     current_backProp_errors: number[][][]; //outputs for every sample on x_train
     current_backProp_error: number[][]; // output for a specific sample on x_train
     direction: number; // 0 is forward propagation, 1 is backwards propagation
+
+
+
     constructor() {
         this.layers = [];
         this.lossFunction = NumTS.mse;
@@ -76,7 +82,7 @@ class Network {
 
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
             this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
- 
+
 
             this.current_layer = this.current_layer - 1;
             if (this.current_layer == 0) {
@@ -99,6 +105,8 @@ class Network {
             }
         }
     }
+
+
 
     buildCustomNeuralNetwork(dataSize: number, layers: number, actFunc: Array<Function>, actFuncPrime: Array<Function>, lossFunc: Function, lossFuncPrime: Function, neuronPerLayer: Array<number>): Network {
 
@@ -132,7 +140,7 @@ class Network {
         this.layers.push(layer);
     }
 
-    setLearningRate(lr: number){
+    setLearningRate(lr: number) {
         this.learningRate = lr;
     }
 
@@ -141,7 +149,7 @@ class Network {
         this.lossFunctionPrime = lossFuncPrime;
     }
 
-    setTrainingSet(x: number[][], y:number[][]){
+    setTrainingSet(x: number[][], y: number[][]) {
         this.x_train = x;
         this.y_train = y;
     }
