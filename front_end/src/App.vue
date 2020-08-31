@@ -1,17 +1,22 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <ParamsNetwork></ParamsNetwork>
+    <Network></Network>
+    
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Network from './components/Network.vue'
+import ParamsNetwork from './components/ParamsNetwork.vue'
+
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Network,
+    ParamsNetwork
   }
 }
 </script>
