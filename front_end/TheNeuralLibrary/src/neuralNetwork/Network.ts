@@ -23,6 +23,64 @@ class Network {
     current_backProp_error: number[][]; // output for a specific sample on x_train
     direction: number; // 0 is forward propagation, 1 is backwards propagation
 
+    lossFunctionsMap: Map<String, String> = new Map([
+        ["LossFunction1", "LossFunction1Derivative"],
+        ["LossFunction2", "LossFunction2Derivative"]
+    ]);
+
+    activationFunctionsMap: Map<String, String> = new Map([
+        ["ActivationFunction1", "ActivationFunction1Derivative"],
+        ["ActivationFunction2", "ActivationFunction2Derivative"]
+    ]);
+
+    //constants
+    maxNumberOfNeurons: number = 8;
+    maxNumberOfLayers: number = 8;
+    
+    // it cant never return a null value since the universe of keys is always limited to available ones
+    getActivationFunctionDerivative(key:String):String{
+        
+        return this.activationFunctionsMap.get(key)!;
+
+    };
+
+    // it cant never return a null value since the universe of keys is always limited to available ones
+    getLossFunctionDerivative(key:String):String{
+        
+        return this.lossFunctionsMap.get(key)!;
+
+    };
+
+
+    getAllActivationFunctions(): Array<String> {
+        let result: Array<String> = new Array<String>();
+
+        for (let key of this.activationFunctionsMap.keys()) {
+            result.push(key);
+        }
+        return result;
+    };
+
+    getAllLossFunctions(): Array<String> {
+        let result: Array<String> = new Array<String>();
+
+        for (let key of this.lossFunctionsMap.keys()) {
+            result.push(key);
+        }
+        return result;
+    };
+
+    getMaxNumberOfNeurons(): number {
+
+        return this.maxNumberOfNeurons;
+    };
+
+    getMaxNumberOfLayers(): number {
+
+        return this.maxNumberOfLayers;
+
+    };
+
 
 
     constructor() {
@@ -40,7 +98,8 @@ class Network {
         this.current_outputs = [];
         this.current_output = [];
         this.current_backProp_errors = [];
-        this.current_backProp_error = []
+        this.current_backProp_error = [];
+        let functionsMap = new Map()
     }
 
 
@@ -105,6 +164,8 @@ class Network {
             }
         }
     }
+
+
 
 
 
