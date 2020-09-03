@@ -23,14 +23,15 @@ class Network {
     current_backProp_error: number[][]; // output for a specific sample on x_train
     direction: number; // 0 is forward propagation, 1 is backwards propagation
 
-    lossFunctionsMap: Map<String, String> = new Map([
-        ["LossFunction1", "LossFunction1Derivative"],
-        ["LossFunction2", "LossFunction2Derivative"]
+    lossFunctionsMap: Map<String, Function> = new Map([
+        ["Binary Cross Entropy", NumTS.binary_cross_entropyPrime],
+        ["Mean Square Error", NumTS.msePrime]
+       
     ]);
 
-    activationFunctionsMap: Map<String, String> = new Map([
-        ["ActivationFunction1", "ActivationFunction1Derivative"],
-        ["ActivationFunction2", "ActivationFunction2Derivative"]
+    activationFunctionsMap: Map<String, Function> = new Map([
+        ["TanH", NumTS.matrixTanhPrime],
+        
     ]);
 
     //constants
@@ -38,14 +39,14 @@ class Network {
     maxNumberOfLayers: number = 8;
     
     // it cant never return a null value since the universe of keys is always limited to available ones
-    getActivationFunctionDerivative(key:String):String{
+    getActivationFunctionDerivative(key:String):Function{
         
         return this.activationFunctionsMap.get(key)!;
 
     };
 
     // it cant never return a null value since the universe of keys is always limited to available ones
-    getLossFunctionDerivative(key:String):String{
+    getLossFunctionDerivative(key:String):Function{
         
         return this.lossFunctionsMap.get(key)!;
 
@@ -99,7 +100,6 @@ class Network {
         this.current_output = [];
         this.current_backProp_errors = [];
         this.current_backProp_error = [];
-        let functionsMap = new Map()
     }
 
 
@@ -165,33 +165,56 @@ class Network {
         }
     }
 
+    //might not work, please check if there is a problem with the switch
+    selectFunction(F:String):Function{
+        let result=new Function;
+
+        switch(F) { 
+            case "Mean Square Error": { 
+               result= NumTS.mse;
+               break; 
+            } 
+            case "Binary Cross Entropy": { 
+                result= NumTS.binary_cross_entropy;
+               break; 
+            } 
+            case "TanH": { 
+                result= NumTS.matrixTanh;
+                break; 
+             } 
+            
+         } 
+         return result;
+
+       
+    };
 
 
 
 
-    buildCustomNeuralNetwork(dataSize: number, layers: number, actFunc: Array<Function>, actFuncPrime: Array<Function>, lossFunc: Function, lossFuncPrime: Function, neuronPerLayer: Array<number>): Network {
+    buildCustomNeuralNetwork(dataSize: number, layers: number, actFunc: Array<String>, lossFunc: String,  neuronPerLayer: Array<number>): Network {
 
         let net: Network = new Network();
 
 
 
         for (var i = 0; i < layers; i++) {
-
+ 
             if (i == 0) {
                 net.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
-                net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
+                net.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
             } else if (i == layers - 1) {
                 net.addLayer(new FullyConectedLayer(neuronPerLayer[i], 1));
-                net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
+                net.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
             }
 
             net.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-            net.addLayer(new ActivationLayer(actFunc[i], actFuncPrime[i]));
+            net.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
         }
-        net.setLossFunction(lossFunc, lossFuncPrime);
+        net.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
 
         return net;
 

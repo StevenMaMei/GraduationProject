@@ -1,11 +1,11 @@
 <template>
   <div>
     
-    <label for="lossFunc">Activation Function: </label>
+    <label for="actfunction">Activation Function: </label>
     <dropdown
       :options="allActFunctions"
       :selected="layer.actFunction"
-      v-on:updateOption="methodToRunOnSelect"
+      v-on:updateOption="methodToRunOnSelectActivation"
       :placeholder="'Select an Item'"
       :closeOnOutsideClick="true"
     >></dropdown>
@@ -13,7 +13,7 @@
     <dropdown
       :options="neuronsArray"
       :selected="layer.neurons"
-      v-on:updateOption="methodToRunOnSelect"
+      v-on:updateOption="methodToRunOnSelectNumber"
       :placeholder="'Select an Item'"
       :closeOnOutsideClick="true"
     >></dropdown>
@@ -25,6 +25,8 @@
 
 <script>
 import dropdown from "vue-dropdowns";
+import Network  from 'front_end/TheNeuralLibrary/src/neuralNetwork/Network.ts'
+
 
 export default {
    name: 'ParamsPerLayer',
@@ -36,11 +38,11 @@ export default {
         neurons: "",
       },
       // debe llegar del back
-      allActFunctions: ["a", "b", "c", "d", "e"],
+      allActFunctions: [],
       
 
       // esos valores toca pedirlos del backend
-      maxNumberOfNeurons: 6,
+     
       neuronsArray:null,
       
     };
@@ -52,22 +54,28 @@ export default {
   created() {
     //pedir los maximos de cada vaina
     this.setLimimtArrays();
+    Network
+      .getAllActivationFunctions()
+      .then(x => (this.allActFunctions= x));
 
   },
 
   methods: {
     setLimimtArrays() {
       
-     this.neuronsArray=Array.from(Array(this.maxNumberOfNeurons), (_, i) => i + 1);
+     this.neuronsArray=Array.from(Array(Network.getMaxNumberOfNeurons()), (_, i) => i + 1);
 
 
 
       },
+      methodToRunOnSelectActivation(payload){
+         this.layer.actFunction = payload;
+      },
     
 
-    methodToRunOnSelect(payload) {
+    methodToRunOnSelectNumber(payload) {
       alert(payload);
-      this.network.lossFunction = payload;
+      this.layers.neurons = payload;
     },
     },
   

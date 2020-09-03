@@ -5,7 +5,7 @@
     <dropdown
       :options="allLossFunctions"
       :selected="network.lossFunction"
-      v-on:updateOption="methodToRunOnSelect"
+      v-on:updateOption="methodToRunOnSelectLoss"
       :placeholder="'Select an Item'"
       :closeOnOutsideClick="true"
     >></dropdown>
@@ -13,7 +13,7 @@
     <dropdown
       :options="layersArray"
       :selected="network.numberOfLayers"
-      v-on:updateOption="methodToRunOnSelect"
+      v-on:updateOption="methodToRunOnSelectNumber"
       :placeholder="'Select an Item'"
       :closeOnOutsideClick="true"
     >></dropdown>
@@ -28,6 +28,8 @@
 <script>
 import dropdown from "vue-dropdowns"
 import ParamsPerLayer from './ParamsPerLayer.vue'
+import Network  from 'front_end/TheNeuralLibrary/src/neuralNetwork/Network.ts'
+
 
 export default {
    name: 'ParamsNetwork',
@@ -41,11 +43,7 @@ export default {
         neuronsPLayer: [],
       },
      
-      allLossFunctions: [1, 2, 3, 4, 5],
-
-      // esos valores toca pedirlos del backend
-     
-      maxNumberOfLayers: 10, 
+      allLossFunctions: [],
       layersArray:null
     };
   },
@@ -55,24 +53,30 @@ export default {
      ParamsPerLayer
   },
   created() {
-    //pedir los maximos de cada vaina
+   
     this.setLimimtArrays();
+
+    Network
+      .getAllLossFunctions()
+      .then(x => (this.allLossFunctions= x));
 
   },
 
   methods: {
-    setLimimtArrays() {
-      
-     this.layersArray=Array.from(Array(this.maxNumberOfLayers), (_, i) => i + 1);
-
-
-
+    setLimimtArrays() {  
+     this.layersArray=Array.from(Array(Network.getMaxNumberOfLayers()), (_, i) => i + 1);
       },
     
 
-    methodToRunOnSelect(payload) {
+    methodToRunOnSelectLoss(payload) {
       alert(payload);
+      
       this.network.lossFunction = payload;
+    },
+    methodToRunOnSelectNumber(payload) {
+      alert(payload);
+      this.network.numberOfLayers=payload;
+      
     },
     },
 
