@@ -1,7 +1,6 @@
 import {ActivationLayer} from "../neuralNetwork/ActivationLayer"
 import {FullyConectedLayer} from "../neuralNetwork/FullyConectedLayer"
 import {Network} from "../neuralNetwork/Network"
-import { networkInterfaces } from "os";
 import { NumTS } from "../math/NumTS";
 
 let x_train: number[][]=[[0,0], [0,1], [1,0], [1,1]];
