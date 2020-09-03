@@ -25,10 +25,10 @@
 </template>
 
 
-<script>
+<script >
 import dropdown from "vue-dropdowns"
 import ParamsPerLayer from './ParamsPerLayer.vue'
-import Network  from 'front_end/TheNeuralLibrary/src/neuralNetwork/Network.ts'
+import{ Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js"
 
 
 export default {
@@ -42,7 +42,7 @@ export default {
         lossFunction: "",
         neuronsPLayer: [],
       },
-     
+      net:Network,
       allLossFunctions: [],
       layersArray:null
     };
@@ -53,18 +53,18 @@ export default {
      ParamsPerLayer
   },
   created() {
+    this.net=new Network();
    
     this.setLimimtArrays();
 
-    Network
-      .getAllLossFunctions()
-      .then(x => (this.allLossFunctions= x));
+    this.allLossFunctions=this.net
+      .getAllLossFunctions();
 
   },
 
   methods: {
     setLimimtArrays() {  
-     this.layersArray=Array.from(Array(Network.getMaxNumberOfLayers()), (_, i) => i + 1);
+     this.layersArray=Array.from(Array(this.net.getMaxNumberOfLayers()), (_, i) => i + 1);
       },
     
 
