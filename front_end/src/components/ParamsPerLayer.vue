@@ -23,15 +23,16 @@
 </template>
 
 
-<script>
+<script >
 import dropdown from "vue-dropdowns";
-import Network  from 'front_end/TheNeuralLibrary/src/neuralNetwork/Network.ts'
+import{Network} from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 
 
 export default {
    name: 'ParamsPerLayer',
    
   data() {
+    
     return {
       layer: {
         actFunction: "",
@@ -39,6 +40,7 @@ export default {
       },
       // debe llegar del back
       allActFunctions: [],
+       net:Network,
       
 
       // esos valores toca pedirlos del backend
@@ -52,18 +54,19 @@ export default {
     dropdown: dropdown,
   },
   created() {
+  this.net=new Network();
+
     //pedir los maximos de cada vaina
     this.setLimimtArrays();
-    Network
-      .getAllActivationFunctions()
-      .then(x => (this.allActFunctions= x));
+    this.allActFunctions =this.net
+      .getAllActivationFunctions();
 
   },
 
   methods: {
     setLimimtArrays() {
       
-     this.neuronsArray=Array.from(Array(Network.getMaxNumberOfNeurons()), (_, i) => i + 1);
+     this.neuronsArray=Array.from(Array(this.net.getMaxNumberOfNeurons()), (_, i) => i + 1);
 
 
 
