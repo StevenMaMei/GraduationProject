@@ -9,10 +9,11 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "vue": "^2.6.11",
     "d3": "^6.1.0",
     "element-ui": "^2.11.1",
-    "vue-dropdowns": "^1.1.1"
+    "vue": "^2.6.11",
+    "vue-dropdowns": "^1.1.1",
+    "vue-select": "^3.10.8"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
