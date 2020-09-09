@@ -1,13 +1,6 @@
 <template>
     <div>
-        <hr/>
-        
-   
-       
-        <hr/>
-
-
-
+        <h1> Aqui va la network </h1>
     </div>
 
 </template>

@@ -35,31 +35,31 @@ class Network {
     // it cant never return a null value since the universe of keys is always limited to available ones
     getActivationFunctionDerivative(key) {
         return this.activationFunctionsMap.get(key);
-    };
+    }
     // it cant never return a null value since the universe of keys is always limited to available ones
     getLossFunctionDerivative(key) {
         return this.lossFunctionsMap.get(key);
-    };
+    }
     getAllActivationFunctions() {
         let result = new Array();
         for (let key of this.activationFunctionsMap.keys()) {
             result.push(key);
         }
         return result;
-    };
+    }
     getAllLossFunctions() {
         let result = new Array();
         for (let key of this.lossFunctionsMap.keys()) {
             result.push(key);
         }
         return result;
-    };
+    }
     getMaxNumberOfNeurons() {
         return this.maxNumberOfNeurons;
-    };
+    }
     getMaxNumberOfLayers() {
         return this.maxNumberOfLayers;
-    };
+    }
     layerStep() {
         if (this.current_outputs.length == 0) { // initializes the first output for every sample in x_train
             for (let j = 0; j < this.x_train.length; j++) {
@@ -124,7 +124,7 @@ class Network {
             }
         }
         return result;
-    };
+    }
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
         let net = new Network();
         for (var i = 0; i < layers; i++) {
@@ -169,7 +169,7 @@ class Network {
     }
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
-            let error = 0;
+           let error = 0;
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
@@ -183,6 +183,7 @@ class Network {
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
                 }
             }
+            print(error);
         }
     }
     goToNextEpoch() {
@@ -199,6 +200,7 @@ class Network {
             for (let k = this.layers.length - 1; k >= 0; k--) {
                 errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
             }
+            print(error);
         }
         this.currEpoch++;
     }

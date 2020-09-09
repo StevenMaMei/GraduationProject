@@ -1,33 +1,34 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <ParamsNetwork></ParamsNetwork>
-    <Network></Network>
-    
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color="primary"
+      dark
+    >
+      
+    </v-app-bar>
+
+    <v-main>
+     <Network/>
+     <hr>  
+     <ParamsNetwork/>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
-import Network from './components/Network.vue'
-import ParamsNetwork from './components/ParamsNetwork.vue'
-
-
+import Network from './components/Network';
+import ParamsNetwork from './components/ParamsNetwork';
 export default {
   name: 'App',
+
   components: {
     Network,
     ParamsNetwork
-  }
-}
-</script>
+  },
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  data: () => ({
+    //
+  }),
+};
+</script>
