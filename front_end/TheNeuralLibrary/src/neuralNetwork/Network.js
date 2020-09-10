@@ -183,7 +183,7 @@ class Network {
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
                 }
             }
-            print(error);
+            console.log(error);
         }
     }
     goToNextEpoch() {
@@ -200,7 +200,7 @@ class Network {
             for (let k = this.layers.length - 1; k >= 0; k--) {
                 errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
             }
-            print(error);
+            console.log(error);
         }
         this.currEpoch++;
     }

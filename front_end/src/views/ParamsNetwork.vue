@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <!-- <div>
     <v-container>
       <hr />
       <label for="lossFunc">Loss Function:</label>
@@ -23,13 +23,39 @@
 
       <hr />
     </v-container>
+  </div> -->
+  <div class="text-center margen">
+    <v-menu>
+      <template v-slot:activator="{ on: menu, attrs }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="{ ...tooltip, ...menu }"
+            >{{selectedLossFunction}}</v-btn>
+          </template>
+          <span>Loss Function</span>
+        </v-tooltip>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in allLossFunctions"
+          :key="index"
+          @click="changeLossFunction(item.title)"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
 
 <script >
-import dropdown from "vue-dropdowns";
-import ParamsPerLayer from "./ParamsPerLayer.vue";
+//import dropdown from "vue-dropdowns";
+//import ParamsPerLayer from "./ParamsPerLayer.vue";
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 
 export default {
@@ -46,19 +72,27 @@ export default {
       net: Network,
       allLossFunctions: [],
       layersArray: null,
+      selectedLossFunction: "Select the loss function",
+      
+      
     };
   },
 
   components: {
-    dropdown: dropdown,
-    ParamsPerLayer,
+    //dropdown: dropdown,
+    //ParamsPerLayer,
   },
   created() {
     this.net = new Network();
 
     this.setLimimtArrays();
 
-    this.allLossFunctions = this.net.getAllLossFunctions();
+    let lf = this.net.getAllLossFunctions();
+    lf.forEach(element => {
+      let lossF = {title:""};
+      lossF.title = element
+      this.allLossFunctions.push(lossF)
+    });
   },
 
   methods: {
@@ -68,12 +102,13 @@ export default {
         (_, i) => i + 1
       );
     },
-
-    methodToRunOnSelectLoss(payload) {
-      alert(payload);
-
-      this.network.lossFunction = payload;
+    changeLossFunction(newLF){
+      this.selectedLossFunction = newLF;
+      this.network.lossFunction = this.selectedLossFunction;
+      console.log(this.network.lossFunction)
+     
     },
+    
     methodToRunOnSelectNumber(payload) {
       alert(payload);
       this.network.numberOfLayers = payload;
@@ -97,5 +132,9 @@ li {
 }
 a {
   color: #42b983;
+}
+
+.margen{
+  margin: 2%
 }
 </style>

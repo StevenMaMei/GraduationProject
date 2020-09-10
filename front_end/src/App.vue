@@ -1,26 +1,18 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      
-    </v-app-bar>
-
-    <v-main>
-     <Network/>
-     <hr>  
-     <ParamsNetwork/>
-    </v-main>
+    <main>
+      <Network />
+      <hr />
+      <ParamsNetwork />
+    </main>
   </v-app>
 </template>
 
 <script>
-import Network from './components/Network';
-import ParamsNetwork from './components/ParamsNetwork';
+import Network from "./views/Network";
+import ParamsNetwork from "./views/ParamsNetwork";
 export default {
-  name: 'App',
+  name: "App",
 
   components: {
     Network,
@@ -29,6 +21,43 @@ export default {
 
   data: () => ({
     //
-  }),
+  })
 };
 </script>
+<style>
+  @import url("https://fonts.googleapis.com/css?family=Roboto|Material+Icons");
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+main {
+  font-family: "Roboto", "sans-serif";
+  background: #fff top center repeat;
+  color: #444;
+}
+
+h1,
+p {
+  margin: 0 0 1em 0;
+}
+.app-container {
+  max-width: 100%;
+  margin: 0 auto;
+  /* background-color: #e8e8e8; */
+  background-color: #fff;
+}
+
+.app-container > * {
+  border-radius: 5px;
+  font-size: 150%;
+  margin-bottom: 3%;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+</style>
