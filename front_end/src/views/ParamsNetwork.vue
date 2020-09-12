@@ -1,30 +1,6 @@
 <template>
-  <!-- <div>
-    <v-container>
-      <hr />
-      <label for="lossFunc">Loss Function:</label>
-      <dropdown
-        :options="allLossFunctions"
-        :selected="network.lossFunction"
-        v-on:updateOption="methodToRunOnSelectLoss"
-        :placeholder="'Select an Item'"
-        :closeOnOutsideClick="true"
-      >></dropdown>
-      <label for="lossFunc">Ammount of layers:</label>
-      <dropdown
-        :options="layersArray"
-        :selected="network.numberOfLayers"
-        v-on:updateOption="methodToRunOnSelectNumber"
-        :placeholder="'Select an Item'"
-        :closeOnOutsideClick="true"
-      >></dropdown>
-
-      <ParamsPerLayer></ParamsPerLayer>
-
-      <hr />
-    </v-container>
-  </div> -->
-  <div class="text-center margen">
+  <div class="text-center margin">
+    <!-- Loss function selection dropdown -->
     <v-menu>
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
@@ -49,13 +25,43 @@
         </v-list-item>
       </v-list>
     </v-menu>
+
+    <!-- Number layers selection dropdown -->
+    <v-menu>
+      <template v-slot:activator="{ on: menu, attrs }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on: tooltip }">
+            <v-btn
+              class="marginLeft"
+              color="primary"
+              dark
+              v-bind="attrs"
+              v-on="{ ...tooltip, ...menu }"
+            >{{selectedNumberOfLayers}}</v-btn>
+          </template>
+          <span>Number of layers</span>
+        </v-tooltip>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in allNumberOfLayers"
+          :key="index"
+          @click="changeNumberOfLayers(item.title)"
+        >
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <v-btn class="marginLeft" @click="createNetwork()" rounded color="success" dark>Create Network</v-btn>
+    
+    <v-row>
+      
+    </v-row>
   </div>
 </template>
 
 
 <script >
-//import dropdown from "vue-dropdowns";
-//import ParamsPerLayer from "./ParamsPerLayer.vue";
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 
 export default {
@@ -71,16 +77,14 @@ export default {
       },
       net: Network,
       allLossFunctions: [],
+      allNumberOfLayers: [],
       layersArray: null,
       selectedLossFunction: "Select the loss function",
-      
-      
+      selectedNumberOfLayers: "Select the number of layers",
     };
   },
 
   components: {
-    //dropdown: dropdown,
-    //ParamsPerLayer,
   },
   created() {
     this.net = new Network();
@@ -88,10 +92,10 @@ export default {
     this.setLimimtArrays();
 
     let lf = this.net.getAllLossFunctions();
-    lf.forEach(element => {
-      let lossF = {title:""};
-      lossF.title = element
-      this.allLossFunctions.push(lossF)
+    lf.forEach((element) => {
+      let lossF = { title: "" };
+      lossF.title = element;
+      this.allLossFunctions.push(lossF);
     });
   },
 
@@ -101,23 +105,37 @@ export default {
         Array(this.net.getMaxNumberOfLayers()),
         (_, i) => i + 1
       );
+      this.layersArray.forEach((element) => {
+        let numL = { title: "" };
+        numL.title = element + "";
+        this.allNumberOfLayers.push(numL);
+      });
     },
-    changeLossFunction(newLF){
+    changeLossFunction(newLF) {
       this.selectedLossFunction = newLF;
-      this.network.lossFunction = this.selectedLossFunction;
-      console.log(this.network.lossFunction)
-     
     },
-    
-    methodToRunOnSelectNumber(payload) {
-      alert(payload);
-      this.network.numberOfLayers = payload;
+    changeNumberOfLayers(newNL) {
+      this.selectedNumberOfLayers = newNL;
+    },
+    createNetwork() {
+      if (
+        this.selectedLossFunction != "Select the loss function" &&
+        this.selectedNumberOfLayers != "Select the number of layers"
+      ) {
+        this.net = new Network();
+        this.network.lossFunction = this.selectedLossFunction;
+        this.network.numberOfLayers = parseInt(this.selectedNumberOfLayers);
+        console.log(this.network.numberOfLayers);
+        console.log(this.network.lossFunction);
+        alert("New network created");
+      } else {
+        alert("Select all the parameters");
+      }
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h3 {
   margin: 40px 0 0;
@@ -134,7 +152,11 @@ a {
   color: #42b983;
 }
 
-.margen{
-  margin: 2%
+.margin {
+  margin: 2%;
+}
+
+.marginLeft {
+  margin-left: 2%;
 }
 </style>
