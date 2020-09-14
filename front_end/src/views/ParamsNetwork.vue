@@ -53,9 +53,11 @@
       </v-list>
     </v-menu>
     <v-btn class="marginLeft" @click="createNetwork()" rounded color="success" dark>Create Network</v-btn>
-    
+
     <v-row>
-      
+    <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
+      <app-layers :layer="layerP"></app-layers>
+    </v-col>
     </v-row>
   </div>
 </template>
@@ -63,9 +65,12 @@
 
 <script >
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
-
+import LayerParams from "../components/LayerParameters.vue";
 export default {
   name: "ParamsNetwork",
+  components: {
+    appLayers: LayerParams,
+  },
 
   data() {
     return {
@@ -81,15 +86,17 @@ export default {
       layersArray: null,
       selectedLossFunction: "Select the loss function",
       selectedNumberOfLayers: "Select the number of layers",
+      layers: [],
+      allActivationFunctions: [],
     };
   },
 
-  components: {
-  },
   created() {
     this.net = new Network();
 
     this.setLimimtArrays();
+  
+    this.allActivationFunctions = this.net.getAllActivationFunctions();
 
     let lf = this.net.getAllLossFunctions();
     lf.forEach((element) => {
@@ -125,9 +132,12 @@ export default {
         this.net = new Network();
         this.network.lossFunction = this.selectedLossFunction;
         this.network.numberOfLayers = parseInt(this.selectedNumberOfLayers);
-        console.log(this.network.numberOfLayers);
-        console.log(this.network.lossFunction);
+        this.layers = [];
         alert("New network created");
+        for (var i = 0; i < this.network.numberOfLayers; i++) {
+          let layer = { number: i , activationF: this.allActivationFunctions};
+          this.layers.push(layer);
+        }
       } else {
         alert("Select all the parameters");
       }
