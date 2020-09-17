@@ -1,10 +1,8 @@
 <template>
   <v-card class="mx-auto margin" max-width="400">
-    
-
     <v-card-text>
       <v-row align="center">
-        <v-col class="display-1" >Layer number: {{layerIndex+1}}</v-col>
+        <v-col class="display-1">Layer number: {{layerIndex+1}}</v-col>
       </v-row>
     </v-card-text>
 
@@ -13,19 +11,19 @@
     </v-list-item>
 
     <!-- Number of neurons slider selector -->
-    <v-slider v-model="neuronsNumber" :max="7" :tick-labels="labels" class="mx-4" ticks></v-slider>
-
+    <v-slider v-model="neuronsNumber" @change="changeNeurons()" :max="7" :tick-labels="labels" class="mx-4" ticks></v-slider>
 
     <v-list-item>
       <v-list-item-subtitle>Activation Function:</v-list-item-subtitle>
     </v-list-item>
 
     <!-- Activation function selection dropdown -->
-    <v-menu >
+    <v-menu>
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
-            <v-btn class="marginB"
+            <v-btn
+              class="marginB"
               color="primary"
               dark
               v-bind="attrs"
@@ -45,12 +43,6 @@
         </v-list-item>
       </v-list>
     </v-menu>
-
-    <v-divider></v-divider>
-
-    <v-card-actions>
-      <v-btn text>Set Layer</v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
@@ -67,25 +59,46 @@ export default {
       net: Network,
       layerIndex: undefined,
       neuronsNumber: 0,
-      labels: [1, 2,3,4,5,6,7,8],
+      labels: null,
       selectedActivationFunction: "Select",
       allActivationFunctions: [],
-      
+
+      neuronsArray: null,
+      maxNumber: 0,
     };
   },
   created() {
     this.layerIndex = this.layer.number;
-    this.layer.activationF.forEach(element => {
-        let actF = {title: element}
-        this.allActivationFunctions.push(actF)
+    this.maxNumber = this.layer.maxNumberOfNuerons;
+    this.setLimimtArrays();
+
+    this.layer.activationF.forEach((element) => {
+      let actF = { title: element };
+      this.allActivationFunctions.push(actF);
     });
-    console.log(this.allActivationFunctions)
   },
   methods: {
-      changeActivationFunction(actF){
-          console.log(actF)
-      }
-  }
+    setLimimtArrays() {
+      this.labels = Array.from(Array(this.maxNumber), (_, i) => i + 1);
+
+      this.labels.forEach((element) => {
+        let numL = { title: "" };
+        numL.title = element + "";
+        this.labels.push(numL);
+      });
+    },
+    changeActivationFunction(actF) {
+      this.selectedActivationFunction=actF;
+      this.update(this.selectedActivationFunction, this.neuronsNumber);
+    },
+    changeNeurons() {
+      
+      this.update(this.selectedActivationFunction, this.neuronsNumber);
+    },
+    update(actF, neuronNumer) {
+      this.$emit("updateMsg", actF, neuronNumer,this.layerIndex);
+    },
+  },
 };
 </script>
 

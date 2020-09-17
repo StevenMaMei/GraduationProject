@@ -52,12 +52,21 @@
         </v-list-item>
       </v-list>
     </v-menu>
+
     <v-btn class="marginLeft" @click="createNetwork()" rounded color="success" dark>Create Network</v-btn>
+    <v-btn
+      v-if="ready"
+      class="marginLeft"
+      @click="generateNetwork()"
+      rounded
+      color="success"
+      dark
+    >Go</v-btn>
 
     <v-row>
-    <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
-      <app-layers :layer="layerP"></app-layers>
-    </v-col>
+      <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
+        <app-layers @updateMsg="reciever" :layer="layerP"></app-layers>
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -80,12 +89,18 @@ export default {
         lossFunction: "",
         neuronsPLayer: [],
       },
+      layerAtributes:[
+
+      ],
+      ready: false,
       net: Network,
       allLossFunctions: [],
       allNumberOfLayers: [],
       layersArray: null,
+      maxNumbOfNeurons: 0,
       selectedLossFunction: "Select the loss function",
       selectedNumberOfLayers: "Select the number of layers",
+
       layers: [],
       allActivationFunctions: [],
     };
@@ -95,8 +110,10 @@ export default {
     this.net = new Network();
 
     this.setLimimtArrays();
-  
+
     this.allActivationFunctions = this.net.getAllActivationFunctions();
+
+    this.maxNumbOfNeurons = this.net.getMaxNumberOfNeurons();
 
     let lf = this.net.getAllLossFunctions();
     lf.forEach((element) => {
@@ -107,6 +124,45 @@ export default {
   },
 
   methods: {
+    reciever(actF, neuronNumer,layerId){
+      let encontro=false;
+      this.layerAtributes.forEach((e)=>{
+        if( e.layerIdd=== layerId){
+          
+          e.actFF= actF;
+          e.neuronNumber=neuronNumer;
+          encontro=true;
+        }
+      });
+      if(encontro==false){
+        let aux={
+          actFF:actF,
+          neuronNumber:neuronNumer,
+          layerIdd:layerId
+        }
+        this.layerAtributes.push(aux);
+      } 
+    },
+    generateNetwork() {
+      console.log(this.layerAtributes[0].actFF)
+      let layersNueorns = new Array();
+      let layersFunctions = new Array();
+
+      this.layerAtributes.forEach((x) => {
+      
+        layersNueorns.push(x.neuronNumber);
+        layersFunctions.push(x.actFF);
+      });
+
+      this.net.buildCustomNeuralNetwork(
+        5,
+        this.selectedNumberOfLayers,
+        layersFunctions,
+        this.selectedLossFunction,
+        layersNueorns
+      );
+     
+    },
     setLimimtArrays() {
       this.layersArray = Array.from(
         Array(this.net.getMaxNumberOfLayers()),
@@ -125,6 +181,7 @@ export default {
       this.selectedNumberOfLayers = newNL;
     },
     createNetwork() {
+      this.ready = true;
       if (
         this.selectedLossFunction != "Select the loss function" &&
         this.selectedNumberOfLayers != "Select the number of layers"
@@ -135,7 +192,11 @@ export default {
         this.layers = [];
         alert("New network created");
         for (var i = 0; i < this.network.numberOfLayers; i++) {
-          let layer = { number: i , activationF: this.allActivationFunctions};
+          let layer = {
+            number: i,
+            activationF: this.allActivationFunctions,
+            maxNumberOfNuerons: this.maxNumbOfNeurons,
+          };
           this.layers.push(layer);
         }
       } else {
