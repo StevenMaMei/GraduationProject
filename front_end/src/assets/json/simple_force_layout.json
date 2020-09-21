@@ -1,0 +1,33 @@
+{
+    "nodes": [
+      {
+        "id": "Neuron 1",
+        "group": 1
+      },
+      {
+        "id": "Neuron 2",
+        "group": 2
+      },
+      {
+        "id": "Neuron 3",
+        "group": 3
+      }
+    ],
+    "links": [
+      {
+        "source": "Neuron 1",
+        "target": "Neuron 2",
+        "value": 1
+      },
+      {
+        "source": "Neuron 2",
+        "target": "Neuron 3",
+        "value": 2
+      },
+      {
+        "source": "Neuron 3",
+        "target": "Neuron 1",
+        "value": 3
+      }
+    ]
+  }
