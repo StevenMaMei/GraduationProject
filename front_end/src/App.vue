@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Network from "./views/Network";
+import Network from "./views/Network"; 
 import ParamsNetwork from "./views/ParamsNetwork";
 export default {
   name: "App",
@@ -19,9 +19,12 @@ export default {
     ParamsNetwork
   },
 
-  data: () => ({
-    //
-  })
+  data() {
+    return {
+      
+    };
+  },
+  
 };
 </script>
 <style>
