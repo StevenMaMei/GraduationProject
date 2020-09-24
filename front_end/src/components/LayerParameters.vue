@@ -2,7 +2,7 @@
   <v-card class="mx-auto margin" max-width="400">
     <v-card-text>
       <v-row align="center">
-        <v-col class="display-1">Layer number: {{layerIndex+1}}</v-col>
+        <v-col class="display-1">Hidden layer number: {{layerIndex+1}}</v-col>
       </v-row>
     </v-card-text>
 
@@ -96,7 +96,7 @@ export default {
       this.update(this.selectedActivationFunction, this.neuronsNumber);
     },
     update(actF, neuronNumer) {
-      this.$emit("updateMsg", actF, neuronNumer,this.layerIndex);
+      this.$emit("updateMsg", actF, neuronNumer+1,this.layerIndex);
     },
   },
 };

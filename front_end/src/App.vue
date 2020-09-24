@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <main>
-      <Network />
+      <Network v-if="destroyComponent" />
       <hr />
       <ParamsNetwork />
     </main>
@@ -11,6 +11,7 @@
 <script>
 import Network from "./views/Network"; 
 import ParamsNetwork from "./views/ParamsNetwork";
+import { EventBus } from "./main.js";
 export default {
   name: "App",
 
@@ -21,9 +22,15 @@ export default {
 
   data() {
     return {
-      
+      destroyComponent: true,
     };
   },
+  created(){
+    EventBus.$on("resetNetwork", (msg) => {
+      
+      this.destroyComponent = msg;
+    });
+  }
   
 };
 </script>

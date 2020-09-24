@@ -47,6 +47,12 @@ class Network {
         }
         return result;
     }
+
+
+    getLayers(){
+        return this.layers;
+    }
+
     getAllLossFunctions() {
         let result = new Array();
         for (let key of this.lossFunctionsMap.keys()) {
@@ -126,21 +132,22 @@ class Network {
         return result;
     }
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
-        let net = new Network();
+        /* let net = new Network(); */
+        this.layers = [];
         for (var i = 0; i < layers; i++) {
             if (i == 0) {
-                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
-                net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
             }
             else if (i == layers - 1) {
-                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], 1));
-                net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], 1));
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
             }
-            net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-            net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+            this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
+            this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
         }
-        net.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
-        return net;
+        this.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
+        return this;
     }
     addLayer(layer) {
         this.layers.push(layer);
