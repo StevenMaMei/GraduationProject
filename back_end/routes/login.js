@@ -1,49 +1,16 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const Usuario = require('./../model/user');
+const { AuthenticationService } = require('../services/AuthenticationService')
 const app = express();
 
-app.post('/login', function (req, res) {
+app.post('/login', async function (req, res, next) {
    let body = req.body;
-   let {user : {email, password} } = body;
-   console.log(password)
-    Usuario.findOne({ email: email }, (erro, userDB)=>{
-        if (erro) {
-          return res.status(500).json({
-             ok: false,
-             err: erro
-          })
-       }
-      if (!userDB) {
-         return res.status(400).json({
-           ok: false,
-           err: {
-               message: "Incorrect user or password"
-           }
-        })
-      }
-
-      if (! bcrypt.compareSync(password, userDB.password)){
-         return res.status(400).json({
-            ok: false,
-            err: {
-              message: "Incorrect user or password"
-            }
-         });
-      }
-
-       let token = jwt.sign({
-              usuario: userDB,
-           }, process.env.AUTHENTICATION_SEED, {
-           expiresIn: process.env.TOKEN_EXPIRATION
-       })
-       res.json({
-           ok: true,
-           usuario: userDB,
-           token,
-       })
-   })
+   let {userCredentials} = body;
+   let authenticationService = new AuthenticationService();
+   try{
+      await Promise.resolve(authenticationService.login(userCredentials,res));
+   }catch(err){
+      next(err)
+   }
 })
 
 module.exports = app;
