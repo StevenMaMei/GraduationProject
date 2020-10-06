@@ -6,8 +6,11 @@ let Schema = mongoose.Schema;
 let neuralNetworkSchema = new Schema({
     ownerEmail: {
         type: String,
-        unique: true,
         required: [true, "Email required"],
+    },
+    networkName: {
+        type: String,
+        required: [true, "Name of the network required"],
     },
     dataSize: {
         type: Number,
@@ -30,7 +33,8 @@ let neuralNetworkSchema = new Schema({
         required: [true, "dataSize required"],
     }
 });
-
+neuralNetworkSchema.index({ownerEmail: 1 ,networkName:1 }, {unique: true});
+neuralNetworkSchema.set('autoIndex', false);
 neuralNetworkSchema.methods.toJSON = function() {
     let network = this;
     let networkObject = network.toObject();

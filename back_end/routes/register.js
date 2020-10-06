@@ -1,7 +1,10 @@
 const express = require('express');
 const { AuthenticationService } = require('../services/AuthenticationService')
+const { registerUserSchema } = require('../schemas/userSchema');
+const validationHandler = require('../middlewares/validationHandler');
+
 const app = express();
-app.post('/register', async function (req, res,next) {
+app.post('/register', validationHandler(registerUserSchema), async function (req, res,next) {
   let body = req.body;
   let { user } = body;
 

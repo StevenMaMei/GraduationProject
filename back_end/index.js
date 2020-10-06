@@ -4,6 +4,11 @@ const app = express()
 const mongoose = require('mongoose');
 const path = require('path');
 const routes = require('./routes/index');
+const {
+  logErrors,
+  wrapErrors,
+  errorHandler
+} = require('./middlewares/errorHandlers');
 
 const USER = encodeURIComponent(config.dbUser);
 const PASSWORD = encodeURIComponent(config.dbPassword);
@@ -34,6 +39,10 @@ app.get('/', function(req, res) {
 app.get('/json', function(req, res) {
   res.json({ hello: 'world' });
 });
+
+app.use(logErrors);
+app.use(wrapErrors);
+app.use(errorHandler);
 
 app.listen(config.port, function() {
   console.log(`Listening http://localhost:${config.port}`);

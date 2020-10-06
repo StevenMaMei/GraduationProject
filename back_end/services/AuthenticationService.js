@@ -16,7 +16,7 @@ class AuthenticationService {
             if (err) {
               return res.status(400).json({
                  ok: false,
-                 err,
+                 err
               });
             }
             res.json({
@@ -60,7 +60,7 @@ class AuthenticationService {
             })
             res.json({
                 ok: true,
-                usuario: userDB,
+                user: userDB,
                 token,
             })
         })
