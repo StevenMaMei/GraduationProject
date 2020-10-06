@@ -10,7 +10,8 @@
               dark
               v-bind="attrs"
               v-on="{ ...tooltip, ...menu }"
-            >{{selectedLossFunction}}</v-btn>
+              >{{ selectedLossFunction }}</v-btn
+            >
           </template>
           <span>Loss Function</span>
         </v-tooltip>
@@ -37,9 +38,10 @@
               dark
               v-bind="attrs"
               v-on="{ ...tooltip, ...menu }"
-            >{{selectedNumberOfLayers}}</v-btn>
+              >{{ selectedNumberOfLayers }}</v-btn
+            >
           </template>
-          <span>Number of layers</span>
+          <span>Number of hidden layers</span>
         </v-tooltip>
       </template>
       <v-list>
@@ -53,7 +55,15 @@
       </v-list>
     </v-menu>
 
-    <v-btn class="marginLeft" @click="createNetwork()" rounded color="success" dark>Create Network</v-btn>
+    <v-btn
+      v-if="createAvailable"
+      class="marginLeft"
+      @click="createNetwork()"
+      rounded
+      color="success"
+      dark
+      >Create Network</v-btn
+    >
     <v-btn
       v-if="ready"
       class="marginLeft"
@@ -61,7 +71,18 @@
       rounded
       color="success"
       dark
-    >Go</v-btn>
+      >Go</v-btn
+    >
+
+    <v-btn
+      v-if="resetAvailable"
+      class="marginLeft"
+      @click="resetNetwork()"
+      rounded
+      color="error"
+      dark
+      >Reset Network</v-btn
+    >
 
     <v-row>
       <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
@@ -75,6 +96,7 @@
 <script >
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 import LayerParams from "../components/LayerParameters.vue";
+import { EventBus } from "../main.js";
 export default {
   name: "ParamsNetwork",
   components: {
@@ -83,15 +105,15 @@ export default {
 
   data() {
     return {
+      resetAvailable: false,
+      createAvailable: true,
       network: {
         actFunctions: [],
         numberOfLayers: "",
         lossFunction: "",
         neuronsPLayer: [],
       },
-      layerAtributes:[
-
-      ],
+      layerAtributes: [],
       ready: false,
       net: Network,
       allLossFunctions: [],
@@ -99,7 +121,7 @@ export default {
       layersArray: null,
       maxNumbOfNeurons: 0,
       selectedLossFunction: "Select the loss function",
-      selectedNumberOfLayers: "Select the number of layers",
+      selectedNumberOfLayers: "Select the number of hidden layers",
 
       layers: [],
       allActivationFunctions: [],
@@ -124,32 +146,40 @@ export default {
   },
 
   methods: {
-    reciever(actF, neuronNumer,layerId){
-      let encontro=false;
-      this.layerAtributes.forEach((e)=>{
-        if( e.layerIdd=== layerId){
-          
-          e.actFF= actF;
-          e.neuronNumber=neuronNumer;
-          encontro=true;
+    resetNetwork(){
+      this.net = new Network();
+      EventBus.$emit("resetNetwork", false);
+      this.selectedLossFunction= "Select the loss function",
+      this.selectedNumberOfLayers= "Select the number of hidden layers",
+      this.resetAvailable = false;
+      this.createAvailable = true;
+      
+    },
+    reciever(actF, neuronNumer, layerId) {
+      let encontro = false;
+      this.layerAtributes.forEach((e) => {
+        if (e.layerIdd === layerId) {
+          e.actFF = actF;
+          e.neuronNumber = neuronNumer;
+          encontro = true;
         }
       });
-      if(encontro==false){
-        let aux={
-          actFF:actF,
-          neuronNumber:neuronNumer,
-          layerIdd:layerId
-        }
+      if (encontro == false) {
+        let aux = {
+          actFF: actF,
+          neuronNumber: neuronNumer,
+          layerIdd: layerId,
+        };
         this.layerAtributes.push(aux);
-      } 
+      }
     },
     generateNetwork() {
-      console.log(this.layerAtributes[0].actFF)
+      /* console.log(this.layerAtributes[0].actFF) */
+      EventBus.$emit("resetNetwork", true);
       let layersNueorns = new Array();
       let layersFunctions = new Array();
 
       this.layerAtributes.forEach((x) => {
-      
         layersNueorns.push(x.neuronNumber);
         layersFunctions.push(x.actFF);
       });
@@ -161,7 +191,15 @@ export default {
         this.selectedLossFunction,
         layersNueorns
       );
-     
+      this.emitGlobalClickEvent()
+      alert("Network has been parametrized")
+      this.ready = false;
+      this.resetAvailable = true;
+      this.layers= [];
+      
+    },
+    emitGlobalClickEvent() {
+      EventBus.$emit("giveNetwork", this.net);
     },
     setLimimtArrays() {
       this.layersArray = Array.from(
@@ -202,6 +240,7 @@ export default {
       } else {
         alert("Select all the parameters");
       }
+      this.createAvailable = false;
     },
   },
 };
