@@ -11,11 +11,12 @@ fullyConectedNetwork.addLayer(new FullyConectedLayer(2,3));
 fullyConectedNetwork.addLayer(new ActivationLayer(NumTS.matrixTanh, NumTS.matrixTanhPrime));
 fullyConectedNetwork.addLayer(new FullyConectedLayer(3,1));
 fullyConectedNetwork.addLayer(new ActivationLayer(NumTS.matrixTanh, NumTS.matrixTanhPrime));
-fullyConectedNetwork.setLearningRate(0.01)
+fullyConectedNetwork.setLearningRate(0.1)
 fullyConectedNetwork.setTrainingSet(x_train,y_train)
-fullyConectedNetwork.setLossFunction(NumTS.binary_cross_entropy,NumTS.binary_cross_entropyPrime);
+fullyConectedNetwork.setLossFunction(NumTS.mse,NumTS.msePrime);
 
-for (let index = 0; index < 300; index++) {
+
+for (let index = 0; index < 1000; index++) {
     fullyConectedNetwork.layerStep();
 }
 

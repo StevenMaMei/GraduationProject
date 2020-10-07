@@ -11,11 +11,12 @@ fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(2, 3))
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
 fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(3, 1));
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
-fullyConectedNetwork.setLearningRate(0.01);
+fullyConectedNetwork.setLearningRate(0.1);
 fullyConectedNetwork.setTrainingSet(x_train, y_train);
-fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.binary_cross_entropy, NumTS_1.NumTS.binary_cross_entropyPrime);
-for (let index = 0; index < 300; index++) {
-    fullyConectedNetwork.layerStep();
+fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.mse, NumTS_1.NumTS.msePrime);
+for (let index = 0; index < 1000; index++) {
+    fullyConectedNetwork.goToNextEpoch();
+    // fullyConectedNetwork.layerStep();
 }
 let result = fullyConectedNetwork.predict(x_train);
 console.log(result);
