@@ -36,12 +36,10 @@ class Network {
     getActivationFunctionDerivative(key) {
         return this.activationFunctionsMap.get(key);
     }
-    ;
     // it cant never return a null value since the universe of keys is always limited to available ones
     getLossFunctionDerivative(key) {
         return this.lossFunctionsMap.get(key);
     }
-    ;
     getAllActivationFunctions() {
         let result = new Array();
         for (let key of this.activationFunctionsMap.keys()) {
@@ -49,7 +47,6 @@ class Network {
         }
         return result;
     }
-    ;
     getAllLossFunctions() {
         let result = new Array();
         for (let key of this.lossFunctionsMap.keys()) {
@@ -57,15 +54,15 @@ class Network {
         }
         return result;
     }
-    ;
     getMaxNumberOfNeurons() {
         return this.maxNumberOfNeurons;
     }
-    ;
     getMaxNumberOfLayers() {
         return this.maxNumberOfLayers;
     }
-    ;
+    getLayers(){
+        return this.layers;
+    }
     layerStep() {
         if (this.current_outputs.length == 0) { // initializes the first output for every sample in x_train
             for (let j = 0; j < this.x_train.length; j++) {
@@ -135,25 +132,25 @@ class Network {
         }
         return result;
     }
-    ;
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
-        let net = new Network();
+        
         this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
         this.y_train = [[0], [1], [1], [0]];
+        this.layers = [];
         for (var i = 0; i < layers; i++) {
             if (i == 0) {
-                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
-                net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i + 1]));
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
             }
             else if (i == layers - 1) {
-                net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], 1));
-                net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], 1));
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
             }
-            net.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-            net.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+            this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
+            this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
         }
-        net.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
-        return net;
+        this.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
+        return this;
     }
     addLayer(layer) {
         this.layers.push(layer);
@@ -183,6 +180,7 @@ class Network {
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error = 0;
+            console.log(error)
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
@@ -200,6 +198,7 @@ class Network {
     }
     goToNextEpoch() {
         let error = 0;
+        console.log(error)
         for (let j = 0; j < this.x_train.length; j++) {
             let output = [];
             output[0] = this.x_train[j];

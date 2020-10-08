@@ -16,7 +16,7 @@ fullyConectedNetwork.setTrainingSet(x_train,y_train)
 fullyConectedNetwork.setLossFunction(NumTS.mse,NumTS.msePrime);
 
 
-for (let index = 0; index < 1000; index++) {
+for (let index = 0; index < 10000; index++) {
     fullyConectedNetwork.layerStep();
 }
 

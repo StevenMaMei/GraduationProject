@@ -2,7 +2,8 @@
   <div class="force-base-ii">
     <div v-if="networkStarted">
       <h3 class="text-center">
-        Current Layer: {{ currentLayer }} -- Current Epoch: {{ epoch }} -- Current Propagation: {{typeOfProp}}
+        Current Layer: {{ currentLayer }} -- Current Epoch: {{ epoch }} --
+        Current Propagation: {{ typeOfProp }}
       </h3>
       <v-container>
         <v-row no-gutters>
@@ -16,10 +17,12 @@
           </v-col>
         </v-row>
       </v-container>
-      
     </div>
-    
+
     <svg id="viz" class="container-border"></svg>
+
+    <p v-if="networkStarted" class="text-center">Data: {{ networkData }}</p>
+    <p v-if="networkStarted" class="text-center">Current Datapoint: {{ currentNetworkData }}</p>
   </div>
 </template>
 
@@ -32,6 +35,8 @@ export default {
   components: {},
   data() {
     return {
+      networkData: "x_train : [[0, 0], [0, 1], [1, 0], [1, 1]] -- y_train : [[0], [1], [1], [0]]",
+      currentNetworkData: "x: [0, 0] -- y: [0]",
       typeOfProp: "Forward",
       networkStarted: false,
       net: Network,
@@ -45,15 +50,17 @@ export default {
   },
   methods: {
     layerStep() {
-      
       this.net.layerStep();
       this.net.layerStep();
-      if(this.net.direction == 0){
+      console.log(this.net);
+
+      this.epoch = this.net.currEpoch + 1;
+      if (this.net.direction == 0) {
+        this.typeOfProp = "Forward";
         this.currentLayer++;
-        this.typeOfProp = "Forward"
-      }else{
+      } else {
+        this.typeOfProp = "Backward";
         this.currentLayer--;
-        this.typeOfProp = "Backward"
       }
       this.svg.selectAll("*").remove();
       this.generateGraph();
@@ -214,7 +221,7 @@ export default {
         node.call(updateNode);
         link.call(updateLink);
         /* labelLayout.alphaTarget(0.3).restart(); */
-        labelNode.each(function (d, i) {
+        /* labelNode.each(function (d, i) {
           if (i % 2 === 0) {
             d.x = d.node.x;
             d.y = d.node.y;
@@ -231,7 +238,7 @@ export default {
               "translate(" + shiftX + "," + shiftY + ")"
             );
           }
-        });
+        }); */
         labelNode.call(updateNode);
       }
       function fixna(x) {
@@ -270,9 +277,11 @@ export default {
     EventBus.$on("resetNetwork", (msg) => {
       this.net = undefined;
       this.networkStarted = false;
-      this.currentLayer=1;
-      this.epoch=1,
-      (this.theGraph = []), (this.links = []), console.log(msg);
+      this.currentLayer = 1;
+      (this.epoch = 1),
+        (this.theGraph = []),
+        (this.links = []),
+        console.log(msg);
       this.height = 100;
       this.svg = d3
         .select("#viz")

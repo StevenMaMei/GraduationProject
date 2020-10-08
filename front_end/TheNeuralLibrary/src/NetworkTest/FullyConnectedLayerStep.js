@@ -14,7 +14,7 @@ fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumT
 fullyConectedNetwork.setLearningRate(0.1);
 fullyConectedNetwork.setTrainingSet(x_train, y_train);
 fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.mse, NumTS_1.NumTS.msePrime);
-for (let index = 0; index < 1000; index++) {
+for (let index = 0; index < 10000; index++) {
     fullyConectedNetwork.layerStep();
 }
 let result = fullyConectedNetwork.predict(x_train);

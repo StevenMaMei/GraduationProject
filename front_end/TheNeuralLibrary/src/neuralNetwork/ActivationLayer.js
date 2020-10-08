@@ -15,6 +15,7 @@ class ActivationLayer {
         return this.output;
     }
     backPropagation(errorRespectToOutput, learningRate) {
+        console.log(learningRate)
         return NumTS_1.NumTS.matrixElemtWiseMult(this.activationFunctionDerived(this.input), errorRespectToOutput);
     }
 }
