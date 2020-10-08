@@ -148,7 +148,7 @@ export default {
   methods: {
     resetNetwork(){
       this.net = new Network();
-      EventBus.$emit("resetNetwork", false);
+      EventBus.$emit("resetNetwork", "network will be reseted");
       this.selectedLossFunction= "Select the loss function",
       this.selectedNumberOfLayers= "Select the number of hidden layers",
       this.resetAvailable = false;
@@ -175,7 +175,7 @@ export default {
     },
     generateNetwork() {
       /* console.log(this.layerAtributes[0].actFF) */
-      EventBus.$emit("resetNetwork", true);
+      /* EventBus.$emit("resetNetwork", true); */
       let layersNueorns = new Array();
       let layersFunctions = new Array();
 
@@ -185,7 +185,7 @@ export default {
       });
 
       this.net.buildCustomNeuralNetwork(
-        5,
+        2,
         this.selectedNumberOfLayers,
         layersFunctions,
         this.selectedLossFunction,

@@ -196,7 +196,8 @@ class Network {
 
         let net: Network = new Network();
 
-
+        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        this.y_train = [[0], [1], [1], [0]];
 
         for (var i = 0; i < layers; i++) {
  

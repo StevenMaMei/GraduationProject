@@ -133,6 +133,8 @@ class Network {
     }
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
         /* let net = new Network(); */
+        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        this.y_train = [[0], [1], [1], [0]];
         this.layers = [];
         for (var i = 0; i < layers; i++) {
             if (i == 0) {
