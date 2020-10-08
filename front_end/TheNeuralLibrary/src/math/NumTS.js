@@ -122,87 +122,64 @@ var NumTS;
         return ans;
     }
     NumTS.msePrime = msePrime;
-    
-
-    function sigmoid(a){
-        return 1/(1+Math.exp(-a));
+    function sigmoid(a) {
+        return 1 / (1 + Math.exp(-a));
     }
-    NumTS.sigmoid = sigmoid;
-    
-    function matrixSigmoid(a){
-        let n= a.length;
-        let m= a[0].length;
-        let toReturn=[];
-        for(let i=0; i<n;i++){
-            toReturn[i]=[];
-            for(let j=0;j<m;j++){
-                toReturn[i][j]=sigmoid(a[i][j]);
-            }
-        }
-        return toReturn;
-    }
-    NumTS.matrixSigmoid = matrixSigmoid
-
-    function sigmoidPrime(a){
-        return Math.exp(a)/(Math.pow((Math.exp(a)+1),2));
-    }
-
-    NumTS.sigmoidPrime = sigmoidPrime
-    
-
-    function matrixSigmoidPrime(a){
-        let n= a.length;
-        let m= a[0].length;
-        let toReturn=[];
-        for(let i=0; i<n;i++){
-            toReturn[i]=[];
-            for(let j=0;j<m;j++){
-                toReturn[i][j]=sigmoidPrime(a[i][j]);
-            }
-        }
-        return toReturn;
-    }
-    NumTS.matrixSigmoidPrime = matrixSigmoidPrime
-
-    function matrixLinear(a, c){
-        let n= a.length;
+    function matrixSigmoid(a) {
+        let n = a.length;
         let m = a[0].length;
-        let toReturn=[];
-        for(let i; i<n;i++){
-            toReturn[i]=[];
-            for(let j=0;j<m;j++){
-                toReturn[i][j]=c*a[i][j];
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = sigmoid(a[i][j]);
             }
         }
         return toReturn;
     }
-    NumTS.matrixLinear= matrixLinear
-
-    function matrixLinearPrime(a){
-        let n= a.length;
+    NumTS.matrixSigmoid = matrixSigmoid;
+    function sigmoidPrime(a) {
+        return Math.exp(a) / (Math.pow((Math.exp(a) + 1), 2));
+    }
+    function matrixSigmoidPrime(a) {
+        let n = a.length;
         let m = a[0].length;
-        let toReturn=[];
-        for(let i=0; i<n;i++){
-            toReturn[i]=[];
-            for(let j=0;j<m;j++){
-                toReturn[i][j]=a[i][j];
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = sigmoidPrime(a[i][j]);
             }
         }
         return toReturn;
     }
-    NumTS.matrixLinearPrime= matrixLinearPrime
-
-    
-    function binary_cross_entropyPrime(predictedOutput, targetOutput) {
-        let ans = [];
-        ans[0] = [];
-        for (let i = 0; i < targetOutput[0].length; i++) {
-            ans[0][i] = (targetOutput[0][i] * (predictedOutput[0][i] - 1)) + ((1 - targetOutput[0][i]) * predictedOutput[0][i]);
+    NumTS.matrixSigmoidPrime = matrixSigmoidPrime;
+    function matrixLinear(a, c) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = c * a[i][j];
+            }
         }
-        return ans;
+        return toReturn;
     }
-    NumTS.binary_cross_entropyPrime = binary_cross_entropyPrime;
-
+    NumTS.matrixLinear = matrixLinear;
+    function matrixLinearPrime(a) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = a[i][j];
+            }
+        }
+        return toReturn;
+    }
+    NumTS.matrixLinearPrime = matrixLinearPrime;
     function binary_cross_entropy(predictedOutput, targetOutput) {
         let sum_score = 0;
         for (let i = 0; i < targetOutput.length; i++) {
@@ -214,7 +191,14 @@ var NumTS;
         return -sum_score;
     }
     NumTS.binary_cross_entropy = binary_cross_entropy;
-
-
+    function binary_cross_entropyPrime(predictedOutput, targetOutput) {
+        let ans = [];
+        ans[0] = [];
+        for (let i = 0; i < targetOutput[0].length; i++) {
+            ans[0][i] = (targetOutput[0][i] * (predictedOutput[0][i] - 1)) + ((1 - targetOutput[0][i]) * predictedOutput[0][i]);
+        }
+        return ans;
+    }
+    NumTS.binary_cross_entropyPrime = binary_cross_entropyPrime;
 })(NumTS || (NumTS = {}));
 exports.NumTS = NumTS;

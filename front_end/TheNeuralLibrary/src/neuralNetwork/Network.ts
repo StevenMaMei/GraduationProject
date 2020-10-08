@@ -132,9 +132,11 @@ class Network {
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
             }
 
-            this.current_layer++; // advances one layer
+           
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
                 this.direction = 1;
+            }else{
+                this.current_layer++; // advances one layer
             }
 
         } else if (this.direction == 1) { //backwards propagation
@@ -143,7 +145,7 @@ class Network {
             this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
 
 
-            this.current_layer = this.current_layer - 1;
+            
             if (this.current_layer == 0) {
                 this.direction = 0;
                 this.current_datapoint_index++;
@@ -160,7 +162,9 @@ class Network {
                     this.current_datapoint_index = 0;
                 }
                 // --
-
+                if(this.current_layer >0){
+                    this.current_layer = this.current_layer - 1;
+                }
             }
         }
     }
