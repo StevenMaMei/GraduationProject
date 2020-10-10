@@ -13,13 +13,18 @@
   "dependencies": {
     "@hapi/boom": "^9.1.0",
     "@hapi/joi": "^15.0.3",
+    "async": "^3.2.0",
     "bcrypt": "^5.0.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "express-flash": "0.0.2",
+    "googleapis": "^61.0.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.6.2",
     "mongoose": "^5.10.6",
-    "mongoose-unique-validator": "^2.0.3"
+    "mongoose-unique-validator": "^2.0.3",
+    "nodemailer": "^6.4.13",
+    "xoauth2": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^7.9.0",

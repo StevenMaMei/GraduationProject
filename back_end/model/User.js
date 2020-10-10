@@ -17,6 +17,8 @@ let userSchema = new Schema({
         type: String,
         required: [true, "Password required"],
     },
+    resetPasswordToken: String,
+    resetPasswordExpires: Date
 });
 
 userSchema.methods.toJSON = function() {
