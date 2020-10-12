@@ -122,6 +122,64 @@ var NumTS;
         return ans;
     }
     NumTS.msePrime = msePrime;
+    function sigmoid(a) {
+        return 1 / (1 + Math.exp(-a));
+    }
+    function matrixSigmoid(a) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = sigmoid(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
+    NumTS.matrixSigmoid = matrixSigmoid;
+    function sigmoidPrime(a) {
+        return Math.exp(a) / (Math.pow((Math.exp(a) + 1), 2));
+    }
+    function matrixSigmoidPrime(a) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = sigmoidPrime(a[i][j]);
+            }
+        }
+        return toReturn;
+    }
+    NumTS.matrixSigmoidPrime = matrixSigmoidPrime;
+    function matrixLinear(a, c) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = c * a[i][j];
+            }
+        }
+        return toReturn;
+    }
+    NumTS.matrixLinear = matrixLinear;
+    function matrixLinearPrime(a) {
+        let n = a.length;
+        let m = a[0].length;
+        let toReturn = [];
+        for (let i = 0; i < n; i++) {
+            toReturn[i] = [];
+            for (let j = 0; j < m; j++) {
+                toReturn[i][j] = a[i][j];
+            }
+        }
+        return toReturn;
+    }
+    NumTS.matrixLinearPrime = matrixLinearPrime;
     function binary_cross_entropy(predictedOutput, targetOutput) {
         let sum_score = 0;
         for (let i = 0; i < targetOutput.length; i++) {

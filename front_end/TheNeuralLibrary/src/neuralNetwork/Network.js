@@ -47,12 +47,6 @@ class Network {
         }
         return result;
     }
-
-
-    getLayers(){
-        return this.layers;
-    }
-
     getAllLossFunctions() {
         let result = new Array();
         for (let key of this.lossFunctionsMap.keys()) {
@@ -65,6 +59,9 @@ class Network {
     }
     getMaxNumberOfLayers() {
         return this.maxNumberOfLayers;
+    }
+    getLayers(){
+        return this.layers;
     }
     layerStep() {
         if (this.current_outputs.length == 0) { // initializes the first output for every sample in x_train
@@ -84,15 +81,16 @@ class Network {
                 let errorForBackwardProp = this.lossFunctionPrime(this.current_output, targetOutput);
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
             }
-            this.current_layer++; // advances one layer
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
                 this.direction = 1;
+            }
+            else {
+                this.current_layer++; // advances one layer
             }
         }
         else if (this.direction == 1) { //backwards propagation
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
             this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
-            this.current_layer = this.current_layer - 1;
             if (this.current_layer == 0) {
                 this.direction = 0;
                 this.current_datapoint_index++;
@@ -109,6 +107,9 @@ class Network {
                     this.current_datapoint_index = 0;
                 }
                 // --
+                if (this.current_layer > 0) {
+                    this.current_layer = this.current_layer - 1;
+                }
             }
         }
     }
@@ -132,7 +133,9 @@ class Network {
         return result;
     }
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
-        /* let net = new Network(); */
+        
+        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        this.y_train = [[0], [1], [1], [0]];
         this.layers = [];
         for (var i = 0; i < layers; i++) {
             if (i == 0) {
@@ -176,7 +179,8 @@ class Network {
     }
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
-           let error = 0;
+            let error = 0;
+            console.log(error)
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
@@ -190,11 +194,11 @@ class Network {
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
                 }
             }
-            console.log(error);
         }
     }
     goToNextEpoch() {
         let error = 0;
+        console.log(error)
         for (let j = 0; j < this.x_train.length; j++) {
             let output = [];
             output[0] = this.x_train[j];
@@ -207,7 +211,6 @@ class Network {
             for (let k = this.layers.length - 1; k >= 0; k--) {
                 errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
             }
-            console.log(error);
         }
         this.currEpoch++;
     }

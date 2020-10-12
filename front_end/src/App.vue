@@ -3,7 +3,7 @@
     <main>
       <div class="app-container">
         <header class="app-header">
-          <v-app-bar color="#9CCC65" fixed=true height="40">
+          <v-app-bar color="#9CCC65"  height="40">
             <!-- <v-img class="mx-2" src="./images/castor.png" max-height="40" max-width="41" contain></v-img> -->
             <v-toolbar-title >Neural Network</v-toolbar-title>
 
@@ -65,7 +65,7 @@ export default {
     };
   },
   created(){
-    this.$router.push("/main");
+    /* this.$router.push("/main"); */
   }
   
 };
