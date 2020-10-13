@@ -8,12 +8,14 @@
       <v-container>
         <v-row no-gutters>
           <v-col class="text-center m-left">
-            <v-btn @click="layerStep()" depressed color="primary">
+            <v-btn @click="nextLayer()" depressed color="primary">
               Next Layer
             </v-btn>
           </v-col>
           <v-col class="text-center m-right">
-            <v-btn depressed color="primary"> Next Epoch </v-btn>
+            <v-btn @click="nextEpoch()" depressed color="primary">
+              Next Epoch
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -21,8 +23,9 @@
 
     <svg id="viz" class="container-border"></svg>
 
-    <p v-if="networkStarted" class="text-center">Data: {{ networkData }}</p>
-    <p v-if="networkStarted" class="text-center">Current Datapoint: {{ currentNetworkData }}</p>
+    <!-- <p v-if="networkStarted" class="text-center">
+      Current error = {{ current_error }}
+    </p> -->
   </div>
 </template>
 
@@ -35,8 +38,7 @@ export default {
   components: {},
   data() {
     return {
-      networkData: "x_train : [[0, 0], [0, 1], [1, 0], [1, 1]] -- y_train : [[0], [1], [1], [0]]",
-      currentNetworkData: "x: [0, 0] -- y: [0]",
+      current_error: undefined,
       typeOfProp: "Forward",
       networkStarted: false,
       net: Network,
@@ -49,7 +51,14 @@ export default {
     };
   },
   methods: {
-    layerStep() {
+    nextEpoch() {
+      this.net.goToNextEpoch();
+      this.epoch = this.net.currEpoch + 1;
+      this.current_error = this.net.current_error;
+      this.svg.selectAll("*").remove();
+      this.generateGraph();
+    },
+    nextLayer() {
       this.net.layerStep();
       this.net.layerStep();
       console.log(this.net);
@@ -59,12 +68,16 @@ export default {
         this.typeOfProp = "Forward";
         this.currentLayer++;
       } else {
-        this.typeOfProp = "Backward";
-        this.currentLayer--;
+        if (this.typeOfProp == "Forward") {
+          this.typeOfProp = "Backward";
+        } else {
+          this.typeOfProp = "Backward";
+          this.currentLayer--;
+        }
       }
+      this.current_error = this.net.current_error;
       this.svg.selectAll("*").remove();
       this.generateGraph();
-      console.log(this.net.current_output);
     },
     updateNodesAndLinks() {
       this.theGraph.nodes = [];

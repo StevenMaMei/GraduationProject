@@ -14,8 +14,11 @@ class ActivationLayer {
         this.output = this.activationFunction(this.input);
         return this.output;
     }
-    backPropagation(errorRespectToOutput, learningRate) {
+    /* backPropagation(errorRespectToOutput: number[][], learningRate: number): number[][] {
         console.log(learningRate)
+        return NumTS.matrixElemtWiseMult(this.activationFunctionDerived(this.input),errorRespectToOutput);
+    } */
+    backPropagation(errorRespectToOutput) {
         return NumTS_1.NumTS.matrixElemtWiseMult(this.activationFunctionDerived(this.input), errorRespectToOutput);
     }
 }

@@ -15,7 +15,7 @@ fullyConectedNetwork.addLayer(new ActivationLayer(NumTS.matrixTanh, NumTS.matrix
 
 fullyConectedNetwork.setLossFunction(NumTS.mse,NumTS.msePrime);
 
-fullyConectedNetwork.fit(x_train,y_train, 400,0.1);
+fullyConectedNetwork.fit(x_train,y_train, 300,0.1);
 /** 
 let testclass: Network = new Network();
 
