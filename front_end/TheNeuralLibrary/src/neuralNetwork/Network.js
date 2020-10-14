@@ -14,8 +14,8 @@ class Network {
             ["TanH", NumTS_1.NumTS.matrixTanhPrime],
         ]);
         //constants
-        this.maxNumberOfNeurons = 8;
-        this.maxNumberOfLayers = 8;
+        this.maxNumberOfNeurons = 5;
+        this.maxNumberOfLayers = 4;
         this.layers = [];
         this.lossFunction = NumTS_1.NumTS.mse;
         this.lossFunctionPrime = NumTS_1.NumTS.msePrime;
@@ -194,7 +194,8 @@ class Network {
     }
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
-            this.current_error = 0;
+            let error = 0;
+            console.log(error);
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
@@ -202,7 +203,7 @@ class Network {
                     output = this.layers[k].forwardPropagation(output);
                 }
                 let targetOutput = [this.y_train[j]];
-                this.current_error += this.lossFunction(output, targetOutput);
+                error += this.lossFunction(output, targetOutput);
                 let errorForBackwardProp = this.lossFunctionPrime(output, targetOutput);
                 for (let k = this.layers.length - 1; k >= 0; k--) {
                     errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);
@@ -211,8 +212,8 @@ class Network {
         }
     }
     goToNextEpoch() {
-        this.cuurent_error = 0;
-        
+        let error = 0;
+        console.log(error);
         for (let j = 0; j < this.x_train.length; j++) {
             let output = [];
             output[0] = this.x_train[j];
@@ -220,7 +221,7 @@ class Network {
                 output = this.layers[k].forwardPropagation(output);
             }
             let targetOutput = [this.y_train[j]];
-            this.current_error += this.lossFunction(output, targetOutput);
+            error += this.lossFunction(output, targetOutput);
             let errorForBackwardProp = this.lossFunctionPrime(output, targetOutput);
             for (let k = this.layers.length - 1; k >= 0; k--) {
                 errorForBackwardProp = this.layers[k].backPropagation(errorForBackwardProp, this.learningRate);

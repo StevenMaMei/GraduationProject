@@ -45,7 +45,7 @@ export default {
       theGraph: { nodes: [], links: [] },
       svg: undefined,
       width: 1850,
-      height: 500,
+      height: 600,
       currentLayer: 1,
       epoch: 1,
     };
@@ -77,9 +77,10 @@ export default {
       }
       this.current_error = this.net.current_error;
       this.svg.selectAll("*").remove();
-      this.generateGraph();
+      this.updateNodesAndLinks();
     },
     updateNodesAndLinks() {
+      
       this.theGraph.nodes = [];
       this.theGraph.links = [];
       let layers = this.net.getLayers();
@@ -96,12 +97,25 @@ export default {
           layerNumber++;
           let numberOfNeurons = layers[i].weights.length;
           for (var j = 0; j < numberOfNeurons; j++) {
+            let neuronLabel = "";
+            if(i == 0){
+              let dataInput = this.net.x_train[this.net.current_datapoint_index];
+              neuronLabel = dataInput[j]
+            }else{
+              let outputs = this.net.layers[i-1].output;
+              if(outputs.length > 0){
+                let rawNumber = outputs[0][j];
+                let roundedNumber = Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+                neuronLabel = roundedNumber+""
+              }
+            }
             let n = j + 1;
             let node = {
               id: "L" + layerNumber + "N" + n,
               group: layerNumber,
               layer: layerNumber,
               neuron: n,
+              label: neuronLabel,
             };
             this.theGraph.nodes.push(node);
             if (i < layers.length - 1) {
@@ -127,7 +141,7 @@ export default {
     },
 
     generateGraph() {
-      this.height = 500;
+      this.height = 600;
       let color = d3.scaleOrdinal(d3.schemeCategory10);
       let graph = this.theGraph;
 
@@ -143,10 +157,10 @@ export default {
           target: i * 2 + 1,
         });
       });
-      /* let labelLayout = d3
+      let labelLayout = d3
         .forceSimulation(label.nodes)
         .force("charge", d3.forceManyBody().strength(-10))
-        .force("link", d3.forceLink(label.links).distance(0).strength(2)); */
+        .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
       d3.forceSimulation(graph.nodes)
         /* .force('charge', d3.forceManyBody().strength(-3000)) */
@@ -155,7 +169,7 @@ export default {
           "x",
           d3
             .forceX(function (d) {
-              return d.layer * 300 /* - 50*this.net.getLayers() */;
+              return d.layer * 400 /* - 50*this.net.getLayers() */;
             })
             .strength(1)
         )
@@ -163,7 +177,7 @@ export default {
           "y",
           d3
             .forceY(function (d) {
-              return 350 + d.neuron * 80;
+              return 350 + d.neuron * 350;
             })
             .strength(1)
         )
@@ -171,7 +185,7 @@ export default {
           "link",
           d3.forceLink(graph.links).id(function (d) {
             return d.id;
-          }) /* .distance(100).strength(1) */
+          }).distance(100).strength(1)
         )
         .on("tick", ticked);
 
@@ -209,9 +223,9 @@ export default {
         .attr("r", 5)
         .attr("fill", function (d) {
           if (d.group == layerNum) {
-            return color(1);
+            return d3.color("#DA1A1A");
           } else {
-            return color(2);
+            return color("#201ADA");
           }
         });
 
@@ -223,7 +237,7 @@ export default {
         .enter()
         .append("text")
         .text(function (d, i) {
-          return i % 2 === 0 ? "" : d.node.id;
+          return i % 2 === 0 ? "" : d.node.label;
         })
         .style("fill", "#555")
         .style("font-family", "Arial")
@@ -233,13 +247,13 @@ export default {
       function ticked() {
         node.call(updateNode);
         link.call(updateLink);
-        /* labelLayout.alphaTarget(0.3).restart(); */
-        /* labelNode.each(function (d, i) {
+        labelLayout.alphaTarget(0.3).restart();
+        labelNode.each(function (d, i) {
           if (i % 2 === 0) {
             d.x = d.node.x;
-            d.y = d.node.y;
+            d.y = d.node.y-20;
           } else {
-            let b = this.getBBox();
+            /* let b = this.getBBox();
             let diffX = d.x - d.node.x;
             let diffY = d.y - d.node.y;
             let dist = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -249,9 +263,9 @@ export default {
             this.setAttribute(
               "transform",
               "translate(" + shiftX + "," + shiftY + ")"
-            );
+            ); */
           }
-        }); */
+        });
         labelNode.call(updateNode);
       }
       function fixna(x) {
@@ -282,6 +296,7 @@ export default {
     },
   },
   created() {
+    
     EventBus.$on("giveNetwork", (data) => {
       this.net = data;
       this.networkStarted = true;

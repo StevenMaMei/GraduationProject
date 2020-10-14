@@ -35,8 +35,8 @@ class Network {
     ])
 
     //constants
-    maxNumberOfNeurons: number = 8;
-    maxNumberOfLayers: number = 8;
+    maxNumberOfNeurons: number = 5;
+    maxNumberOfLayers: number = 4;
 
     // it cant never return a null value since the universe of keys is always limited to available ones
     getActivationFunctionDerivative(key: String): Function {
