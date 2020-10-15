@@ -14,6 +14,8 @@ class Network {
     learningRate: number;
     x_train: number[][];
     y_train: number[][];
+    all_outputs: number[][][];
+    output_size: number;
     current_layer: number;
     current_error: number;
     current_datapoint_index: number; // the position, in the x_train array, of the current data point that is being passed through the network
@@ -35,8 +37,8 @@ class Network {
     ])
 
     //constants
-    maxNumberOfNeurons: number = 5;
-    maxNumberOfLayers: number = 4;
+    maxNumberOfNeurons: number = 4;
+    maxNumberOfLayers: number = 3;
 
     // it cant never return a null value since the universe of keys is always limited to available ones
     getActivationFunctionDerivative(key: String): Function {
@@ -89,6 +91,7 @@ class Network {
 
 
     constructor() {
+        this.all_outputs = [];
         this.layers = [];
         this.lossFunction = NumTS.mse;
         this.lossFunctionPrime = NumTS.msePrime;
@@ -104,6 +107,7 @@ class Network {
         this.current_output = [];
         this.current_backProp_errors = [];
         this.current_backProp_error = [];
+        this.output_size = 1;
     }
 
 
@@ -128,6 +132,7 @@ class Network {
 
             this.current_output = this.layers[this.current_layer].forwardPropagation(this.current_output); // does the forward propagation for the sample "j" in x_train
             this.current_outputs[this.current_datapoint_index] = this.current_output; // assigns the new values
+            this.all_outputs.push(this.current_output);
 
 
             if (this.current_layer == this.layers.length - 1) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
@@ -155,6 +160,8 @@ class Network {
             if (this.current_layer == 0) {
                 this.direction = 0;
                 this.current_datapoint_index++;
+                this.all_outputs = []; //resets the array of outputs that is shown in the visualization
+
                 // -- resets the values for the next epoch
                 if (this.current_datapoint_index == this.x_train.length) {
                     this.currEpoch++;
@@ -239,7 +246,7 @@ class Network {
                     this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
 
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], 1));
+                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
                     this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
                 } else {

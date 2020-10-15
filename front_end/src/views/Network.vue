@@ -65,11 +65,18 @@ export default {
 
       this.epoch = this.net.currEpoch + 1;
       if (this.net.direction == 0) {
-        this.typeOfProp = "Forward";
-        this.currentLayer++;
+        if (this.typeOfProp == "Backward") {
+          this.net.layerStep();
+          this.typeOfProp = "Forward";
+          this.currentLayer++;
+        } else {
+          this.typeOfProp = "Forward";
+          this.currentLayer++;
+        }
       } else {
         if (this.typeOfProp == "Forward") {
           this.typeOfProp = "Backward";
+          this.net.layerStep();
         } else {
           this.typeOfProp = "Backward";
           this.currentLayer--;
@@ -80,7 +87,6 @@ export default {
       this.updateNodesAndLinks();
     },
     updateNodesAndLinks() {
-      
       this.theGraph.nodes = [];
       this.theGraph.links = [];
       let layers = this.net.getLayers();
@@ -91,6 +97,7 @@ export default {
           nArray.push(layers[p].weights.length);
         }
       }
+      nArray.push(this.net.output_size);
 
       for (var i = 0; i < layers.length; i++) {
         if (i == 0 || i % 2 == 0) {
@@ -98,27 +105,34 @@ export default {
           let numberOfNeurons = layers[i].weights.length;
           for (var j = 0; j < numberOfNeurons; j++) {
             let neuronLabel = "";
-            if(i == 0){
-              let dataInput = this.net.x_train[this.net.current_datapoint_index];
-              neuronLabel = dataInput[j]
-            }else{
-              let outputs = this.net.layers[i-1].output;
-              if(outputs.length > 0){
-                let rawNumber = outputs[0][j];
-                let roundedNumber = Math.round((rawNumber + Number.EPSILON) * 100) / 100;
-                neuronLabel = roundedNumber+""
+            if (i == 0) {
+              let dataInput = this.net.x_train[
+                this.net.current_datapoint_index
+              ];
+              neuronLabel = dataInput[j];
+            } else {
+              /* let outputs = this.net.layers[i-1].output; */
+              if (this.net.all_outputs[i - 1] != undefined) {
+                let outputs = this.net.all_outputs[i - 1][0];
+                if (outputs.length > 0) {
+                  let rawNumber = outputs[j];
+                  let roundedNumber =
+                    Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+                  neuronLabel = roundedNumber + "";
+                }
               }
             }
             let n = j + 1;
             let node = {
               id: "L" + layerNumber + "N" + n,
               group: layerNumber,
-              layer: layerNumber,
               neuron: n,
               label: neuronLabel,
+              last: "no",
             };
             this.theGraph.nodes.push(node);
-            if (i < layers.length - 1) {
+            /* if (i < layers.length - 1) { */
+            if (i < layers.length) {
               let currentNextLayer = nArray[layerNumber];
               let currentSource = "L" + layerNumber + "N" + n;
               for (var k = 0; k < currentNextLayer; k++) {
@@ -137,12 +151,35 @@ export default {
         }
       }
 
+      let lastLayerSize = this.net.output_size;
+      layerNumber++;
+      for (i = 0; i < lastLayerSize; i++) {
+        let neuronLabel = "";
+        if (this.net.all_outputs[this.net.layers.length - 1] != undefined) {
+          let outputs = this.net.all_outputs[this.net.layers.length - 1][0];
+          if (outputs.length > 0) {
+            let rawNumber = outputs[i];
+            let roundedNumber =
+              Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+            neuronLabel = roundedNumber + "";
+          }
+        }
+        let n = i + 1;
+        let node = {
+          id: "L" + layerNumber + "N" + n,
+          group: layerNumber,
+          neuron: n,
+          label: neuronLabel,
+          last: "yes",
+        };
+        this.theGraph.nodes.push(node);
+      }
+
       this.generateGraph();
     },
 
     generateGraph() {
       this.height = 600;
-      let color = d3.scaleOrdinal(d3.schemeCategory10);
       let graph = this.theGraph;
 
       let label = {
@@ -163,13 +200,12 @@ export default {
         .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
       d3.forceSimulation(graph.nodes)
-        /* .force('charge', d3.forceManyBody().strength(-3000)) */
         .force("center", d3.forceCenter(this.width / 2, this.height / 2))
         .force(
           "x",
           d3
             .forceX(function (d) {
-              return d.layer * 400 /* - 50*this.net.getLayers() */;
+              return d.group * 400;
             })
             .strength(1)
         )
@@ -183,9 +219,13 @@ export default {
         )
         .force(
           "link",
-          d3.forceLink(graph.links).id(function (d) {
-            return d.id;
-          }).distance(100).strength(1)
+          d3
+            .forceLink(graph.links)
+            .id(function (d) {
+              return d.id;
+            })
+            .distance(100)
+            .strength(1)
         )
         .on("tick", ticked);
 
@@ -194,14 +234,7 @@ export default {
         .attr("width", this.width)
         .attr("height", this.height);
       let container = this.svg.append("g");
-      this.svg.call(
-        d3
-          .zoom()
-          .scaleExtent([0.1, 4]) // eslint-disable-line
-          .on("zoom", function () {
-            container.attr("transform", d3.event.transform);
-          })
-      );
+
       let link = container
         .append("g")
         .attr("class", "links")
@@ -220,12 +253,16 @@ export default {
         .data(graph.nodes)
         .enter()
         .append("circle")
-        .attr("r", 5)
+        .attr("r", 12)
         .attr("fill", function (d) {
           if (d.group == layerNum) {
-            return d3.color("#DA1A1A");
+            return d3.color("#F12525");
           } else {
-            return color("#201ADA");
+            if (d.last == "yes") {
+              return d3.color("#2550F1");
+            } else {
+              return d3.color("#9898AA");
+            }
           }
         });
 
@@ -241,29 +278,46 @@ export default {
         })
         .style("fill", "#555")
         .style("font-family", "Arial")
-        .style("font-size", 12)
+        .style("font-size", 15)
         .style("pointer-events", "none"); // to prevent mouseover/drag capture
+
+      let labelLink = container
+        .append("g")
+        .attr("class", "labelLinks")
+        .selectAll("text")
+        .data(graph.links)
+        .enter()
+        .append("text")
+        .text("weight")
+        .style("fill", "#555")
+        .style("font-family", "Arial")
+        .style("font-size", 10)
+        .style("pointer-events", "none");
+
+      /* console.log(labelLink); */
 
       function ticked() {
         node.call(updateNode);
         link.call(updateLink);
         labelLayout.alphaTarget(0.3).restart();
+        labelLink.each(function (d) {
+          if (d.target.x > d.source.x) {
+            d.x = d.source.x + (d.target.x - d.source.x) / 2;
+          } else {
+            d.x = d.target.x + (d.source.x - d.target.x) / 2;
+          }
+          if (d.target.y > d.source.y) {
+            d.y = d.source.y + (d.target.y - d.source.y) / 2;
+          } else {
+            d.y = d.target.y + (d.source.y - d.target.y) / 2;
+          }
+        });
+        labelLink.call(updateLinkLabel);
+
         labelNode.each(function (d, i) {
           if (i % 2 === 0) {
             d.x = d.node.x;
-            d.y = d.node.y-20;
-          } else {
-            /* let b = this.getBBox();
-            let diffX = d.x - d.node.x;
-            let diffY = d.y - d.node.y;
-            let dist = Math.sqrt(diffX * diffX + diffY * diffY);
-            let shiftX = (b.width * (diffX - dist)) / (dist * 2);
-            shiftX = Math.max(-b.width, Math.min(0, shiftX));
-            let shiftY = 16;
-            this.setAttribute(
-              "transform",
-              "translate(" + shiftX + "," + shiftY + ")"
-            ); */
+            d.y = d.node.y - 25;
           }
         });
         labelNode.call(updateNode);
@@ -293,10 +347,15 @@ export default {
           return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
         });
       }
+      function updateLinkLabel(labelLink) {
+        labelLink.attr("transform", function (d) {
+          return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
+        });
+      }
     },
   },
+
   created() {
-    
     EventBus.$on("giveNetwork", (data) => {
       this.net = data;
       this.networkStarted = true;
