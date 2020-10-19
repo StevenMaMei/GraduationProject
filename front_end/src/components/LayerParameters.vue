@@ -11,7 +11,7 @@
     </v-list-item>
 
     <!-- Number of neurons slider selector -->
-    <v-slider v-model="neuronsNumber" @change="changeNeurons()" :max="7" :tick-labels="labels" class="mx-4" ticks></v-slider>
+    <v-slider v-model="neuronsNumber" @change="changeNeurons()" :max="3" :tick-labels="labels" class="mx-4" ticks></v-slider>
 
     <v-list-item>
       <v-list-item-subtitle>Activation Function:</v-list-item-subtitle>

@@ -8,12 +8,14 @@
       <v-container>
         <v-row no-gutters>
           <v-col class="text-center m-left">
-            <v-btn @click="layerStep()" depressed color="primary">
+            <v-btn @click="nextLayer()" depressed color="primary">
               Next Layer
             </v-btn>
           </v-col>
           <v-col class="text-center m-right">
-            <v-btn depressed color="primary"> Next Epoch </v-btn>
+            <v-btn @click="nextEpoch()" depressed color="primary">
+              Next Epoch
+            </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -21,8 +23,9 @@
 
     <svg id="viz" class="container-border"></svg>
 
-    <p v-if="networkStarted" class="text-center">Data: {{ networkData }}</p>
-    <p v-if="networkStarted" class="text-center">Current Datapoint: {{ currentNetworkData }}</p>
+    <!-- <p v-if="networkStarted" class="text-center">
+      Current error = {{ current_error }}
+    </p> -->
   </div>
 </template>
 
@@ -35,36 +38,53 @@ export default {
   components: {},
   data() {
     return {
-      networkData: "x_train : [[0, 0], [0, 1], [1, 0], [1, 1]] -- y_train : [[0], [1], [1], [0]]",
-      currentNetworkData: "x: [0, 0] -- y: [0]",
+      current_error: undefined,
       typeOfProp: "Forward",
       networkStarted: false,
       net: Network,
       theGraph: { nodes: [], links: [] },
       svg: undefined,
       width: 1850,
-      height: 500,
+      height: 600,
       currentLayer: 1,
       epoch: 1,
     };
   },
   methods: {
-    layerStep() {
+    nextEpoch() {
+      this.net.goToNextEpoch();
+      this.epoch = this.net.currEpoch + 1;
+      this.current_error = this.net.current_error;
+      this.svg.selectAll("*").remove();
+      this.generateGraph();
+    },
+    nextLayer() {
       this.net.layerStep();
       this.net.layerStep();
       console.log(this.net);
 
       this.epoch = this.net.currEpoch + 1;
       if (this.net.direction == 0) {
-        this.typeOfProp = "Forward";
-        this.currentLayer++;
+        if (this.typeOfProp == "Backward") {
+          this.net.layerStep();
+          this.typeOfProp = "Forward";
+          this.currentLayer++;
+        } else {
+          this.typeOfProp = "Forward";
+          this.currentLayer++;
+        }
       } else {
-        this.typeOfProp = "Backward";
-        this.currentLayer--;
+        if (this.typeOfProp == "Forward") {
+          this.typeOfProp = "Backward";
+          this.net.layerStep();
+        } else {
+          this.typeOfProp = "Backward";
+          this.currentLayer--;
+        }
       }
+      this.current_error = this.net.current_error;
       this.svg.selectAll("*").remove();
-      this.generateGraph();
-      console.log(this.net.current_output);
+      this.updateNodesAndLinks();
     },
     updateNodesAndLinks() {
       this.theGraph.nodes = [];
@@ -77,21 +97,42 @@ export default {
           nArray.push(layers[p].weights.length);
         }
       }
+      nArray.push(this.net.output_size);
 
       for (var i = 0; i < layers.length; i++) {
         if (i == 0 || i % 2 == 0) {
           layerNumber++;
           let numberOfNeurons = layers[i].weights.length;
           for (var j = 0; j < numberOfNeurons; j++) {
+            let neuronLabel = "";
+            if (i == 0) {
+              let dataInput = this.net.x_train[
+                this.net.current_datapoint_index
+              ];
+              neuronLabel = dataInput[j];
+            } else {
+              /* let outputs = this.net.layers[i-1].output; */
+              if (this.net.all_outputs[i - 1] != undefined) {
+                let outputs = this.net.all_outputs[i - 1][0];
+                if (outputs.length > 0) {
+                  let rawNumber = outputs[j];
+                  let roundedNumber =
+                    Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+                  neuronLabel = roundedNumber + "";
+                }
+              }
+            }
             let n = j + 1;
             let node = {
               id: "L" + layerNumber + "N" + n,
               group: layerNumber,
-              layer: layerNumber,
               neuron: n,
+              label: neuronLabel,
+              last: "no",
             };
             this.theGraph.nodes.push(node);
-            if (i < layers.length - 1) {
+            /* if (i < layers.length - 1) { */
+            if (i < layers.length) {
               let currentNextLayer = nArray[layerNumber];
               let currentSource = "L" + layerNumber + "N" + n;
               for (var k = 0; k < currentNextLayer; k++) {
@@ -110,12 +151,35 @@ export default {
         }
       }
 
+      let lastLayerSize = this.net.output_size;
+      layerNumber++;
+      for (i = 0; i < lastLayerSize; i++) {
+        let neuronLabel = "";
+        if (this.net.all_outputs[this.net.layers.length - 1] != undefined) {
+          let outputs = this.net.all_outputs[this.net.layers.length - 1][0];
+          if (outputs.length > 0) {
+            let rawNumber = outputs[i];
+            let roundedNumber =
+              Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+            neuronLabel = roundedNumber + "";
+          }
+        }
+        let n = i + 1;
+        let node = {
+          id: "L" + layerNumber + "N" + n,
+          group: layerNumber,
+          neuron: n,
+          label: neuronLabel,
+          last: "yes",
+        };
+        this.theGraph.nodes.push(node);
+      }
+
       this.generateGraph();
     },
 
     generateGraph() {
-      this.height = 500;
-      let color = d3.scaleOrdinal(d3.schemeCategory10);
+      this.height = 600;
       let graph = this.theGraph;
 
       let label = {
@@ -130,19 +194,18 @@ export default {
           target: i * 2 + 1,
         });
       });
-      /* let labelLayout = d3
+      let labelLayout = d3
         .forceSimulation(label.nodes)
         .force("charge", d3.forceManyBody().strength(-10))
-        .force("link", d3.forceLink(label.links).distance(0).strength(2)); */
+        .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
       d3.forceSimulation(graph.nodes)
-        /* .force('charge', d3.forceManyBody().strength(-3000)) */
         .force("center", d3.forceCenter(this.width / 2, this.height / 2))
         .force(
           "x",
           d3
             .forceX(function (d) {
-              return d.layer * 300 /* - 50*this.net.getLayers() */;
+              return d.group * 400;
             })
             .strength(1)
         )
@@ -150,15 +213,19 @@ export default {
           "y",
           d3
             .forceY(function (d) {
-              return 350 + d.neuron * 80;
+              return 350 + d.neuron * 350;
             })
             .strength(1)
         )
         .force(
           "link",
-          d3.forceLink(graph.links).id(function (d) {
-            return d.id;
-          }) /* .distance(100).strength(1) */
+          d3
+            .forceLink(graph.links)
+            .id(function (d) {
+              return d.id;
+            })
+            .distance(100)
+            .strength(1)
         )
         .on("tick", ticked);
 
@@ -167,14 +234,7 @@ export default {
         .attr("width", this.width)
         .attr("height", this.height);
       let container = this.svg.append("g");
-      this.svg.call(
-        d3
-          .zoom()
-          .scaleExtent([0.1, 4]) // eslint-disable-line
-          .on("zoom", function () {
-            container.attr("transform", d3.event.transform);
-          })
-      );
+
       let link = container
         .append("g")
         .attr("class", "links")
@@ -193,12 +253,16 @@ export default {
         .data(graph.nodes)
         .enter()
         .append("circle")
-        .attr("r", 5)
+        .attr("r", 12)
         .attr("fill", function (d) {
           if (d.group == layerNum) {
-            return color(1);
+            return d3.color("#F12525");
           } else {
-            return color(2);
+            if (d.last == "yes") {
+              return d3.color("#2550F1");
+            } else {
+              return d3.color("#9898AA");
+            }
           }
         });
 
@@ -210,35 +274,52 @@ export default {
         .enter()
         .append("text")
         .text(function (d, i) {
-          return i % 2 === 0 ? "" : d.node.id;
+          return i % 2 === 0 ? "" : d.node.label;
         })
         .style("fill", "#555")
         .style("font-family", "Arial")
-        .style("font-size", 12)
+        .style("font-size", 15)
         .style("pointer-events", "none"); // to prevent mouseover/drag capture
+
+      let labelLink = container
+        .append("g")
+        .attr("class", "labelLinks")
+        .selectAll("text")
+        .data(graph.links)
+        .enter()
+        .append("text")
+        .text("weight")
+        .style("fill", "#555")
+        .style("font-family", "Arial")
+        .style("font-size", 10)
+        .style("pointer-events", "none");
+
+      /* console.log(labelLink); */
 
       function ticked() {
         node.call(updateNode);
         link.call(updateLink);
-        /* labelLayout.alphaTarget(0.3).restart(); */
-        /* labelNode.each(function (d, i) {
+        labelLayout.alphaTarget(0.3).restart();
+        labelLink.each(function (d) {
+          if (d.target.x > d.source.x) {
+            d.x = d.source.x + (d.target.x - d.source.x) / 2;
+          } else {
+            d.x = d.target.x + (d.source.x - d.target.x) / 2;
+          }
+          if (d.target.y > d.source.y) {
+            d.y = d.source.y + (d.target.y - d.source.y) / 2;
+          } else {
+            d.y = d.target.y + (d.source.y - d.target.y) / 2;
+          }
+        });
+        labelLink.call(updateLinkLabel);
+
+        labelNode.each(function (d, i) {
           if (i % 2 === 0) {
             d.x = d.node.x;
-            d.y = d.node.y;
-          } else {
-            let b = this.getBBox();
-            let diffX = d.x - d.node.x;
-            let diffY = d.y - d.node.y;
-            let dist = Math.sqrt(diffX * diffX + diffY * diffY);
-            let shiftX = (b.width * (diffX - dist)) / (dist * 2);
-            shiftX = Math.max(-b.width, Math.min(0, shiftX));
-            let shiftY = 16;
-            this.setAttribute(
-              "transform",
-              "translate(" + shiftX + "," + shiftY + ")"
-            );
+            d.y = d.node.y - 25;
           }
-        }); */
+        });
         labelNode.call(updateNode);
       }
       function fixna(x) {
@@ -266,8 +347,14 @@ export default {
           return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
         });
       }
+      function updateLinkLabel(labelLink) {
+        labelLink.attr("transform", function (d) {
+          return "translate(" + fixna(d.x) + "," + fixna(d.y) + ")";
+        });
+      }
     },
   },
+
   created() {
     EventBus.$on("giveNetwork", (data) => {
       this.net = data;

@@ -12,7 +12,7 @@ fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumT
 fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(3, 1));
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
 fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.mse, NumTS_1.NumTS.msePrime);
-fullyConectedNetwork.fit(x_train, y_train, 400, 0.1);
+fullyConectedNetwork.fit(x_train, y_train, 300, 0.1);
 /**
 let testclass: Network = new Network();
 
