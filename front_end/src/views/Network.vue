@@ -44,10 +44,12 @@ export default {
       net: Network,
       theGraph: { nodes: [], links: [] },
       svg: undefined,
-      width: 1850,
-      height: 600,
+      width: 0,
+      height: 0,
       currentLayer: 1,
       epoch: 1,
+      currentScreenWidth: window.screen.width,
+      currentScreenHeight: window.screen.height,
     };
   },
   methods: {
@@ -111,7 +113,7 @@ export default {
               ];
               neuronLabel = dataInput[j];
             } else {
-              /* let outputs = this.net.layers[i-1].output; */
+              
               if (this.net.all_outputs[i - 1] != undefined) {
                 let outputs = this.net.all_outputs[i - 1][0];
                 if (outputs.length > 0) {
@@ -131,7 +133,7 @@ export default {
               last: "no",
             };
             this.theGraph.nodes.push(node);
-            /* if (i < layers.length - 1) { */
+            
             if (i < layers.length) {
               let currentNextLayer = nArray[layerNumber];
               let currentSource = "L" + layerNumber + "N" + n;
@@ -139,10 +141,16 @@ export default {
                 let targetLayer = parseInt(layerNumber, 10) + 1;
                 let targetNeuron = parseInt(k, 10) + 1;
                 let currentTarget = "L" + targetLayer + "N" + targetNeuron;
+                let rawCorrespondingWeight = this.net.layers[i].weights[j][k];
+                let roundedNumber =
+                  Math.round((rawCorrespondingWeight + Number.EPSILON) * 100) /
+                  100;
+
                 let link = {
                   source: currentSource,
                   target: currentTarget,
                   value: 1,
+                  weight: roundedNumber,
                 };
                 this.theGraph.links.push(link);
               }
@@ -179,7 +187,7 @@ export default {
     },
 
     generateGraph() {
-      this.height = 600;
+      this.height = this.currentScreenHeight * 0.55
       let graph = this.theGraph;
 
       let label = {
@@ -288,28 +296,26 @@ export default {
         .data(graph.links)
         .enter()
         .append("text")
-        .text("weight")
+        .text(function (d) {
+          return d.weight;
+        })
         .style("fill", "#555")
         .style("font-family", "Arial")
-        .style("font-size", 10)
+        .style("font-size", 11)
         .style("pointer-events", "none");
-
-      /* console.log(labelLink); */
 
       function ticked() {
         node.call(updateNode);
         link.call(updateLink);
         labelLayout.alphaTarget(0.3).restart();
         labelLink.each(function (d) {
-          if (d.target.x > d.source.x) {
-            d.x = d.source.x + (d.target.x - d.source.x) / 2;
-          } else {
-            d.x = d.target.x + (d.source.x - d.target.x) / 2;
-          }
+          
           if (d.target.y > d.source.y) {
-            d.y = d.source.y + (d.target.y - d.source.y) / 2;
+            d.y = d.source.y + ((d.target.y - d.source.y) / 4 );
+            d.x =d.source.x + ((d.target.x - d.source.x) / 4) ;
           } else {
-            d.y = d.target.y + (d.source.y - d.target.y) / 2;
+            d.y = d.source.y - ((d.source.y - d.target.y) / 4) ;
+            d.x = d.source.x + ((d.target.x - d.source.x) / 4) ;
           }
         });
         labelLink.call(updateLinkLabel);
@@ -356,6 +362,8 @@ export default {
   },
 
   created() {
+    this.width = this.currentScreenWidth * 0.96
+    this.height = this.currentScreenHeight * 0.55
     EventBus.$on("giveNetwork", (data) => {
       this.net = data;
       this.networkStarted = true;
@@ -369,7 +377,7 @@ export default {
         (this.theGraph = []),
         (this.links = []),
         console.log(msg);
-      this.height = 100;
+      this.height = this.currentScreenHeight*0.09;
       this.svg = d3
         .select("#viz")
         .attr("width", this.width)
