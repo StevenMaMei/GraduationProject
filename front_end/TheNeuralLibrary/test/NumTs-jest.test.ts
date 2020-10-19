@@ -1,4 +1,4 @@
-import {NumTS} from "../../src/math/numTS";
+import {NumTS} from "../src/math/numTS";
 
 describe.only("matrixDotProduct test",()=>{
     describe("when [[1,2]] and [[2],[3]] are passed",()=>{
@@ -283,6 +283,3 @@ describe("binary_cross_entropyPrime test",()=>{
 });
 
 
-//TODO mATRIX LINEAR TEST
-//TODO BINARY CROSS ENTROPHY
-//TODO mse Testing

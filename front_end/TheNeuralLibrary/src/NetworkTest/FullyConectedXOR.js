@@ -12,7 +12,7 @@ fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumT
 fullyConectedNetwork.addLayer(new FullyConectedLayer_1.FullyConectedLayer(3, 1));
 fullyConectedNetwork.addLayer(new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime));
 fullyConectedNetwork.setLossFunction(NumTS_1.NumTS.mse, NumTS_1.NumTS.msePrime);
-fullyConectedNetwork.fit(x_train, y_train, 300, 0.1);
+//fullyConectedNetwork.fit(x_train,y_train, 300,0.1);
 /**
 let testclass: Network = new Network();
 
@@ -20,16 +20,24 @@ let test: Network = testclass.buildCustomNeuralNetwork(2, 3, new Array("TanH","T
 "Binary Cross Entropy", new Array(2, 3, 4));
 test.fit(x_train, y_train, 300, 0.1);
 */
-let result = fullyConectedNetwork.predict(x_train);
+//let result : number[][][]= fullyConectedNetwork.predict(x_train);
 //let result: number[][][] = test.predict(x_train);
-let layer = new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime);
-let a = [[1, 2]];
-let b = [[10]];
-let c = [[2], [3]];
+let layer = new FullyConectedLayer_1.FullyConectedLayer(4, 4);
+let a = [[1, 3], [9, 6]];
+let b = [[1, 5], [6, 4]];
+let c = [[1, 2], [3, 4]];
 let d = 2;
-console.log(NumTS_1.NumTS.binary_cross_entropyPrime([[0.1, 0.2, 0.3]], [[0.15, 0.23, 0.26]]));
-console.log("----RESULTS---" + "\n" +
-    NumTS_1.NumTS.matrixLinearPrime(a) + "\n" +
-    NumTS_1.NumTS.matrixLinearPrime(b) + "\n" +
-    NumTS_1.NumTS.matrixLinearPrime(c) + "\n");
+/**
+let a:number[][]= [[2]];
+let b: number[][]=[[2],[3]];
+let c: number[][]= [[1,2],[3,4]];
+*/
+let net = new Network_1.Network();
+console.log(net.buildCustomNeuralNetwork(2, 1, ["TanH"], "Mean Square Error", [3]));
+/**
+console.log("----RESULTS---"+"\n"+
+layer.forwardPropagation(a)+"\n"+
+layer.forwardPropagation(b)+"\n"+
+layer.forwardPropagation(c)+"\n");
+*/
 //console.log(result);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const numTS_1 = require("../../src/math/numTS");
+const numTS_1 = require("../src/math/numTS");
 describe.only("matrixDotProduct test", () => {
     describe("when [[1,2]] and [[2],[3]] are passed", () => {
         test("then result shold be [ [ 8 ] ] ", () => {
@@ -235,12 +235,9 @@ describe("binary_cross_entropy test", () => {
 });
 describe("binary_cross_entropyPrime test", () => {
     describe("when [[0.1,0.2,0.3]] AND [[0.15,0.23,0.26]] ", () => {
-        test("then result shold be 1.0285914129336933 ", () => {
+        test("then result shold be [ [ -0.05, -0.03, 0.04000000000000001 ] ] ", () => {
             const result = numTS_1.NumTS.binary_cross_entropyPrime([[0.1, 0.2, 0.3]], [[0.15, 0.23, 0.26]]);
-            expect(result).toBe(1.0285914129336933);
+            expect(result).toBe([[-0.05, -0.03, 0.04000000000000001]]);
         });
     });
 });
-//TODO mATRIX LINEAR TEST
-//TODO BINARY CROSS ENTROPHY
-//TODO mse Testing
