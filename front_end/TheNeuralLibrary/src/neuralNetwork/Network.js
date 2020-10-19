@@ -60,7 +60,7 @@ class Network {
     getMaxNumberOfLayers() {
         return this.maxNumberOfLayers;
     }
-    getLayers(){
+    getLayers() {
         return this.layers;
     }
     layerStep() {
@@ -133,7 +133,6 @@ class Network {
         return result;
     }
     buildCustomNeuralNetwork(dataSize, layers, actFunc, lossFunc, neuronPerLayer) {
-        
         this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
         this.y_train = [[0], [1], [1], [0]];
         this.layers = [];
@@ -180,7 +179,7 @@ class Network {
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error = 0;
-            console.log(error)
+            console.log(error);
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
@@ -198,7 +197,7 @@ class Network {
     }
     goToNextEpoch() {
         let error = 0;
-        console.log(error)
+        console.log(error);
         for (let j = 0; j < this.x_train.length; j++) {
             let output = [];
             output[0] = this.x_train[j];

@@ -5,7 +5,7 @@ module NumTS{
         let n: number= a.length;
         let m: number = b[0].length;
         let toReturn: number[][]=[];
-    
+        
         for(let i:number=0; i<n;i++){
             toReturn[i]=[];
             for(let j:number=0;j<m;j++){
@@ -16,6 +16,7 @@ module NumTS{
                 toReturn[i][j]=ans;
             }
         }
+         
         return toReturn;
     }
 

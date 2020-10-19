@@ -26,5 +26,16 @@ test.fit(x_train, y_train, 300, 0.1);
 let result : number[][][]= fullyConectedNetwork.predict(x_train);
 
 //let result: number[][][] = test.predict(x_train);
+let layer:ActivationLayer=new ActivationLayer(NumTS.matrixTanh, NumTS.matrixTanhPrime);
+let a:number[][]= [[1,2]];
+let b: number[][]=[[10]];
+let c: number[][]= [[2],[3]];
+let d: number= 2;
 
-console.log(result);
+console.log(NumTS.binary_cross_entropyPrime([[0.1,0.2,0.3]],[[0.15,0.23,0.26]]));
+
+console.log("----RESULTS---"+"\n"+
+NumTS.matrixLinearPrime(a)+"\n"+
+NumTS.matrixLinearPrime(b)+"\n"+
+NumTS.matrixLinearPrime(c)+"\n");
+//console.log(result);

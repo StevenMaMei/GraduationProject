@@ -17,6 +17,7 @@
     "typescript": "^3.9.6"
   },
   "dependencies": {
+    "ts-jest": "^26.4.1",
     "yarn": "^1.22.5"
   }
 }
