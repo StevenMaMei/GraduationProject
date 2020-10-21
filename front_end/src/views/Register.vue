@@ -3,8 +3,7 @@
     <h2 class="margin">Registration</h2>
     <form @submit.prevent="createUser">
 
-      <v-text-field class="margin" v-model="firstName" label="First Name"></v-text-field>
-      <v-text-field class="margin" v-model="lastName" label="Last Name"></v-text-field>
+      <v-text-field class="margin" v-model="name" label="Name"></v-text-field>
 
 
       <v-text-field class="margin" v-model="email" label="Email"></v-text-field>
@@ -24,25 +23,36 @@
 </template>
 
 <script>
-/* import axios from '../plugins/axios' */
+var axios = require("axios");
+
 export default {
   data() {
     return {
-      user: {
-        firstName: "",
-        lastName: "",
-        password: "",
-        email: "",
-        edad: 0,
-        
-       
-      }
-     
+
+      name: "",
+      password: "",
+      email: ""
     };
   },
   methods: {      
       createUser(){
+          console.log(this.name)
           
+          axios.post('http://localhost:3000/register',{
+            ok: true,
+            user: {
+              name: this.name,
+              email: this.email,
+              password: this.password
+            }
+          }).then(res=>{
+            res
+            alert("User created")
+          })
+          .catch(err=>{
+            console.log(err.response)
+            alert(err.response.data.message)
+          });
       }
      
       

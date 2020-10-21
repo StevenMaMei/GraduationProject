@@ -9,7 +9,7 @@
 </template>
 
 <script>
-/* import axios from "../plugins/axios"; */
+var axios = require("axios");
 export default {
   data() {
     return {
@@ -24,7 +24,17 @@ export default {
   },
   methods: {
     login(){
-        
+      axios.post('http://localhost:3000/login', {
+          userCredentials:{
+          email: this.email,
+          password: this.password
+        }})
+        .then(res=>{
+          this.$cookie.set('token',res.data.token);
+        })
+        .catch(err=>{
+          alert(err.response.data.err.message)
+        });
     }
     
   }
