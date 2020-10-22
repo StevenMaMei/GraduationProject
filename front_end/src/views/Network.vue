@@ -85,7 +85,8 @@ export default {
            'headers': { 'Authorization': this.$cookie.get('token') }
           })
         .then(res=>{
-          alert(res);
+          console.log(res)
+          alert(res.response.data.message);
         })
         .catch((err) => {
           alert(err.response.data.err.message);
