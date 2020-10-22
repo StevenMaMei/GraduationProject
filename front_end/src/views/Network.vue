@@ -7,15 +7,21 @@
       </h3>
       <v-container>
         <v-row no-gutters>
-          <v-col class="text-center m-left">
+          <v-col class="text-center">
             <v-btn @click="nextLayer()" depressed color="primary">
               Next Layer
             </v-btn>
           </v-col>
-          <v-col class="text-center m-right">
+          <v-col class="text-center">
             <v-btn @click="nextEpoch()" depressed color="primary">
               Next Epoch
             </v-btn>
+          </v-col>
+          <v-col class="text-center">
+            <v-btn @click="saveNetwork" depressed color="primary"> Save Network </v-btn>
+          </v-col>
+          <v-col>
+            <v-text-field v-model="networkName" label="NN name"></v-text-field>
           </v-col>
         </v-row>
       </v-container>
@@ -39,6 +45,7 @@ export default {
   components: {},
   data() {
     return {
+      
       networkName: undefined,
       current_error: undefined,
       typeOfProp: "Forward",
@@ -55,32 +62,33 @@ export default {
     };
   },
   methods: {
-    saveNetwork(){
-      if(!this.networkName ){
-        alert("Insert the networkName")
+    saveNetwork() {
+      if (!this.networkName) {
+        alert("Insert the networkName");
         return;
       }
-      if(!this.$cookie.get('userEmail')){
+      if (!this.$cookie.get("userEmail")) {
         alert("You are not logged in");
         return;
       }
-      axios.post('http://localhost:3000/neuralNetwork/save', {
-        neuralNetwork: {
-        ownerEmail: this.$cookie.get('userEmail'),
-        networkName: this.networkName,
-        dataSize:this.net.dataSize,
-        numOfLayers: this.net.layersN,
-        activationFunctions: this.net.actFunc,
-        lossFunction: this.net.lossFunc,
-        neuronsPerLayer: this.net.neuronPerLayer
-        }
+      axios
+        .post("http://localhost:3000/neuralNetwork/save", {
+          neuralNetwork: {
+            ownerEmail: this.$cookie.get("userEmail"),
+            networkName: this.networkName,
+            dataSize: this.net.dataSize,
+            numOfLayers: this.net.layersN,
+            activationFunctions: this.net.actFunc,
+            lossFunction: this.net.lossFunc,
+            neuronsPerLayer: this.net.neuronPerLayer,
+          },
         })
-        .then(res=>{
-          this.$cookie.set('userEmail',res.data.user.email);
-          this.$cookie.set('token',res.data.token);
+        .then((res) => {
+          this.$cookie.set("userEmail", res.data.user.email);
+          this.$cookie.set("token", res.data.token);
         })
-        .catch(err=>{
-          alert(err.response.data.err.message)
+        .catch((err) => {
+          alert(err.response.data.err.message);
         });
     },
     nextEpoch() {
@@ -149,7 +157,7 @@ export default {
               if (this.net.all_outputs[i - 1] != undefined) {
                 let outputs = this.net.all_outputs[i - 1][0];
                 if (outputs.length > 0) {
-                  let rawNumber = outputs[j];      
+                  let rawNumber = outputs[j];
                   let roundedNumber = round(rawNumber, 5);
                   neuronLabel = roundedNumber + "";
                 }
@@ -173,8 +181,7 @@ export default {
                 let targetNeuron = parseInt(k, 10) + 1;
                 let currentTarget = "L" + targetLayer + "N" + targetNeuron;
                 let rawCorrespondingWeight = this.net.layers[i].weights[j][k];
-                let roundedNumber =round(rawCorrespondingWeight, 5);
-                  
+                let roundedNumber = round(rawCorrespondingWeight, 5);
 
                 let link = {
                   source: currentSource,
