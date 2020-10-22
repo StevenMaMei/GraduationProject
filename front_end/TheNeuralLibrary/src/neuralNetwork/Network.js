@@ -33,6 +33,11 @@ class Network {
         this.current_backProp_errors = [];
         this.current_backProp_error = [];
         this.output_size = 1;
+        this.dataSize = 0;
+        this.layersN = 0;
+        this.actFunc = [];
+        this.lossFunc = "";
+        this.neuronPerLayer = [];
     }
     // it cant never return a null value since the universe of keys is always limited to available ones
     getActivationFunctionDerivative(key) {
@@ -137,6 +142,13 @@ class Network {
         return result;
     }
     buildCustomNeuralNetwork(dataSize, layersN, actFunc, lossFunc, neuronPerLayer) {
+        //we store this info, to later save the network config
+        this.dataSize = dataSize;
+        this.layersN = layersN;
+        this.actFunc = actFunc;
+        this.lossFunc = lossFunc;
+        this.neuronPerLayer = neuronPerLayer;
+        //-------
         this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
         this.y_train = [[0], [1], [1], [0]];
         this.layers = [];

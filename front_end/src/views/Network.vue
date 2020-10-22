@@ -33,11 +33,13 @@
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 import * as d3 from "d3";
 import { EventBus } from "../main.js";
+var axios = require("axios");
 export default {
   name: "Network",
   components: {},
   data() {
     return {
+      networkName: undefined,
       current_error: undefined,
       typeOfProp: "Forward",
       networkStarted: false,
@@ -53,6 +55,34 @@ export default {
     };
   },
   methods: {
+    saveNetwork(){
+      if(!this.networkName ){
+        alert("Insert the networkName")
+        return;
+      }
+      if(!this.$cookie.get('userEmail')){
+        alert("You are not logged in");
+        return;
+      }
+      axios.post('http://localhost:3000/neuralNetwork/save', {
+        neuralNetwork: {
+        ownerEmail: this.$cookie.get('userEmail'),
+        networkName: this.networkName,
+        dataSize:this.net.dataSize,
+        numOfLayers: this.net.layersN,
+        activationFunctions: this.net.actFunc,
+        lossFunction: this.net.lossFunc,
+        neuronsPerLayer: this.net.neuronPerLayer
+        }
+        })
+        .then(res=>{
+          this.$cookie.set('userEmail',res.data.user.email);
+          this.$cookie.set('token',res.data.token);
+        })
+        .catch(err=>{
+          alert(err.response.data.err.message)
+        });
+    },
     nextEpoch() {
       this.net.goToNextEpoch();
       this.epoch = this.net.currEpoch + 1;

@@ -24,6 +24,11 @@ class Network {
     current_backProp_errors: number[][][]; //outputs for every sample on x_train
     current_backProp_error: number[][]; // output for a specific sample on x_train
     direction: number; // 0 is forward propagation, 1 is backwards propagation
+    dataSize: number; 
+    layersN: number; 
+    actFunc: Array<String>; 
+    lossFunc: String; 
+    neuronPerLayer: Array<number>;
 
     lossFunctionsMap: Map<String, Function> = new Map([
         ["Binary Cross Entropy", NumTS.binary_cross_entropyPrime],
@@ -108,6 +113,11 @@ class Network {
         this.current_backProp_errors = [];
         this.current_backProp_error = [];
         this.output_size = 1;
+        this.dataSize = 0; 
+        this.layersN= 0; 
+        this.actFunc= []; 
+        this.lossFunc= ""; 
+        this.neuronPerLayer= [];
     }
 
 
@@ -213,8 +223,13 @@ class Network {
 
     buildCustomNeuralNetwork(dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
 
-
-
+        //we store this info, to later save the network config
+        this.dataSize = dataSize;
+        this.layersN = layersN;
+        this.actFunc = actFunc;
+        this.lossFunc = lossFunc;
+        this.neuronPerLayer = neuronPerLayer;
+        //-------
         this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
         this.y_train = [[0], [1], [1], [0]];
         this.layers = [];
