@@ -71,21 +71,21 @@ export default {
         alert("You are not logged in");
         return;
       }
-      axios
-        .post("http://localhost:3000/neuralNetwork/save", {
-          neuralNetwork: {
-            ownerEmail: this.$cookie.get("userEmail"),
-            networkName: this.networkName,
-            dataSize: this.net.dataSize,
-            numOfLayers: this.net.layersN,
-            activationFunctions: this.net.actFunc,
-            lossFunction: this.net.lossFunc,
-            neuronsPerLayer: this.net.neuronPerLayer,
-          },
-        })
-        .then((res) => {
-          this.$cookie.set("userEmail", res.data.user.email);
-          this.$cookie.set("token", res.data.token);
+      axios.post('http://localhost:3000/neuralNetwork/save', {
+        neuralNetwork: {
+        ownerEmail: this.$cookie.get('userEmail'),
+        networkName: this.networkName,
+        dataSize:this.net.dataSize,
+        numOfLayers: this.net.layersN,
+        activationFunctions: this.net.actFunc,
+        lossFunction: this.net.lossFunc,
+        neuronsPerLayer: this.net.neuronPerLayer
+        }
+        },  {
+           'headers': { 'Authorization': this.$cookie.get('token') }
+          })
+        .then(res=>{
+          alert(res);
         })
         .catch((err) => {
           alert(err.response.data.err.message);
