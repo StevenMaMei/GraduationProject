@@ -30,6 +30,7 @@ export default {
           password: this.password
         }})
         .then(res=>{
+          this.$cookie.set('userEmail',res.data.user.email);
           this.$cookie.set('token',res.data.token);
         })
         .catch(err=>{
