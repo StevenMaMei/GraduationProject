@@ -1,6 +1,11 @@
 <template>
   <div class="text-center margin">
     <!-- Loss function selection dropdown -->
+
+    <v-btn @click="changeCustomize()" class="margin-r" color="secondary" dark>{{
+      customizationMsg
+    }}</v-btn>
+
     <v-menu>
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
@@ -84,6 +89,75 @@
       >Reset Network</v-btn
     >
 
+    <div v-if="customizingData">
+      <div v-if="!customizingDataPoints">
+        <v-row class="margin">
+          <v-col>
+            <v-text-field
+              v-model="dataPointsNumber"
+              label="Number of datapoints (1-5)"
+            ></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="inputSize"
+              label="Input size (1-5)"
+            ></v-text-field>
+          </v-col>
+          <v-col>
+            <v-text-field
+              v-model="outputSize"
+              label="Output size (1-5)"
+            ></v-text-field>
+          </v-col>
+        </v-row>
+      </div>
+      <v-row class="margin">
+        <v-btn
+          v-if="!customizingDataPoints"
+          @click="continueCustomizing()"
+          rounded
+          color="#4511E6"
+          dark
+          >Continue</v-btn
+        >
+        <v-btn
+          v-if="customizingDataPoints"
+          @click="finishCustom()"
+          class="marginLeft"
+          rounded
+          color="success"
+          dark
+          >Finish Customization</v-btn
+        >
+        <v-btn
+          v-if="customizingDataPoints"
+          @click="backWithinCustoms()"
+          class="marginLeft"
+          rounded
+          color="error"
+          dark
+          >Back</v-btn
+        >
+        <v-btn
+          v-if="!customizingDataPoints"
+          @click="cancelDataCustomization()"
+          class="marginLeft"
+          rounded
+          color="error"
+          dark
+          >Cancel Customization</v-btn
+        >
+      </v-row>
+      <div v-if="customizingDataPoints">
+        <v-row v-for="dataP in customDataPoints" :key="dataP.index">
+          <app-data-points
+            @updateDP="receiverOfDataPoints"
+            :dataPointInfo="dataP"
+          ></app-data-points>
+        </v-row>
+      </div>
+    </div>
     <v-row>
       <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
         <app-layers @updateMsg="reciever" :layer="layerP"></app-layers>
@@ -96,15 +170,27 @@
 <script >
 import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 import LayerParams from "../components/LayerParameters.vue";
+import DataPointsParams from "../components/DataPointParameters.vue";
 import { EventBus } from "../main.js";
 export default {
   name: "ParamsNetwork",
   components: {
     appLayers: LayerParams,
+    appDataPoints: DataPointsParams,
   },
 
   data() {
     return {
+      customizationMsg: "Customize Data",
+      customData: false,
+      alignment: "center",
+      dataPointsX: [],
+      dataPointsY: [],
+      dataPointsNumber: undefined,
+      inputSize: undefined,
+      outputSize: undefined,
+      customizingData: false,
+      customizingDataPoints: false,
       resetAvailable: false,
       createAvailable: true,
       network: {
@@ -124,6 +210,7 @@ export default {
       selectedNumberOfLayers: "Select the number of hidden layers",
 
       layers: [],
+      customDataPoints: [],
       allActivationFunctions: [],
     };
   },
@@ -146,14 +233,76 @@ export default {
   },
 
   methods: {
-    resetNetwork(){
+    finishCustom() {
+      let cond = false;
+      this.dataPointsX.forEach((element) => {
+        if (element == undefined) {
+          cond = true;
+        }
+      });
+      if (cond) {
+        alert("Finish completing all the data");
+      } else {
+        alert("Data has been successfully customized!");
+        this.customizationMsg = "Network data has been customized";
+        this.customizingDataPoints = false;
+        this.customizingData = false;
+        this.customData = true;
+      }
+    },
+    backWithinCustoms() {
+      this.customizingDataPoints = false;
+    },
+    cancelDataCustomization() {
+      this.customData = false;
+      this.customizingDataPoints = false;
+      this.customizingData = false;
+      this.customDataPoints = [];
+      this.dataPointsX = [];
+      this.dataPointsY = [];
+      this.dataPointsNumber = undefined;
+      this.inputSize = undefined;
+      this.outputSize = undefined;
+    },
+    continueCustomizing() {
+      this.customizingDataPoints = true;
+      this.customDataPoints = [];
+      this.dataPointsX = [];
+      this.dataPointsY = [];
+      for (let i = 0; i < this.dataPointsNumber; i++) {
+        let obj = {
+          inputSize: this.inputSize,
+          outputSize: this.outputSize,
+          index: i,
+        };
+        this.customDataPoints.push(obj);
+        this.dataPointsX.push(undefined);
+        this.dataPointsY.push(undefined);
+      }
+    },
+    changeCustomize() {
+      this.customizingData = !this.customizingData;
+    },
+    resetNetwork() {
       this.net = new Network();
       EventBus.$emit("resetNetwork", "network will be reseted");
-      this.selectedLossFunction= "Select the loss function",
-      this.selectedNumberOfLayers= "Select the number of hidden layers",
-      this.resetAvailable = false;
+      (this.selectedLossFunction = "Select the loss function"),
+        (this.selectedNumberOfLayers = "Select the number of hidden layers"),
+        (this.resetAvailable = false);
       this.createAvailable = true;
-      
+      this.customData = false;
+      this.customizingDataPoints = false;
+      this.customizingData = false;
+      this.customDataPoints = [];
+      this.dataPointsX = [];
+      this.dataPointsY = [];
+      this.dataPointsNumber = undefined;
+      this.inputSize = undefined;
+      this.outputSize = undefined;
+    },
+    receiverOfDataPoints(xDP, yDP, indexDP) {
+      this.dataPointsX[indexDP] = xDP;
+      this.dataPointsY[indexDP] = yDP;
     },
     reciever(actF, neuronNumer, layerId) {
       let encontro = false;
@@ -183,20 +332,42 @@ export default {
         layersNueorns.push(x.neuronNumber);
         layersFunctions.push(x.actFF);
       });
+      if (this.customData) {
+        this.net.buildCustomNeuralNetwork(
+          this.dataPointsX,
+          this.dataPointsY,
+          this.outputSize,
+          this.inputSize,
+          this.selectedNumberOfLayers,
+          layersFunctions,
+          this.selectedLossFunction,
+          layersNueorns
+        );
+      } else {
+        let x_train = [
+          [0, 0],
+          [0, 1],
+          [1, 0],
+          [1, 1],
+        ];
+        let y_train = [[0], [1], [1], [0]];
+        this.net.buildCustomNeuralNetwork(
+          x_train,
+          y_train,
+          1,
+          2,
+          this.selectedNumberOfLayers,
+          layersFunctions,
+          this.selectedLossFunction,
+          layersNueorns
+        );
+      }
 
-      this.net.buildCustomNeuralNetwork(
-        2,
-        this.selectedNumberOfLayers,
-        layersFunctions,
-        this.selectedLossFunction,
-        layersNueorns
-      );
-      this.emitGlobalClickEvent()
-      alert("Network has been parametrized")
+      this.emitGlobalClickEvent();
+      alert("Network has been parametrized");
       this.ready = false;
       this.resetAvailable = true;
-      this.layers= [];
-      
+      this.layers = [];
     },
     emitGlobalClickEvent() {
       EventBus.$emit("giveNetwork", this.net);
@@ -268,5 +439,12 @@ a {
 
 .marginLeft {
   margin-left: 2%;
+}
+
+.margin-r {
+  margin-right: 2%;
+}
+.center {
+  text-align: center;
 }
 </style>

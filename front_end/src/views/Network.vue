@@ -29,9 +29,7 @@
 
     <svg id="viz" class="container-border"></svg>
 
-    <!-- <p v-if="networkStarted" class="text-center">
-      Current error = {{ current_error }}
-    </p> -->
+    
   </div>
 </template>
 
@@ -205,8 +203,7 @@ export default {
           let outputs = this.net.all_outputs[this.net.layers.length - 1][0];
           if (outputs.length > 0) {
             let rawNumber = outputs[i];
-            let roundedNumber =
-              Math.round((rawNumber + Number.EPSILON) * 100) / 100;
+            let roundedNumber =round(rawNumber,5);
             neuronLabel = roundedNumber + "";
           }
         }

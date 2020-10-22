@@ -221,7 +221,7 @@ class Network {
 
 
 
-    buildCustomNeuralNetwork(dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
+    buildCustomNeuralNetwork(xDataPoints:number[][], yDataPoints:number[][], outputS:number, dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
 
         //we store this info, to later save the network config
         this.dataSize = dataSize;
@@ -230,8 +230,9 @@ class Network {
         this.lossFunc = lossFunc;
         this.neuronPerLayer = neuronPerLayer;
         //-------
-        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
-        this.y_train = [[0], [1], [1], [0]];
+        this.x_train = xDataPoints;
+        this.y_train = yDataPoints;
+        this.output_size= outputS;
         this.layers = [];
 
         if (layersN == 1) {
@@ -239,7 +240,7 @@ class Network {
             this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
             this.addLayer(new FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
             this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            this.addLayer(new FullyConectedLayer(neuronPerLayer[0], 1));
+            this.addLayer(new FullyConectedLayer(neuronPerLayer[0], this.output_size));
             this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
         } else {
             for (var i = 0; i < layersN; i++) {
@@ -260,7 +261,7 @@ class Network {
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
                     this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
-
+                    console.log(this.output_size+" --- output size")
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
                     this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
