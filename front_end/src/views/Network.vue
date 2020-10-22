@@ -74,7 +74,9 @@ export default {
         lossFunction: this.net.lossFunc,
         neuronsPerLayer: this.net.neuronPerLayer
         }
-        })
+        },  {
+           'headers': { 'Authorization': this.$cookie.get('token') }
+          })
         .then(res=>{
           this.$cookie.set('userEmail',res.data.user.email);
           this.$cookie.set('token',res.data.token);
