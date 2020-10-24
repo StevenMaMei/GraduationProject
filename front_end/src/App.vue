@@ -11,7 +11,8 @@
 
             <!-- <v-btn v-if="this.sesionIniciada == false" to="/iniciarSesion">Iniciar Sesion</v-btn>
             <v-btn v-if="this.sesionIniciada == false" to="/registro">Registro</v-btn> -->
-
+            <v-text-field v-model="searchEmail" label="Email of the user you want to search"></v-text-field>
+            <v-btn  @click="searchNetworks" text>search</v-btn>
             <v-btn  to="/login" text>Login</v-btn>
             <v-btn to="/main" text>Main</v-btn>
 
@@ -52,6 +53,8 @@
 </template>
 
 <script>
+var axios = require("axios");
+import { EventBus } from "./main.js";
 export default {
   name: "App",
 
@@ -59,9 +62,22 @@ export default {
 
   },
 
+  methods: {
+    searchNetworks(){
+      axios.get(`http://localhost:3000/neuralNetwork/${this.searchEmail}`)
+        .then(async res=>{
+          await this.$router.push({path:'/search'})
+          EventBus.$emit("foundNetworks", res.data.networks);
+        })
+        .catch(err=>{
+          alert(err.response.data.err.message)
+        });
+    }
+  },
+
   data() {
     return {
-      
+      searchEmail: undefined
     };
   },
   created(){

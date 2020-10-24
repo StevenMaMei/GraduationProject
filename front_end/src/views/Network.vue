@@ -71,13 +71,16 @@ export default {
       }
       axios.post('http://localhost:3000/neuralNetwork/save', {
         neuralNetwork: {
-        ownerEmail: this.$cookie.get('userEmail'),
-        networkName: this.networkName,
-        dataSize:this.net.dataSize,
-        numOfLayers: this.net.layersN,
-        activationFunctions: this.net.actFunc,
-        lossFunction: this.net.lossFunc,
-        neuronsPerLayer: this.net.neuronPerLayer
+          ownerEmail: this.$cookie.get('userEmail'),
+          networkName: this.networkName,
+          dataSize:this.net.dataSize,
+          numOfLayers: this.net.layersN,
+          activationFunctions: this.net.actFunc,
+          lossFunction: this.net.lossFunc,
+          neuronsPerLayer: this.net.neuronPerLayer,
+          xTrain: this.net.x_train,
+          yTrain: this.net.y_train,
+          outputSize: this.net.output_size
         }
         },  {
            'headers': { 'Authorization': this.$cookie.get('token') }
@@ -403,6 +406,7 @@ export default {
       this.networkStarted = true;
       this.updateNodesAndLinks();
     });
+    console.log(this.net)
     EventBus.$on("resetNetwork", (msg) => {
       this.net = undefined;
       this.networkStarted = false;

@@ -31,6 +31,18 @@ let neuralNetworkSchema = new Schema({
     neuronsPerLayer: {
         type: Array,
         required: [true, "dataSize required"],
+    },
+    xTrain: {
+        type: Array,
+        required: [true, "data x_train is required"],
+    },
+    yTrain: {
+        type: Array,
+        required: [true, "data y_train is required"],
+    },
+    outputSize: {
+        type: Number,
+        required: [true, "output size is required"],
     }
 });
 neuralNetworkSchema.index({ownerEmail: 1 ,networkName:1 }, {unique: true});

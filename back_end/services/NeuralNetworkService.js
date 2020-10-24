@@ -65,7 +65,7 @@ class NeuralNetworkService{
                 if (err) {
                     return res.status(400).json({
                        ok: false,
-                       err,
+                       err : err,
                     });
                 }
                 res.json({

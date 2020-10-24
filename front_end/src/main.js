@@ -5,6 +5,7 @@ import VueRouter from 'vue-router';
 import login from './views/Login'
 import register from './views/Register'
 import main from './views/MainPage'
+import foundNetworks from './views/FoundNetworks'
 import VueCookie from 'vue-cookie'
 import axios from 'axios'
 
@@ -15,6 +16,8 @@ const routes = [
   { path: "/login", component: login },
   { path: "/register", component: register },
   { path: "/main", component: main },
+  { path: "/search", component: foundNetworks},
+  
 ]
 Vue.use(axios );
 Vue.use(VueCookie )
