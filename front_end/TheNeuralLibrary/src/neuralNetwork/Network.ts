@@ -248,24 +248,6 @@ class Network {
 
 
     }
-<<<<<<< Updated upstream
-
-
-
-
-    buildCustomNeuralNetwork(xDataPoints:number[][], yDataPoints:number[][], outputS:number, dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
-
-        //we store this info, to later save the network config
-        this.dataSize = dataSize;
-        this.layersN = layersN;
-        this.actFunc = actFunc;
-        this.lossFunc = lossFunc;
-        this.neuronPerLayer = neuronPerLayer;
-        //-------
-        this.x_train = xDataPoints;
-        this.y_train = yDataPoints;
-        this.output_size= outputS;
-=======
     /**     
     *This method creates a new custom neural network speficit values the user
     desires
@@ -273,7 +255,6 @@ class Network {
     buildCustomNeuralNetwork(dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
         this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
         this.y_train = [[0], [1], [1], [0]];
->>>>>>> Stashed changes
         this.layers = [];
         let result = new Network;
         if (actFunc.length == layersN) {
@@ -287,21 +268,7 @@ class Network {
             } else {
                 for (var i = 0; i < layersN; i++) {
 
-<<<<<<< Updated upstream
-        if (layersN == 1) {
-            this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[0]));
-            this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            this.addLayer(new FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
-            this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            this.addLayer(new FullyConectedLayer(neuronPerLayer[0], this.output_size));
-            this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-        } else {
-            for (var i = 0; i < layersN; i++) {
-
-                if (i == 0) {
-=======
                     if (i == 0) {
->>>>>>> Stashed changes
 
                         this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i]));
                         this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
@@ -317,15 +284,9 @@ class Network {
                         this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
                         this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
-<<<<<<< Updated upstream
-                    console.log(this.output_size+" --- output size")
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-=======
 
                         this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
                         this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
->>>>>>> Stashed changes
 
                     } else {
 
