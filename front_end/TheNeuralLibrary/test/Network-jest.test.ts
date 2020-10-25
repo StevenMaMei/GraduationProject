@@ -1,5 +1,5 @@
 import { Network } from "../src/neuralNetwork/Network";
-import { readFileSync } from 'fs';
+
 
 
 
