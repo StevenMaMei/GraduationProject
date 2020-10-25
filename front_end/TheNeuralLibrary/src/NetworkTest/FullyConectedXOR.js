@@ -25,7 +25,6 @@ test.fit(x_train, y_train, 300, 0.1);
 let layer = new FullyConectedLayer_1.FullyConectedLayer(4, 4);
 let a = [[1, 3], [9, 6]];
 let b = [[1, 5], [6, 4]];
-let c = [[1, 2], [3, 4]];
 let d = 2;
 /**
 let a:number[][]= [[2]];
@@ -33,7 +32,11 @@ let b: number[][]=[[2],[3]];
 let c: number[][]= [[1,2],[3,4]];
 */
 let net = new Network_1.Network();
-console.log(net.buildCustomNeuralNetwork(2, 1, ["TanH"], "Mean Square Error", [3]));
+let layer1 = new ActivationLayer_1.ActivationLayer(NumTS_1.NumTS.matrixTanh, NumTS_1.NumTS.matrixTanhPrime);
+let c = [[1, 2], [3, 4]];
+layer1.forwardPropagation(c);
+console.log(layer1.backPropagation(b));
+//console.log(net.buildCustomNeuralNetwork(2,1,["TanH"],"Mean Square Error",[3]));
 /**
 console.log("----RESULTS---"+"\n"+
 layer.forwardPropagation(a)+"\n"+

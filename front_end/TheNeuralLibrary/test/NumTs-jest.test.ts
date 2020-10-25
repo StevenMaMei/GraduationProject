@@ -1,6 +1,6 @@
 import {NumTS} from "../src/math/numTS";
 
-describe.only("matrixDotProduct test",()=>{
+describe("matrixDotProduct test",()=>{
     describe("when [[1,2]] and [[2],[3]] are passed",()=>{
         test("then result shold be [ [ 8 ] ] ",()=>{
             let result : number[][]=NumTS.matrixDotProduct([[1,2]], [[2],[3]]);
@@ -78,7 +78,7 @@ describe("matrixTransposse test",()=>{
     describe("when [[5,6]] ",()=>{
         test("then result shold be [[5],[6]] ",()=>{
             const result : number[][]=NumTS.matrixTransposse([[5,6]]);
-            expect(result).toStrictEqual([[5,6]]);
+            expect(result).toStrictEqual([[5],[6]]);
         });
     });
 });
@@ -105,10 +105,10 @@ describe("matrixTanh test",()=>{
 
 describe("matrixTanh test",()=>{
     describe("when [[2],[3]] ",()=>{
-        test("then result shold be  [[0.964027580075816],[0.9950547536867305]]",()=>{
+        test("then result shold be  [[0.9640275800758169],[0.9950547536867305]]",()=>{
         
             const result : number[][]=NumTS.matrixTanh([[2],[3]]);
-            expect(result).toStrictEqual([[0.964027580075816],[0.9950547536867305]]);
+            expect(result).toStrictEqual([[0.9640275800758169],[0.9950547536867305]]);
         });
     });
 });
@@ -135,19 +135,19 @@ describe("matrixTanh test",()=>{
 
 describe("matrixTanh test",()=>{
     describe("when [[2],[3]] ",()=>{
-        test("then result shold be  [[0.964027580075816],[0.9950547536867305]]",()=>{
+        test("then result shold be  [[0.9640275800758169],[0.9950547536867305]]",()=>{
         
             const result : number[][]=NumTS.matrixTanh([[2],[3]]);
-            expect(result).toStrictEqual([[0.964027580075816],[0.9950547536867305]]);
+            expect(result).toStrictEqual([[0.9640275800758169],[0.9950547536867305]]);
         });
     });
 });
 
 describe("matrixTanhPrime test",()=>{
     describe("when [[10]] ",()=>{
-        test("then result shold be [[0.9999999958776927]] ",()=>{
+        test("then result shold be [[ 8.244614546626394e-9]] ",()=>{
             const result : number[][]=NumTS.matrixTanhPrime([[10]]);
-            expect(result).toStrictEqual([[0.9999999958776927]]);
+            expect(result).toStrictEqual([[ 8.244614546626394e-9]]);
         });
     });
 });
@@ -173,9 +173,9 @@ describe("matrixTanhPrime test",()=>{
 
 describe("matrixSigmoid test",()=>{
     describe("when [[2],[3]] ",()=>{
-        test("then result shold be [[0.07065082485316443],[0.009866037165440211]] ",()=>{
+        test("then result shold be [[0.8807970779778823],[0.9525741268224334]] ",()=>{
             const result : number[][]=NumTS.matrixSigmoid([[2],[3]]);
-            expect(result).toStrictEqual([[0.07065082485316443],[0.009866037165440211]]);
+            expect(result).toStrictEqual([[0.8807970779778823],[0.9525741268224334]]);
         });
     });
 });
@@ -201,27 +201,27 @@ describe("msePrime test",()=>{
 
 describe("matrixSigmoidPrime test",()=>{
     describe("when [[10]] ",()=>{
-        test("then result shold be [[0.9999546021312976]] ",()=>{
+        test("then result shold be [[0.00004539580773595167]] ",()=>{
             const result : number[][]=NumTS.matrixSigmoidPrime([[10]]);
-            expect(result).toStrictEqual([[0.9999546021312976]]);
+            expect(result).toStrictEqual([[0.00004539580773595167]]);
         });
     });
 });
 
 describe("matrixSigmoidPrime test",()=>{
     describe("when [[1,2]] ",()=>{
-        test("then result shold be [[0.7310585786300049,0.8807970779778823]] ",()=>{
+        test("then result shold be [[0.19661193324148185,0.10499358540350652]] ",()=>{
             const result : number[][]=NumTS.matrixSigmoidPrime([[1,2]]);
-            expect(result).toStrictEqual([[0.7310585786300049,0.8807970779778823]]);
+            expect(result).toStrictEqual([[0.19661193324148185,0.10499358540350652]]);
         });
     });
 });
 
 describe("matrixSigmoidPrime test",()=>{
     describe("when [[2],[3]] ",()=>{
-        test("then result shold be [[0.8807970779778823],[0.9525741268224334]] ",()=>{
+        test("then result shold be [[0.10499358540350652],[0.04517665973091213]] ",()=>{
             const result : number[][]=NumTS.matrixSigmoidPrime([[2],[3]]);
-            expect(result).toStrictEqual([[0.8807970779778823],[0.9525741268224334]]);
+            expect(result).toStrictEqual([[0.10499358540350652],[0.04517665973091213]]);
         });
     });
 });
@@ -231,7 +231,7 @@ describe("matrixLinear test",()=>{
     describe("when [[0.1,0.2,0.3]] and 2.3 ",()=>{
         test("then result shold be [[0.22999999999999998, 0.45999999999999996, 0.69 ] ] ",()=>{
             const result : number[][]=NumTS.matrixLinear([[0.1,0.2,0.3]],2.3);
-            expect(result).toBe([[0.22999999999999998, 0.45999999999999996, 0.69 ] ]);
+            expect(result).toStrictEqual([[0.22999999999999998, 0.45999999999999996, 0.69 ] ]);
         });
     });
 });
@@ -241,7 +241,7 @@ describe("matrixLinearPrime test",()=>{
     describe("when [[10]] ",()=>{
         test("then result shold be 1 ",()=>{
             const result : number[][]=NumTS.matrixLinearPrime([[10]]);
-            expect(result).toStrictEqual(10);
+            expect(result).toStrictEqual([[10]]);
         });
     });
 });
@@ -277,7 +277,7 @@ describe("binary_cross_entropyPrime test",()=>{
     describe("when [[0.1,0.2,0.3]] AND [[0.15,0.23,0.26]] ",()=>{
         test("then result shold be [ [ -0.05, -0.03, 0.04000000000000001 ] ] ",()=>{
             const result : number[][]=NumTS.binary_cross_entropyPrime([[0.1,0.2,0.3]],[[0.15,0.23,0.26]]);
-            expect(result).toBe([ [ -0.05, -0.03, 0.04000000000000001 ] ]);
+            expect(result).toStrictEqual([ [ -0.05, -0.03, 0.04000000000000001 ] ]);
         });
     });
 });

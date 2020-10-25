@@ -30,36 +30,54 @@ class Network {
     lossFunc: String; 
     neuronPerLayer: Array<number>;
 
+    /**
+     * This map contains the name of all the loss functions and their 
+     * prime function 
+     */
     lossFunctionsMap: Map<String, Function> = new Map([
         ["Binary Cross Entropy", NumTS.binary_cross_entropyPrime],
         ["Mean Square Error", NumTS.msePrime]
 
     ])
-
+    /**
+      * This map contains the name of all the activation functions and their 
+      * prime function 
+      */
     activationFunctionsMap: Map<String, Function> = new Map([
         ["TanH", NumTS.matrixTanhPrime],
+        ["Sigmoid", NumTS.matrixSigmoidPrime],
+        ["Linear", NumTS.matrixLinearPrime]
 
     ])
 
     //constants
     maxNumberOfNeurons: number = 4;
     maxNumberOfLayers: number = 3;
-
-    // it cant never return a null value since the universe of keys is always limited to available ones
+    /**
+     * This method will always return the derivative of a certain activation function
+     * it cant never return a null value since the universe of keys is always 
+     * limited to available ones
+     */
     getActivationFunctionDerivative(key: String): Function {
 
         return this.activationFunctionsMap.get(key)!;
 
     }
 
-    // it cant never return a null value since the universe of keys is always limited to available ones
+    /**
+     * This method will always return the derivative of a certain loss function
+     * it cant never return a null value since the universe of keys is always 
+     * limited to available ones
+     */
     getLossFunctionDerivative(key: String): Function {
 
         return this.lossFunctionsMap.get(key)!;
 
     }
 
-
+    /**
+    *This method retrieves all the activation Funcions
+     */
     getAllActivationFunctions(): Array<String> {
         let result: Array<String> = new Array<String>();
 
@@ -68,7 +86,9 @@ class Network {
         }
         return result;
     }
-
+    /**
+    *This method retrieves all the loss Funcions
+     */
     getAllLossFunctions(): Array<String> {
         let result: Array<String> = new Array<String>();
 
@@ -77,12 +97,16 @@ class Network {
         }
         return result;
     }
-
+    /**
+    *This method retrieves the maximun number of neurons allowed
+     */
     getMaxNumberOfNeurons(): number {
 
         return this.maxNumberOfNeurons;
     }
-
+    /**
+    *This method retrieves the maximun number of layers allowed
+     */
     getMaxNumberOfLayers(): number {
 
         return this.maxNumberOfLayers;
@@ -210,13 +234,21 @@ class Network {
             case "TanH": {
                 result = NumTS.matrixTanh;
                 break;
-            }
+            } case "Sigmoid": {
+                result = NumTS.matrixSigmoid;
+                break;
 
+            } case "Linear": {
+                result = NumTS.matrixLinear;
+                break;
+
+            }
         }
         return result;
 
 
     }
+<<<<<<< Updated upstream
 
 
 
@@ -233,8 +265,29 @@ class Network {
         this.x_train = xDataPoints;
         this.y_train = yDataPoints;
         this.output_size= outputS;
+=======
+    /**     
+    *This method creates a new custom neural network speficit values the user
+    desires
+     */
+    buildCustomNeuralNetwork(dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
+        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        this.y_train = [[0], [1], [1], [0]];
+>>>>>>> Stashed changes
         this.layers = [];
+        let result = new Network;
+        if (actFunc.length == layersN) {
+            if (layersN == 1) {
+                this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[0]));
+                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
+                this.addLayer(new FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
+                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
+                this.addLayer(new FullyConectedLayer(neuronPerLayer[0], 1));
+                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
+            } else {
+                for (var i = 0; i < layersN; i++) {
 
+<<<<<<< Updated upstream
         if (layersN == 1) {
             this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[0]));
             this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
@@ -246,36 +299,50 @@ class Network {
             for (var i = 0; i < layersN; i++) {
 
                 if (i == 0) {
+=======
+                    if (i == 0) {
+>>>>>>> Stashed changes
 
-                    this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-
-                } else if (i == layersN - 1) {
+                        this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i]));
+                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
 
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
+                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
 
+
+                    } else if (i == layersN - 1) {
+
+
+                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
+                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+
+<<<<<<< Updated upstream
                     console.log(this.output_size+" --- output size")
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
                     this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+=======
 
-                } else {
+                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
+                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+>>>>>>> Stashed changes
 
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    } else {
+
+                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
+                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    }
                 }
             }
+
+            this.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
+            return this;
+        } else {
+            alert("juemadre vida");
+            return result;
+
         }
 
-        this.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
-
-        return this;
 
     }
 

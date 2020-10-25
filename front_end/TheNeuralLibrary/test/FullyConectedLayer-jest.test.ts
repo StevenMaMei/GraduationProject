@@ -39,16 +39,11 @@ describe("backPropagation test", () => {
     describe("when ActivationLayer(NumTS.matrixTanh, NumTS.matrixTanhPrime) and [[1, 3], [9, 6]] and [[1, 5], [6, 4]] and [[1, 2], [3, 4]] is passed", () => {
         test("then result shold be [[0.41997434161402614],[0.029598111496320634],[5.482792539979187e-7],[0.00014745928443171685]] ", () => {
             let layer1: FullyConectedLayer = new FullyConectedLayer(3,6);
-            let a: number[][] = [[1, 3], [9, 6]];
-            let b: number[][] = [[1, 5], [6, 4]];
-            let c: number[][] = [[1, 2], [3, 4]];
+                  let c: number[][] = [[1, 2], [3, 4]];
 
             layer1.forwardPropagation(c);
-            layer1.forwardPropagation(b);
-            layer1.forwardPropagation(a);
 
-
-            const result: number[][]= layer1.backPropagation(a,3);
+            const result: number[][] = layer1.backPropagation([[1, 5], [6, 4]],1);
             expect(result).toStrictEqual([[0.41997434161402614],[0.029598111496320634],[5.482792539979187e-7],[0.00014745928443171685]]);
         });
     });

@@ -30,7 +30,7 @@ let layer:FullyConectedLayer=new FullyConectedLayer(4,4);
 
 let a:number[][]= [[1,3],[9,6]];
 let b: number[][]=[[1,5],[6,4]];
-let c: number[][]= [[1,2],[3,4]];
+
 let d: number= 2;
 
 /** 
@@ -39,8 +39,11 @@ let b: number[][]=[[2],[3]];
 let c: number[][]= [[1,2],[3,4]];
 */
 let net: Network= new Network();
-
-console.log(net.buildCustomNeuralNetwork(2,1,["TanH"],"Mean Square Error",[3]));
+let layer1: ActivationLayer = new ActivationLayer(NumTS.matrixTanh, NumTS.matrixTanhPrime);
+let c: number[][] = [[1, 2], [3, 4]];
+layer1.forwardPropagation(c);
+console.log(layer1.backPropagation(b));
+//console.log(net.buildCustomNeuralNetwork(2,1,["TanH"],"Mean Square Error",[3]));
 /** 
 console.log("----RESULTS---"+"\n"+
 layer.forwardPropagation(a)+"\n"+
