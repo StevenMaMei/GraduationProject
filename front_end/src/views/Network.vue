@@ -60,6 +60,7 @@ export default {
     };
   },
   methods: {
+
     saveNetwork() {
       if (!this.networkName) {
         alert("Insert the networkName");
