@@ -154,14 +154,14 @@ var NumTS;
         return toReturn;
     }
     NumTS.matrixSigmoidPrime = matrixSigmoidPrime;
-    function matrixLinear(a, c) {
+    function matrixLinear(a) {
         let n = a.length;
         let m = a[0].length;
         let toReturn = [];
         for (let i = 0; i < n; i++) {
             toReturn[i] = [];
             for (let j = 0; j < m; j++) {
-                toReturn[i][j] = c * a[i][j];
+                toReturn[i][j] = a[i][j];
             }
         }
         return toReturn;
@@ -174,7 +174,7 @@ var NumTS;
         for (let i = 0; i < n; i++) {
             toReturn[i] = [];
             for (let j = 0; j < m; j++) {
-                toReturn[i][j] = a[i][j];
+                toReturn[i][j] = 1;
             }
         }
         return toReturn;

@@ -1,6 +1,7 @@
 <template>
   <div class="margin">
     <h3 class="marginB">Data Point number {{ dataPointInfo.index + 1 }}</h3>
+
     <p>X data:</p>
     <v-row>
       <v-col v-for="point in xJsonFormat" :key="point.position">
@@ -22,7 +23,8 @@
       ></v-col>
     </v-row>
     <v-btn @click="changeParams()" rounded color="#4511E6" dark
-      >Update Data</v-btn
+      >Update Data <v-icon v-if="dataUpdated" dark right> mdi-checkbox-marked-circle</v-icon>
+      <v-icon v-if="!dataUpdated" dark right> mdi-cancel </v-icon></v-btn
     >
   </div>
 </template>
@@ -36,6 +38,7 @@ export default {
   },
   data() {
     return {
+      dataUpdated: false,
       inputSize: 0,
       outputSize: 0,
       xDataPoint: [],
@@ -61,27 +64,33 @@ export default {
   methods: {
     changeParams() {
       let cond = false;
-      this.xDataPoint.forEach(element => {
-        if(element == undefined){
-          cond =true;
+      this.xDataPoint.forEach((element) => {
+        element = parseInt(element,10);
+        if (element == undefined) {
+          cond = true;
+        } else if (!Number.isInteger(element)) {
+          cond = true;
         }
       });
-      this.yDataPoint.forEach(element => {
-        if(element == undefined){
-          cond =true;
+      this.yDataPoint.forEach((element) => {
+        element = parseInt(element,10);
+        if (element == undefined) {
+          cond = true;
+        } else if (!Number.isInteger(element)) {
+          cond = true;
         }
       });
-      if(cond){
-        alert("Insert all the values")
-      }else{
+      if (cond) {
+        alert("Insert correct values (numbers) for all the fields");
+      } else {
+        this.dataUpdated = true;
         this.$emit(
-        "updateDP",
-        this.xDataPoint,
-        this.yDataPoint,
-        this.dataPointInfo.index
-      );
+          "updateDP",
+          this.xDataPoint,
+          this.yDataPoint,
+          this.dataPointInfo.index
+        );
       }
-      
     },
   },
 };
@@ -92,6 +101,6 @@ export default {
   margin: 2%;
 }
 .marginB {
-    margin-bottom: 2%;
+  margin-bottom: 2%;
 }
 </style>

@@ -157,14 +157,14 @@ module NumTS{
         return toReturn;
     }
 
-    export function matrixLinear(a:number[][], c:number):number[][]{
+    export function matrixLinear(a:number[][]):number[][]{
         let n: number= a.length;
         let m: number = a[0].length;
         let toReturn: number[][]=[];
         for(let i:number=0; i<n;i++){
             toReturn[i]=[];
             for(let j:number=0;j<m;j++){
-                toReturn[i][j]=c*a[i][j];
+                toReturn[i][j]=a[i][j];
             }
         }
         return toReturn;
@@ -177,7 +177,7 @@ module NumTS{
         for(let i:number=0; i<n;i++){
             toReturn[i]=[];
             for(let j:number=0;j<m;j++){
-                toReturn[i][j]=a[i][j];
+                toReturn[i][j]=1;
             }
         }
         return toReturn;

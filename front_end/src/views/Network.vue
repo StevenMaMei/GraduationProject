@@ -86,7 +86,6 @@ export default {
            'headers': { 'Authorization': this.$cookie.get('token') }
           })
         .then(res=>{
-          console.log(res)
           alert(res.response.data.message);
         })
         .catch((err) => {
@@ -405,8 +404,9 @@ export default {
       this.net = data;
       this.networkStarted = true;
       this.updateNodesAndLinks();
+      console.log(this.net)
     });
-    console.log(this.net)
+    
     EventBus.$on("resetNetwork", (msg) => {
       this.net = undefined;
       this.networkStarted = false;

@@ -95,19 +95,19 @@
           <v-col>
             <v-text-field
               v-model="dataPointsNumber"
-              label="Number of datapoints (1-5)"
+              label="Number of datapoints (1-16)"
             ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
               v-model="inputSize"
-              label="Input size (1-5)"
+              label="Input size (1-4)"
             ></v-text-field>
           </v-col>
           <v-col>
             <v-text-field
               v-model="outputSize"
-              label="Output size (1-5)"
+              label="Output size (1-2)"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -150,11 +150,18 @@
         >
       </v-row>
       <div v-if="customizingDataPoints">
-        <v-row v-for="dataP in customDataPoints" :key="dataP.index">
-          <app-data-points
-            @updateDP="receiverOfDataPoints"
-            :dataPointInfo="dataP"
-          ></app-data-points>
+        <v-row
+          align="center"
+          align-content="center"
+          v-for="dataP in customDataPoints"
+          :key="dataP.index"
+        >
+          <v-col cols="12">
+            <app-data-points
+              @updateDP="receiverOfDataPoints"
+              :dataPointInfo="dataP"
+            ></app-data-points>
+          </v-col>
         </v-row>
       </div>
     </div>
@@ -265,19 +272,46 @@ export default {
       this.outputSize = undefined;
     },
     continueCustomizing() {
-      this.customizingDataPoints = true;
-      this.customDataPoints = [];
-      this.dataPointsX = [];
-      this.dataPointsY = [];
-      for (let i = 0; i < this.dataPointsNumber; i++) {
-        let obj = {
-          inputSize: this.inputSize,
-          outputSize: this.outputSize,
-          index: i,
-        };
-        this.customDataPoints.push(obj);
-        this.dataPointsX.push(undefined);
-        this.dataPointsY.push(undefined);
+      this.dataPointsNumber = parseInt(this.dataPointsNumber, 10);
+      this.inputSize = parseInt(this.inputSize, 10);
+      this.outputSize = parseInt(this.outputSize, 10);
+
+      if (
+        this.dataPointsNumber == undefined ||
+        this.inputSize == undefined ||
+        this.outputSize == undefined
+      ) {
+        alert("Complete all the values");
+      } else if (
+        !Number.isInteger(this.dataPointsNumber) ||
+        !Number.isInteger(this.inputSize) ||
+        !Number.isInteger(this.outputSize)
+      ) {
+        alert("All fields must be integer numbers");
+        this.dataPointsNumber = undefined;
+        this.inputSize = undefined;
+        this.outputSize = undefined;
+      } else if (this.dataPointsNumber < 1 || this.dataPointsNumber > 16) {
+        alert("The number of data points must be between 1 and 16");
+      } else if (this.inputSize < 1 || this.inputSize > 4) {
+        alert("The input size must be between 1 and 4");
+      } else if (this.outputSize < 1 || this.outputSize > 2) {
+        alert("The output size must be between 1 and 2");
+      } else {
+        this.customizingDataPoints = true;
+        this.customDataPoints = [];
+        this.dataPointsX = [];
+        this.dataPointsY = [];
+        for (let i = 0; i < this.dataPointsNumber; i++) {
+          let obj = {
+            inputSize: this.inputSize,
+            outputSize: this.outputSize,
+            index: i,
+          };
+          this.customDataPoints.push(obj);
+          this.dataPointsX.push(undefined);
+          this.dataPointsY.push(undefined);
+        }
       }
     },
     changeCustomize() {
@@ -323,8 +357,6 @@ export default {
       }
     },
     generateNetwork() {
-      /* console.log(this.layerAtributes[0].actFF) */
-      /* EventBus.$emit("resetNetwork", true); */
       let layersNueorns = new Array();
       let layersFunctions = new Array();
 
@@ -390,28 +422,32 @@ export default {
       this.selectedNumberOfLayers = newNL;
     },
     createNetwork() {
-      this.ready = true;
-      if (
-        this.selectedLossFunction != "Select the loss function" &&
-        this.selectedNumberOfLayers != "Select the number of layers"
-      ) {
-        this.net = new Network();
-        this.network.lossFunction = this.selectedLossFunction;
-        this.network.numberOfLayers = parseInt(this.selectedNumberOfLayers);
-        this.layers = [];
-        alert("New network created");
-        for (var i = 0; i < this.network.numberOfLayers; i++) {
-          let layer = {
-            number: i,
-            activationF: this.allActivationFunctions,
-            maxNumberOfNuerons: this.maxNumbOfNeurons,
-          };
-          this.layers.push(layer);
+      if (!this.customizingData) {
+        this.ready = true;
+        if (
+          this.selectedLossFunction != "Select the loss function" &&
+          this.selectedNumberOfLayers != "Select the number of layers"
+        ) {
+          this.net = new Network();
+          this.network.lossFunction = this.selectedLossFunction;
+          this.network.numberOfLayers = parseInt(this.selectedNumberOfLayers);
+          this.layers = [];
+          alert("New network created");
+          for (var i = 0; i < this.network.numberOfLayers; i++) {
+            let layer = {
+              number: i,
+              activationF: this.allActivationFunctions,
+              maxNumberOfNuerons: this.maxNumbOfNeurons,
+            };
+            this.layers.push(layer);
+          }
+        } else {
+          alert("Select all the parameters");
         }
-      } else {
-        alert("Select all the parameters");
+        this.createAvailable = false;
+      }else{
+        alert("Finish or cancel data customization")
       }
-      this.createAvailable = false;
     },
   },
 };
