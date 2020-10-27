@@ -92,9 +92,11 @@ export default {
           }
         )
         .then((res) => {
-          alert(res.response.data.message);
+          alert("Saved")
+          res
         })
         .catch((err) => {
+          alert(err.response.data.message)
           alert(err.response.data.err.message);
         });
     },

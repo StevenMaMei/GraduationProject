@@ -1,15 +1,15 @@
 <template>
 <div class="app-container"> 
     <ul >
-        <li v-for="(net) in networks" :key="net.networkName">
-        <span> <strong> Network Name: </strong></span>
+        <li class="netInfo" v-for="(net) in networks" :key="net.networkName">
+        <p> <strong> Network Name: </strong></p>
         {{ net.networkName }}
-        <span><strong> Number of hidden layers:</strong> </span>
+        <p><strong> Number of hidden layers:</strong> </p>
         {{ net.numOfLayers}}
-        <span><strong> Data size:</strong> </span>
+        <p><strong> Data size:</strong> </p>
         {{ net.dataSize}}
-        <span><strong> Loss Function:</strong> </span>
-        {{ net.lossFunction}}
+        <p><strong> Loss Function:</strong> </p>
+        {{ net.lossFunction}}<br>
         <v-btn  @click="onChoseNetwork(net)" text>Charge network</v-btn>
         </li>
     </ul>
@@ -67,10 +67,28 @@ export default {
 *:after {
   box-sizing: border-box;
 }
+.netInfo {
+  width: 45%;
+  font-size: 20px;
+  display: inline-block;
+  border-width: 0.5px;
+  text-align: center;
+  background: #FBFBFB;
+  border-radius: 10px;
+  margin: 5px;
+}
+.netInfo button{
+  border-style: solid;
+  color: white;
+  margin: 5px;
+}
 main {
   font-family: "Roboto", "sans-serif";
   background: #fff top center repeat;
   color: #444;
+}
+ul {
+  display: inline-block;
 }
 h1,
 p {
@@ -78,6 +96,7 @@ p {
 }
 .app-container {
   max-width: 100%;
+  text-align: center;
   margin: 0 auto;
   /* background-color: #e8e8e8; */
   background-color: #fff;
