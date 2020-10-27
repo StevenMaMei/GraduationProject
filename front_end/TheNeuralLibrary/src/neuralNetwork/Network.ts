@@ -29,6 +29,7 @@ class Network {
     actFunc: Array<String>; 
     lossFunc: String; 
     neuronPerLayer: Array<number>;
+    isLayerStep: boolean;
 
     /**
      * This map contains the name of all the loss functions and their 
@@ -120,6 +121,7 @@ class Network {
 
 
     constructor() {
+        this.isLayerStep=false;
         this.all_outputs = [];
         this.layers = [];
         this.lossFunction = NumTS.mse;
@@ -156,6 +158,7 @@ class Network {
                 curr[0] = this.x_train[j];
                 this.current_outputs[j] = curr;
             }
+            this.isLayerStep = true;
         }
 
 
@@ -207,6 +210,7 @@ class Network {
                     this.current_backProp_error = [];
                     this.current_error = 0;
                     this.current_datapoint_index = 0;
+                    this.isLayerStep = false;
                 }
                 // --
 
@@ -315,6 +319,9 @@ class Network {
         this.actFunc = actFunc;
         this.lossFunc = lossFunc;
         this.neuronPerLayer = neuronPerLayer;
+        if(layersN == 1){
+            this.neuronPerLayer[1] =0;
+        }
         //-------
         this.x_train = xDataPoints;
         this.y_train = yDataPoints;

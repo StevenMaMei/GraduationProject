@@ -18,7 +18,9 @@
             </v-btn>
           </v-col>
           <v-col class="text-center">
-            <v-btn @click="saveNetwork" depressed color="primary"> Save Network </v-btn>
+            <v-btn @click="saveNetwork" depressed color="primary">
+              Save Network
+            </v-btn>
           </v-col>
           <v-col>
             <v-text-field v-model="networkName" label="NN name"></v-text-field>
@@ -26,10 +28,9 @@
         </v-row>
       </v-container>
     </div>
-
-    <svg id="viz" class="container-border"></svg>
-
-    
+    <div>
+      <svg id="viz" class="container-border"></svg>
+    </div>
   </div>
 </template>
 
@@ -43,7 +44,7 @@ export default {
   components: {},
   data() {
     return {
-      
+      networkTimeOut: false,
       networkName: undefined,
       current_error: undefined,
       typeOfProp: "Forward",
@@ -60,7 +61,6 @@ export default {
     };
   },
   methods: {
-
     saveNetwork() {
       if (!this.networkName) {
         alert("Insert the networkName");
@@ -70,23 +70,28 @@ export default {
         alert("You are not logged in");
         return;
       }
-      axios.post('http://localhost:3000/neuralNetwork/save', {
-        neuralNetwork: {
-          ownerEmail: this.$cookie.get('userEmail'),
-          networkName: this.networkName,
-          dataSize:this.net.dataSize,
-          numOfLayers: this.net.layersN,
-          activationFunctions: this.net.actFunc,
-          lossFunction: this.net.lossFunc,
-          neuronsPerLayer: this.net.neuronPerLayer,
-          xTrain: this.net.x_train,
-          yTrain: this.net.y_train,
-          outputSize: this.net.output_size
-        }
-        },  {
-           'headers': { 'Authorization': this.$cookie.get('token') }
-          })
-        .then(res=>{
+      axios
+        .post(
+          "http://localhost:3000/neuralNetwork/save",
+          {
+            neuralNetwork: {
+              ownerEmail: this.$cookie.get("userEmail"),
+              networkName: this.networkName,
+              dataSize: this.net.dataSize,
+              numOfLayers: this.net.layersN,
+              activationFunctions: this.net.actFunc,
+              lossFunction: this.net.lossFunc,
+              neuronsPerLayer: this.net.neuronPerLayer,
+              xTrain: this.net.x_train,
+              yTrain: this.net.y_train,
+              outputSize: this.net.output_size,
+            },
+          },
+          {
+            headers: { Authorization: this.$cookie.get("token") },
+          }
+        )
+        .then((res) => {
           alert(res.response.data.message);
         })
         .catch((err) => {
@@ -94,13 +99,18 @@ export default {
         });
     },
     nextEpoch() {
-      this.net.goToNextEpoch();
-      this.epoch = this.net.currEpoch + 1;
-      this.current_error = this.net.current_error;
-      this.svg.selectAll("*").remove();
-      this.updateNodesAndLinks();
+      if (this.net.isLayerStep) {
+        alert("Please finish the current epoch by using the Next Layer option")
+      } else {
+        this.net.goToNextEpoch();
+        this.epoch = this.net.currEpoch + 1;
+        this.current_error = this.net.current_error;
+        this.svg.selectAll("*").remove();
+        this.updateNodesAndLinks();
+      }
     },
     nextLayer() {
+      this.networkTimeOut = true;
       this.net.layerStep();
       this.net.layerStep();
       console.log(this.net);
@@ -206,7 +216,7 @@ export default {
           let outputs = this.net.all_outputs[this.net.layers.length - 1][0];
           if (outputs.length > 0) {
             let rawNumber = outputs[i];
-            let roundedNumber =round(rawNumber,5);
+            let roundedNumber = round(rawNumber, 5);
             neuronLabel = roundedNumber + "";
           }
         }
@@ -245,21 +255,56 @@ export default {
         .force("charge", d3.forceManyBody().strength(-10))
         .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
+      let numberOfLayers = this.net.layers.length;
+      let minNeurons = 5;
+      let variable = this.net.neuronPerLayer;
+      variable.forEach((element) => {
+        if (element < minNeurons) {
+          minNeurons = element;
+        }
+      });
+
       d3.forceSimulation(graph.nodes)
-        .force("center", d3.forceCenter(this.width / 2, this.height / 2))
+        /* .force("center", d3.forceCenter(this.width / 2, this.height / 2)) */
         .force(
-          "x",
+          "fx",
           d3
             .forceX(function (d) {
-              return d.group * 400;
+              if (numberOfLayers == 6) {
+                /* if (minNeurons == 4) {
+                  return d.group * 1100;
+                } else if (minNeurons == 3) {
+                  return d.group * 900;
+                } else if (minNeurons == 2) {
+                  return d.group * 700;
+                } else {
+                  return d.group * 400;
+                } */
+                return d.group * 400;
+              } else if (numberOfLayers == 8) {
+                /* if (minNeurons == 4) {
+                  return d.group * 800;
+                } else if (minNeurons == 3) {
+                  return d.group * 600;
+                } else if (minNeurons == 2) {
+                  return d.group * 400;
+                } else {
+                  return d.group * 300;
+                } */
+                return d.group * 300;
+              } else if (numberOfLayers == 10) {
+                return d.group * 200;
+              } else if (numberOfLayers == 12) {
+                return d.group * 100;
+              }
             })
             .strength(1)
         )
         .force(
-          "y",
+          "fy",
           d3
             .forceY(function (d) {
-              return 350 + d.neuron * 350;
+              return d.neuron * 200;
             })
             .strength(1)
         )
@@ -405,9 +450,8 @@ export default {
       this.net = data;
       this.networkStarted = true;
       this.updateNodesAndLinks();
-      console.log(this.net)
     });
-    
+
     EventBus.$on("resetNetwork", (msg) => {
       this.net = undefined;
       this.networkStarted = false;

@@ -26,6 +26,7 @@ class Network {
         //constants
         this.maxNumberOfNeurons = 4;
         this.maxNumberOfLayers = 3;
+        this.isLayerStep = false;
         this.all_outputs = [];
         this.layers = [];
         this.lossFunction = NumTS_1.NumTS.mse;
@@ -107,6 +108,7 @@ class Network {
                 curr[0] = this.x_train[j];
                 this.current_outputs[j] = curr;
             }
+            this.isLayerStep = true;
         }
         if (this.direction == 0) { //forward propagation
             this.current_output = this.current_outputs[this.current_datapoint_index];
@@ -144,6 +146,7 @@ class Network {
                     this.current_backProp_error = [];
                     this.current_error = 0;
                     this.current_datapoint_index = 0;
+                    this.isLayerStep = false;
                 }
                 // --
             }
@@ -242,6 +245,9 @@ class Network {
         this.actFunc = actFunc;
         this.lossFunc = lossFunc;
         this.neuronPerLayer = neuronPerLayer;
+        if (layersN == 1) {
+            this.neuronPerLayer[1] = 0;
+        }
         //-------
         this.x_train = xDataPoints;
         this.y_train = yDataPoints;
