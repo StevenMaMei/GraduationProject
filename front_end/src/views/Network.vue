@@ -28,9 +28,7 @@
         </v-row>
       </v-container>
     </div>
-    <div>
-      <svg id="viz" class="container-border"></svg>
-    </div>
+    <svg id="viz" class="container-border"></svg>
   </div>
 </template>
 
@@ -44,7 +42,6 @@ export default {
   components: {},
   data() {
     return {
-      networkTimeOut: false,
       networkName: undefined,
       current_error: undefined,
       typeOfProp: "Forward",
@@ -92,17 +89,17 @@ export default {
           }
         )
         .then((res) => {
-          alert("Saved")
-          res
+          alert("Saved");
+          res;
         })
         .catch((err) => {
-          alert(err.response.data.message)
+          alert(err.response.data.message);
           alert(err.response.data.err.message);
         });
     },
     nextEpoch() {
       if (this.net.isLayerStep) {
-        alert("Please finish the current epoch by using the Next Layer option")
+        alert("Please finish the current epoch by using the Next Layer option");
       } else {
         this.net.goToNextEpoch();
         this.epoch = this.net.currEpoch + 1;
@@ -112,7 +109,6 @@ export default {
       }
     },
     nextLayer() {
-      this.networkTimeOut = true;
       this.net.layerStep();
       this.net.layerStep();
       console.log(this.net);
@@ -177,6 +173,10 @@ export default {
                 }
               }
             }
+            let pLS = 0;
+            if(layerNumber>0){
+              pLS = nArray[layerNumber-2];
+            }
             let n = j + 1;
             let node = {
               id: "L" + layerNumber + "N" + n,
@@ -184,6 +184,8 @@ export default {
               neuron: n,
               label: neuronLabel,
               last: "no",
+              pastLayerSize: pLS,
+              layerSize: numberOfNeurons
             };
             this.theGraph.nodes.push(node);
 
@@ -223,12 +225,15 @@ export default {
           }
         }
         let n = i + 1;
+        let pLS = nArray[nArray.length-2]
         let node = {
           id: "L" + layerNumber + "N" + n,
           group: layerNumber,
           neuron: n,
           label: neuronLabel,
           last: "yes",
+          pastLayerSize: pLS,
+          layerSize: lastLayerSize
         };
         this.theGraph.nodes.push(node);
       }
@@ -237,6 +242,7 @@ export default {
     },
 
     generateGraph() {
+      console.log(this.theGraph)
       this.height = this.currentScreenHeight * 0.55;
       let graph = this.theGraph;
 
@@ -257,56 +263,49 @@ export default {
         .force("charge", d3.forceManyBody().strength(-10))
         .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
-      let numberOfLayers = this.net.layers.length;
-      let minNeurons = 5;
-      let variable = this.net.neuronPerLayer;
-      variable.forEach((element) => {
-        if (element < minNeurons) {
-          minNeurons = element;
-        }
-      });
-
       d3.forceSimulation(graph.nodes)
-        /* .force("center", d3.forceCenter(this.width / 2, this.height / 2)) */
+        .force("center", d3.forceCenter(this.width / 2, this.height / 2 - 50))
         .force(
-          "fx",
+          "x",
           d3
             .forceX(function (d) {
-              if (numberOfLayers == 6) {
-                /* if (minNeurons == 4) {
-                  return d.group * 1100;
-                } else if (minNeurons == 3) {
-                  return d.group * 900;
-                } else if (minNeurons == 2) {
-                  return d.group * 700;
-                } else {
-                  return d.group * 400;
-                } */
-                return d.group * 400;
-              } else if (numberOfLayers == 8) {
-                /* if (minNeurons == 4) {
-                  return d.group * 800;
-                } else if (minNeurons == 3) {
-                  return d.group * 600;
-                } else if (minNeurons == 2) {
-                  return d.group * 400;
-                } else {
-                  return d.group * 300;
-                } */
-                return d.group * 300;
-              } else if (numberOfLayers == 10) {
+              if(d.group == 1){
+                return d.group*50
+              }else{
+                if (d.pastLayerSize == 1) {
                 return d.group * 200;
-              } else if (numberOfLayers == 12) {
-                return d.group * 100;
+              } else if (d.pastLayerSize == 2) {
+                return d.group * 250;
+              } else if (d.pastLayerSize == 3) {
+                return d.group * 300;
+              } else {
+                return d.group * 400;
               }
+              }
+              
             })
             .strength(1)
         )
         .force(
-          "fy",
+          "y",
           d3
             .forceY(function (d) {
-              return d.neuron * 200;
+              if(d.layerSize == 1){
+                if(d.pastLayerSize >=2){
+                  return d.neuron * 600
+                }else{
+                  return d.neuron * 500;
+                }
+              }else if(d.layerSize == 2){
+                if(d.pastLayerSize >=3){
+                  return d.neuron * 400
+                }else{
+                  return d.neuron * 500;
+                }
+              }else{
+                return d.neuron * 350;
+              }
+              
             })
             .strength(1)
         )
@@ -320,7 +319,11 @@ export default {
             .distance(100)
             .strength(1)
         )
-        .on("tick", ticked);
+        .on("tick", ticked) /* .velocityDecay(0.3).alphaDecay(0.1) */
+        .alpha(0.05)
+        .restart();
+
+      labelLayout.velocityDecay(0.4);
 
       this.svg = d3
         .select("#viz")
@@ -392,7 +395,6 @@ export default {
       function ticked() {
         node.call(updateNode);
         link.call(updateLink);
-        labelLayout.alphaTarget(0.3).restart();
         labelLink.each(function (d) {
           if (d.target.y > d.source.y) {
             d.y = d.source.y + (d.target.y - d.source.y) / 4;
