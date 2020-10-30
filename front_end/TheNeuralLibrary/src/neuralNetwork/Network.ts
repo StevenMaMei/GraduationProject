@@ -405,7 +405,6 @@ class Network {
     fitTo(targetEpoch: number) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error: number = 0;
-            console.log(error)
             for (let j = 0; j < this.x_train.length; j++) {
                 let output: number[][] = [];
                 output[0] = this.x_train[j];
@@ -425,7 +424,7 @@ class Network {
     }
     goToNextEpoch() {
         let error: number = 0;
-        console.log(error)
+        error * 1;
         for (let j = 0; j < this.x_train.length; j++) {
             let output: number[][] = [];
             output[0] = this.x_train[j];
@@ -445,6 +444,7 @@ class Network {
     fit(x_train: number[][], y_train: number[][], epochs: number, learningRate: number) {
         for (let i = 0; i < epochs; i++) {
             let error: number = 0;
+            error*1;
             for (let j = 0; j < x_train.length; j++) {
                 let output: number[][] = [];
                 output[0] = x_train[j];

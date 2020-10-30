@@ -2,8 +2,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
-import login from './views/Login'
-import register from './views/Register'
 import main from './views/MainPage'
 import foundNetworks from './views/FoundNetworks'
 import VueCookie from 'vue-cookie'
@@ -13,8 +11,6 @@ Vue.config.productionTip = false
 export const EventBus = new Vue();
 
 const routes = [
-  { path: "/login", component: login },
-  { path: "/register", component: register },
   { path: "/main", component: main },
   { path: "/search", component: foundNetworks},
   

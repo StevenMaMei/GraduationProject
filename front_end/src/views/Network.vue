@@ -1,34 +1,340 @@
 <template>
   <div class="force-base-ii">
-    <div v-if="networkStarted">
-      <h3 class="text-center">
-        Current Layer: {{ currentLayer }} -- Current Epoch: {{ epoch }} --
-        Current Propagation: {{ typeOfProp }}
-      </h3>
-      <v-container>
-        <v-row no-gutters>
-          <v-col class="text-center">
-            <v-btn @click="nextLayer()" depressed color="primary">
-              Next Layer
+      <div v-if="networkStarted">
+        <v-container>
+          <!-- FIRST LINE WITH NETWORK INFORMATION -->
+
+          <v-row no-gutters class="row-margins-lbls">
+            <v-col class="text-center">
+              Layer Number: {{ currentLayer }}
+            </v-col>
+            <v-col class="text-center"> Epoch Number: {{ epoch }} </v-col>
+            <v-col class="text-center">
+              {{ typeOfProp }}
+            </v-col>
+          </v-row>
+
+          <!-- SECOND LINE WITH NETWORK OPTIONS (BUTTONS) -->
+
+          <v-row no-gutters class="row-margins-btns">
+            <!-- this button advances the network one layer -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="nextLayer()" dark rounded color="#4511E6"
+                      ><v-icon dark>mdi-fast-forward</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Next Layer</span>
+              </v-tooltip>
+            </v-col>
+
+            <!-- this button advances the network one epoch -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="nextEpoch()" dark rounded color="#4511E6"
+                      ><v-icon dark>mdi-skip-next</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Next Epoch</span>
+              </v-tooltip>
+            </v-col>
+
+            <!-- this option opens a dialog for you to specify to which epoch you want to move your network forward -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn
+                      @click="epochsDialog = true"
+                      dark
+                      rounded
+                      color="#4511E6"
+                      ><v-icon dark>mdi-skip-next</v-icon
+                      ><v-icon dark>mdi-skip-next</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Go to specific Epoch</span>
+              </v-tooltip>
+              <v-dialog v-model="epochsDialog" persistent max-width="600px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline"
+                      >To what epoch do you wish to advance?</span
+                    >
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-text-field
+                            label="Target epoch"
+                            required
+                            v-model="epochNumber"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small>Current epoch: {{ epoch }}</small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="epochsDialog = false"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="goToEpoch()">
+                      Go
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+
+            <!-- this button stops the network and returns it to 0, which means epoch 1 layer 1 -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="stopNetwork()" dark rounded color="#4511E6"
+                      ><v-icon dark>mdi-stop</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Stop Network</span>
+              </v-tooltip>
+            </v-col>
+
+            <v-spacer></v-spacer>
+            <v-divider vertical></v-divider>
+            <v-spacer></v-spacer>
+
+            <!-- this option first verifies that you are logged in and then opens a dialog for you to give your network a name and then save it -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="verifyLogin()" dark rounded color="#4511E6"
+                      ><v-icon dark>mdi-content-save</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Save Network</span>
+              </v-tooltip>
+              <v-dialog
+                v-model="saveNetworkDialog"
+                persistent
+                max-width="600px"
+              >
+                <v-card>
+                  <v-card-title>
+                    <span class="headline"
+                      >Please enter the name of your Neural Network</span
+                    >
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-text-field
+                            label="*Name"
+                            required
+                            v-model="networkName"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="saveNetworkDialog = false"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="saveNetwork">
+                      Save
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+
+            <!-- this option opens up a table where you can see all the training data of your network with all of its specific parameters -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn @click="viewData()" dark rounded color="#4511E6"
+                      ><v-icon dark>mdi-database</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Show data and network details</span>
+              </v-tooltip>
+            </v-col>
+
+            <!-- this option resets completly the network, all of its parameters and data, and then takes you to the config menu again. It asks you for a confirmation first -->
+            <v-col class="text-center">
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <div v-on="on">
+                    <v-btn
+                      @click="resetConfirmationDialog = true"
+                      dark
+                      rounded
+                      color="#E62111"
+                      ><v-icon dark>mdi-close</v-icon>
+                    </v-btn>
+                  </div>
+                </template>
+                <span>Reset Network</span>
+              </v-tooltip>
+              <v-dialog
+                v-model="resetConfirmationDialog"
+                persistent
+                max-width="290px"
+              >
+                <v-card>
+                  <v-card-title class="headline">
+                    Are you sure you want to reset your network?
+                  </v-card-title>
+                  <v-card-text
+                    >This will completly reset your network and take you back to
+                    the Network configuration menu.</v-card-text
+                  >
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="resetConfirmationDialog = false"
+                    >
+                      No
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="resetNetwork()">
+                      Yes
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+
+      <!-- THIS IS THE LOGIN DIALOG -->
+      <v-dialog v-model="loginDialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Login</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="*Email"
+                    required
+                    v-model="email"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="*Password"
+                    required
+                    v-model="password"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn color="blue darken-1" text @click="openRegistration()">
+              Registration
             </v-btn>
-          </v-col>
-          <v-col class="text-center">
-            <v-btn @click="nextEpoch()" depressed color="primary">
-              Next Epoch
+            <v-spacer></v-spacer>
+            <v-btn color="#E62111" text @click="loginDialog = false">
+              Close
             </v-btn>
-          </v-col>
-          <v-col class="text-center">
-            <v-btn @click="saveNetwork" depressed color="primary">
-              Save Network
+            <v-btn color="blue darken-1" text @click="login()"> Enter </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- THIS IS THE REGISTRATION DIALOG -->
+      <v-dialog v-model="registrationDialog" persistent max-width="600px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Registration</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="*Email"
+                    required
+                    v-model="email"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="*Password"
+                    required
+                    v-model="password"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    label="*Name"
+                    required
+                    v-model="name"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+            <small>*indicates required field</small>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn color="blue darken-1" text @click="openLogin()">
+              Login
             </v-btn>
-          </v-col>
-          <v-col>
-            <v-text-field v-model="networkName" label="NN name"></v-text-field>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-    <svg id="viz" class="container-border"></svg>
+            <v-spacer></v-spacer>
+            <v-btn color="#E62111" text @click="registrationDialog = false">
+              Close
+            </v-btn>
+            <v-btn color="blue darken-1" text @click="reigster()">
+              Enter
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- THIS IS THE NETWORK VISUALIZATION -->
+      <svg id="viz" class="container-border"></svg>
+    
   </div>
 </template>
 
@@ -42,9 +348,27 @@ export default {
   components: {},
   data() {
     return {
+      //dialog toggles
+
+      loginDialog: false,
+      registrationDialog: false,
+      resetConfirmationDialog: false,
+      saveNetworkDialog: false,
+      epochsDialog: false,
+
+      //----------------
+
+      //fields used in registration and login
+
+      email: "",
+      password: "",
+      name: "",
+
+      //-------------
+
+      epochNumber: undefined,
       networkName: undefined,
-      current_error: undefined,
-      typeOfProp: "Forward",
+      typeOfProp: "Forward Propagation",
       networkStarted: false,
       net: Network,
       theGraph: { nodes: [], links: [] },
@@ -58,15 +382,113 @@ export default {
     };
   },
   methods: {
+    openRegistration() {
+      this.loginDialog = false;
+      this.registrationDialog = true;
+    },
+    openLogin() {
+      this.loginDialog = true;
+      this.registrationDialog = false;
+    },
+    register() {
+      axios
+        .post("http://localhost:3000/register", {
+          ok: true,
+          user: {
+            name: this.name,
+            email: this.email,
+            password: this.password,
+          },
+        })
+        .then((res) => {
+          res;
+          alert("User created");
+        })
+        .catch((err) => {
+          console.log(err.response);
+          alert(err.response.data.message);
+        });
+    },
+    login() {
+      axios
+        .post("http://localhost:3000/login", {
+          userCredentials: {
+            email: this.email,
+            password: this.password,
+          },
+        })
+        .then((res) => {
+          this.$cookie.set("userEmail", res.data.user.email);
+          this.$cookie.set("token", res.data.token);
+        })
+        .catch((err) => {
+          alert(err.response.data.err.message);
+        });
+    },
+    stopNetwork() {
+      let x_train = this.net.x_train;
+      let y_train = this.net.y_train;
+      let outputS = this.net.output_size;
+      let dataS = this.net.dataSize;
+      let layersN = this.net.layersN;
+      let actF = this.net.actFunc;
+      let lossF = this.net.lossFunc;
+      let neuronPL = this.net.neuronPerLayer;
+
+      this.net = new Network();
+
+      this.currentLayer = 1;
+      this.epoch = 1;
+      this.typeOfProp = "Forward Propagation";
+
+      this.net.buildCustomNeuralNetwork(
+        x_train,
+        y_train,
+        outputS,
+        dataS,
+        layersN,
+        actF,
+        lossF,
+        neuronPL
+      );
+      this.svg.selectAll("*").remove();
+      this.updateNodesAndLinks();
+    },
+    resetNetwork() {
+      this.networkName = undefined;
+      this.epochNumber = undefined;
+      this.typeOfProp = "Forward Propagation";
+      this.net = undefined;
+      this.networkStarted = false;
+      this.currentLayer = 1;
+      (this.epoch = 1),
+        (this.theGraph = []),
+        (this.links = []),
+        (this.height = this.currentScreenHeight * 0.09);
+      this.svg = d3
+        .select("#viz")
+        .attr("width", this.width)
+        .attr("height", this.height);
+      this.svg.selectAll("*").remove();
+      EventBus.$emit("resetNetwork", "Network will be reseted");
+      this.resetConfirmationDialog = false;
+    },
+    verifyLogin() {
+      if (!this.$cookie.get("userEmail")) {
+        alert("You need to be logged in");
+      } else {
+        this.dialog = true;
+      }
+    },
     saveNetwork() {
       if (!this.networkName) {
         alert("Insert the networkName");
         return;
       }
-      if (!this.$cookie.get("userEmail")) {
+      /* if (!this.$cookie.get("userEmail")) {
         alert("You are not logged in");
         return;
-      }
+      } */
       axios
         .post(
           "http://localhost:3000/neuralNetwork/save",
@@ -97,16 +519,58 @@ export default {
           alert(err.response.data.err.message);
         });
     },
+    goToEpoch() {
+      let n = parseInt(this.epochNumber, 10);
+      if (!Number.isInteger(n)) {
+        alert("Must be an integer number");
+      } else if (n <= this.epoch) {
+        alert(
+          "Invalid number. The target epoch must be greater than the current epoch"
+        );
+      } else {
+        let targetEpoch = n - 1;
+        this.epochsDialog = false;
+        if (this.net.isLayerStep) {
+          while (this.net.isLayerStep) {
+            this.net.layerStep();
+          }
+
+          this.net.fitTo(targetEpoch);
+          this.epoch = this.net.currEpoch + 1;
+          this.currentLayer = 1;
+          this.typeOfProp = "Forward Propagation";
+          this.svg.selectAll("*").remove();
+          this.updateNodesAndLinks();
+        } else {
+          this.net.fitTo(targetEpoch);
+          this.currentLayer = 1;
+          this.epoch = this.net.currEpoch + 1;
+          this.typeOfProp = "Forward Propagation";
+          this.svg.selectAll("*").remove();
+          this.updateNodesAndLinks();
+        }
+        console.log(this.net);
+      }
+    },
     nextEpoch() {
       if (this.net.isLayerStep) {
-        alert("Please finish the current epoch by using the Next Layer option");
+        while (this.net.isLayerStep) {
+          this.net.layerStep();
+        }
+        this.epoch = this.net.currEpoch + 1;
+        this.currentLayer = 1;
+        this.typeOfProp = "Forward Propagation";
+        this.svg.selectAll("*").remove();
+        this.updateNodesAndLinks();
       } else {
         this.net.goToNextEpoch();
+        this.currentLayer = 1;
         this.epoch = this.net.currEpoch + 1;
-        this.current_error = this.net.current_error;
+        this.typeOfProp = "Forward Propagation";
         this.svg.selectAll("*").remove();
         this.updateNodesAndLinks();
       }
+      console.log(this.net);
     },
     nextLayer() {
       this.net.layerStep();
@@ -115,24 +579,23 @@ export default {
 
       this.epoch = this.net.currEpoch + 1;
       if (this.net.direction == 0) {
-        if (this.typeOfProp == "Backward") {
+        if (this.typeOfProp == "Backward Propagation") {
           this.net.layerStep();
-          this.typeOfProp = "Forward";
+          this.typeOfProp = "Forward Propagation";
           this.currentLayer++;
         } else {
-          this.typeOfProp = "Forward";
+          this.typeOfProp = "Forward Propagation";
           this.currentLayer++;
         }
       } else {
-        if (this.typeOfProp == "Forward") {
-          this.typeOfProp = "Backward";
+        if (this.typeOfProp == "Forward Propagation") {
+          this.typeOfProp = "Backward Propagation";
           this.net.layerStep();
         } else {
-          this.typeOfProp = "Backward";
+          this.typeOfProp = "Backward Propagation";
           this.currentLayer--;
         }
       }
-      this.current_error = this.net.current_error;
       this.svg.selectAll("*").remove();
       this.updateNodesAndLinks();
     },
@@ -174,8 +637,8 @@ export default {
               }
             }
             let pLS = 0;
-            if(layerNumber>0){
-              pLS = nArray[layerNumber-2];
+            if (layerNumber > 0) {
+              pLS = nArray[layerNumber - 2];
             }
             let n = j + 1;
             let node = {
@@ -185,7 +648,7 @@ export default {
               label: neuronLabel,
               last: "no",
               pastLayerSize: pLS,
-              layerSize: numberOfNeurons
+              layerSize: numberOfNeurons,
             };
             this.theGraph.nodes.push(node);
 
@@ -225,7 +688,7 @@ export default {
           }
         }
         let n = i + 1;
-        let pLS = nArray[nArray.length-2]
+        let pLS = nArray[nArray.length - 2];
         let node = {
           id: "L" + layerNumber + "N" + n,
           group: layerNumber,
@@ -233,7 +696,7 @@ export default {
           label: neuronLabel,
           last: "yes",
           pastLayerSize: pLS,
-          layerSize: lastLayerSize
+          layerSize: lastLayerSize,
         };
         this.theGraph.nodes.push(node);
       }
@@ -242,7 +705,6 @@ export default {
     },
 
     generateGraph() {
-      console.log(this.theGraph)
       this.height = this.currentScreenHeight * 0.55;
       let graph = this.theGraph;
 
@@ -269,20 +731,19 @@ export default {
           "x",
           d3
             .forceX(function (d) {
-              if(d.group == 1){
-                return d.group*50
-              }else{
-                if (d.pastLayerSize == 1) {
-                return d.group * 200;
-              } else if (d.pastLayerSize == 2) {
-                return d.group * 250;
-              } else if (d.pastLayerSize == 3) {
-                return d.group * 300;
+              if (d.group == 1) {
+                return d.group * 50;
               } else {
-                return d.group * 400;
+                if (d.pastLayerSize == 1) {
+                  return d.group * 200;
+                } else if (d.pastLayerSize == 2) {
+                  return d.group * 250;
+                } else if (d.pastLayerSize == 3) {
+                  return d.group * 300;
+                } else {
+                  return d.group * 400;
+                }
               }
-              }
-              
             })
             .strength(1)
         )
@@ -290,22 +751,21 @@ export default {
           "y",
           d3
             .forceY(function (d) {
-              if(d.layerSize == 1){
-                if(d.pastLayerSize >=2){
-                  return d.neuron * 600
-                }else{
+              if (d.layerSize == 1) {
+                if (d.pastLayerSize >= 2) {
+                  return d.neuron * 600;
+                } else {
                   return d.neuron * 500;
                 }
-              }else if(d.layerSize == 2){
-                if(d.pastLayerSize >=3){
-                  return d.neuron * 400
-                }else{
+              } else if (d.layerSize == 2) {
+                if (d.pastLayerSize >= 3) {
+                  return d.neuron * 400;
+                } else {
                   return d.neuron * 500;
                 }
-              }else{
+              } else {
                 return d.neuron * 350;
               }
-              
             })
             .strength(1)
         )
@@ -455,21 +915,9 @@ export default {
       this.networkStarted = true;
       this.updateNodesAndLinks();
     });
-
-    EventBus.$on("resetNetwork", (msg) => {
-      this.net = undefined;
-      this.networkStarted = false;
-      this.currentLayer = 1;
-      (this.epoch = 1),
-        (this.theGraph = []),
-        (this.links = []),
-        console.log(msg);
-      this.height = this.currentScreenHeight * 0.09;
-      this.svg = d3
-        .select("#viz")
-        .attr("width", this.width)
-        .attr("height", this.height);
-      this.svg.selectAll("*").remove();
+    EventBus.$on("loginUser", (msg) => {
+      console.log(msg);
+      this.loginDialog = true;
     });
   },
   mounted() {},
@@ -489,5 +937,15 @@ svg {
 }
 .m-right {
   margin-right: 40%;
+}
+.row-margins-btns {
+  margin-top: 1%;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+.row-margins-lbls {
+  margin-left: 25%;
+  margin-right: 25%;
 }
 </style>

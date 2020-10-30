@@ -3,50 +3,23 @@
     <main>
       <div class="app-container">
         <header class="app-header">
-          <v-app-bar color="#9CCC65"  height="40">
-            <!-- <v-img class="mx-2" src="./images/castor.png" max-height="40" max-width="41" contain></v-img> -->
+          <v-app-bar fixed dark color="#4511E6"  height="40">
             <v-toolbar-title >Neural Network</v-toolbar-title>
 
             <v-spacer></v-spacer>
 
-            <!-- <v-btn v-if="this.sesionIniciada == false" to="/iniciarSesion">Iniciar Sesion</v-btn>
-            <v-btn v-if="this.sesionIniciada == false" to="/registro">Registro</v-btn> -->
-            <v-text-field v-model="searchEmail" label="Email of the user you want to search"></v-text-field>
-            <v-btn  @click="searchNetworks" text>search</v-btn>
-            <v-btn  to="/login" text>Login</v-btn>
-            <v-btn to="/main" text>Main</v-btn>
+            <v-text-field dark v-model="searchEmail" label="Email of the user you want to search"></v-text-field>
+            <v-btn dark  @click="searchNetworks" text>search</v-btn>
+            <v-btn dark  @click="loginUser()" text>Login</v-btn>
+            <v-btn dark to="/main" text>Main</v-btn>
 
-            <!-- <v-btn icon v-if="this.sesionIniciada == true" @click="cerrarSesion">
-              <v-icon>mdi-export</v-icon>
-            </v-btn> -->
           </v-app-bar>
         </header>
         <v-content>
           <router-view></router-view>
         </v-content>
 
-        <!-- <v-footer v-if="this.sesionIniciada == true" padless>
-          <v-row justify="center" no-gutters>
-            <v-btn
-              color="gray"
-              text
-              rounded
-              class="my-2"
-              to="/proyectos"
-            >PROYECTOS</v-btn>
-            <v-btn
-              color="gray"
-              text
-              rounded
-              class="my-2"
-              to="/acercaDe"
-            >ACERCA DE NOSOTROS</v-btn>
-            <v-col class=" py-4 text-center gray--text" cols="12">
-              {{ new Date().getFullYear() }} —
-              <strong>FUNDI</strong>
-            </v-col>
-          </v-row>
-        </v-footer> -->
+        
       </div>
     </main>
   </v-app>
@@ -63,6 +36,9 @@ export default {
   },
 
   methods: {
+    loginUser(){
+      EventBus.$emit("loginUser", "Open login dialog");
+    },
     searchNetworks(){
       axios.get(`http://localhost:3000/neuralNetwork/${this.searchEmail}`)
         .then(async res=>{

@@ -1,92 +1,102 @@
 <template>
-  <div class="text-center margin">
-    <!-- Loss function selection dropdown -->
+  <div>
+    <!-- <transition name="fade"> -->
+    <div v-if="show" class="text-center margin">
+      <h2 class="margin-b" >Network configuration menu</h2>
+      <p class="margin-b" v-if="ready">Hidden Layers: {{selectedNumberOfLayers}} --- Loss Function: {{selectedLossFunction}}</p>
 
-    <v-btn @click="changeCustomize()" class="margin-r" color="secondary" dark>{{
-      customizationMsg
-    }}</v-btn>
+      <!-- Loss function selection dropdown -->
 
-    <v-menu>
-      <template v-slot:activator="{ on: menu, attrs }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn
-              color="primary"
-              dark
-              v-bind="attrs"
-              v-on="{ ...tooltip, ...menu }"
-              >{{ selectedLossFunction }}</v-btn
-            >
-          </template>
-          <span>Loss Function</span>
-        </v-tooltip>
-      </template>
-      <v-list>
-        <v-list-item
-          v-for="(item, index) in allLossFunctions"
-          :key="index"
-          @click="changeLossFunction(item.title)"
-        >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      <v-btn
+        v-if="!ready"
+        @click="changeCustomize()"
+        class="margin-r"
+        color="secondary"
+        dark
+        >{{ customizationMsg }}</v-btn
+      >
 
-    <!-- Number layers selection dropdown -->
-    <v-menu>
-      <template v-slot:activator="{ on: menu, attrs }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on: tooltip }">
-            <v-btn
-              class="marginLeft"
-              color="primary"
-              dark
-              v-bind="attrs"
-              v-on="{ ...tooltip, ...menu }"
-              >{{ selectedNumberOfLayers }}</v-btn
-            >
-          </template>
-          <span>Number of hidden layers</span>
-        </v-tooltip>
-      </template>
-      <v-list>
-        <v-list-item
-          v-for="(item, index) in allNumberOfLayers"
-          :key="index"
-          @click="changeNumberOfLayers(item.title)"
-        >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+      <v-menu v-if="!ready">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                color="#4511E6"
+                dark
+                v-bind="attrs"
+                v-on="{ ...tooltip, ...menu }"
+                >{{ selectedLossFunction }}</v-btn
+              >
+            </template>
+            <span>Loss Function</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in allLossFunctions"
+            :key="index"
+            @click="changeLossFunction(item.title)"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <!-- Number layers selection dropdown -->
+      <v-menu v-if="!ready">
+        <template v-slot:activator="{ on: menu, attrs }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on: tooltip }">
+              <v-btn
+                class="marginLeft"
+                color="#4511E6"
+                dark
+                v-bind="attrs"
+                v-on="{ ...tooltip, ...menu }"
+                >{{ selectedNumberOfLayers }}</v-btn
+              >
+            </template>
+            <span>Number of hidden layers</span>
+          </v-tooltip>
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(item, index) in allNumberOfLayers"
+            :key="index"
+            @click="changeNumberOfLayers(item.title)"
+          >
+            <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
 
     <v-btn
       v-if="createAvailable"
       class="marginLeft"
       @click="createNetwork()"
       rounded
-      color="success"
+      color="#0DBD47"
       dark
       >Create Network</v-btn
     >
     <v-btn
       v-if="ready"
       class="marginLeft"
+      @click="backToBeginning()"
+      rounded
+      color="#E62111"
+      dark
+      >Back</v-btn
+    >
+    <v-btn
+      v-if="ready"
+      class="marginLeft"
       @click="generateNetwork()"
       rounded
-      color="success"
+      color="#0DBD47"
       dark
-      >Go</v-btn
-    >
-
-    <v-btn
-      v-if="resetAvailable"
-      class="marginLeft"
-      @click="resetNetwork()"
-      rounded
-      color="error"
-      dark
-      >Reset Network</v-btn
+      >Finish</v-btn
     >
 
     <div v-if="customizingData">
@@ -126,7 +136,7 @@
           @click="finishCustom()"
           class="marginLeft"
           rounded
-          color="success"
+          color="#0DBD47"
           dark
           >Finish Customization</v-btn
         >
@@ -135,16 +145,17 @@
           @click="backWithinCustoms()"
           class="marginLeft"
           rounded
-          color="error"
+          color="#E62111"
           dark
           >Back</v-btn
         >
+
         <v-btn
           v-if="!customizingDataPoints"
           @click="cancelDataCustomization()"
           class="marginLeft"
           rounded
-          color="error"
+          color="#E62111"
           dark
           >Cancel Customization</v-btn
         >
@@ -165,12 +176,13 @@
         </v-row>
       </div>
     </div>
-    <v-row>
-      <v-col v-for="layerP in layers" :key="layerP.number" cols="12" md="4">
+    <v-row class="margin-t">
+      <v-col v-for="layerP in layers" :key="layerP.number">
         <app-layers @updateMsg="reciever" :layer="layerP"></app-layers>
       </v-col>
     </v-row>
   </div>
+  <!-- </transition> -->
 </template>
 
 
@@ -188,6 +200,7 @@ export default {
 
   data() {
     return {
+      show: true,
       customizationMsg: "Customize Data",
       customData: false,
       alignment: "center",
@@ -198,7 +211,6 @@ export default {
       outputSize: undefined,
       customizingData: false,
       customizingDataPoints: false,
-      resetAvailable: false,
       createAvailable: true,
       network: {
         actFunctions: [],
@@ -223,6 +235,26 @@ export default {
   },
 
   created() {
+    EventBus.$on("resetNetwork", (msg) => {
+      console.log(msg);
+      this.show = true;
+
+      this.net = new Network();
+
+      (this.selectedLossFunction = "Select the loss function"),
+        (this.selectedNumberOfLayers = "Select the number of hidden layers"),
+        (this.createAvailable = true);
+      this.customData = false;
+      this.customizingDataPoints = false;
+      this.customizingData = false;
+      this.customDataPoints = [];
+      this.dataPointsX = [];
+      this.dataPointsY = [];
+      this.dataPointsNumber = undefined;
+      this.inputSize = undefined;
+      this.outputSize = undefined;
+    });
+
     this.net = new Network();
 
     this.setLimimtArrays();
@@ -317,23 +349,6 @@ export default {
     changeCustomize() {
       this.customizingData = !this.customizingData;
     },
-    resetNetwork() {
-      this.net = new Network();
-      EventBus.$emit("resetNetwork", "network will be reseted");
-      (this.selectedLossFunction = "Select the loss function"),
-        (this.selectedNumberOfLayers = "Select the number of hidden layers"),
-        (this.resetAvailable = false);
-      this.createAvailable = true;
-      this.customData = false;
-      this.customizingDataPoints = false;
-      this.customizingData = false;
-      this.customDataPoints = [];
-      this.dataPointsX = [];
-      this.dataPointsY = [];
-      this.dataPointsNumber = undefined;
-      this.inputSize = undefined;
-      this.outputSize = undefined;
-    },
     receiverOfDataPoints(xDP, yDP, indexDP) {
       this.dataPointsX[indexDP] = xDP;
       this.dataPointsY[indexDP] = yDP;
@@ -357,6 +372,7 @@ export default {
       }
     },
     generateNetwork() {
+      this.customizationMsg = "Customize Data";
       let layersNueorns = new Array();
       let layersFunctions = new Array();
 
@@ -398,7 +414,7 @@ export default {
       this.emitGlobalClickEvent();
       alert("Network has been parametrized");
       this.ready = false;
-      this.resetAvailable = true;
+      this.show = false;
       this.layers = [];
     },
     emitGlobalClickEvent() {
@@ -421,13 +437,22 @@ export default {
     changeNumberOfLayers(newNL) {
       this.selectedNumberOfLayers = newNL;
     },
+    backToBeginning() {
+      this.net = new Network();
+      this.selectedLossFunction = "Select the loss function";
+      this.selectedNumberOfLayers = "Select the number of layers";
+      this.layers = [];
+      this.ready = false;
+      this.createAvailable = true;
+    },
     createNetwork() {
       if (!this.customizingData) {
-        this.ready = true;
         if (
           this.selectedLossFunction != "Select the loss function" &&
           this.selectedNumberOfLayers != "Select the number of layers"
         ) {
+          this.ready = true;
+          this.createAvailable = false;
           this.net = new Network();
           this.network.lossFunction = this.selectedLossFunction;
           this.network.numberOfLayers = parseInt(this.selectedNumberOfLayers);
@@ -444,9 +469,8 @@ export default {
         } else {
           alert("Select all the parameters");
         }
-        this.createAvailable = false;
-      }else{
-        alert("Finish or cancel data customization")
+      } else {
+        alert("Finish or cancel data customization");
       }
     },
   },
@@ -454,6 +478,14 @@ export default {
 </script>
 
 <style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s ease-out;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 h3 {
   margin: 40px 0 0;
 }
@@ -480,7 +512,13 @@ a {
 .margin-r {
   margin-right: 2%;
 }
+.margin-b {
+  margin-bottom: 2%;
+}
 .center {
   text-align: center;
+}
+.margin-t {
+  margin-top: 2%;
 }
 </style>
