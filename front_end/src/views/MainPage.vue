@@ -2,6 +2,7 @@
   <v-app>
     <main>
       <Network/>
+      
       <ParamsNetwork />
     </main>
   </v-app>

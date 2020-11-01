@@ -1,7 +1,8 @@
 <template>
   <div class="force-base-ii">
-      <div v-if="networkStarted">
-        <v-container>
+    <div v-if="networkStarted">
+      <v-container>
+        <div class="margin-top" >
           <!-- FIRST LINE WITH NETWORK INFORMATION -->
 
           <v-row no-gutters class="row-margins-lbls">
@@ -22,7 +23,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="nextLayer()" dark rounded color="#4511E6"
+                    <v-btn @click="nextLayer()" dark rounded color="#EFB810"
                       ><v-icon dark>mdi-fast-forward</v-icon>
                     </v-btn>
                   </div>
@@ -36,7 +37,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="nextEpoch()" dark rounded color="#4511E6"
+                    <v-btn @click="nextEpoch()" dark rounded color="#EFB810"
                       ><v-icon dark>mdi-skip-next</v-icon>
                     </v-btn>
                   </div>
@@ -54,7 +55,7 @@
                       @click="epochsDialog = true"
                       dark
                       rounded
-                      color="#4511E6"
+                      color="#EFB810"
                       ><v-icon dark>mdi-skip-next</v-icon
                       ><v-icon dark>mdi-skip-next</v-icon>
                     </v-btn>
@@ -105,7 +106,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="stopNetwork()" dark rounded color="#4511E6"
+                    <v-btn @click="stopNetwork()" dark rounded color="#EFB810"
                       ><v-icon dark>mdi-stop</v-icon>
                     </v-btn>
                   </div>
@@ -123,7 +124,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="verifyLogin()" dark rounded color="#4511E6"
+                    <v-btn @click="verifyLogin()" dark rounded color="#1D0664"
                       ><v-icon dark>mdi-content-save</v-icon>
                     </v-btn>
                   </div>
@@ -177,7 +178,7 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="viewData()" dark rounded color="#4511E6"
+                    <v-btn @click="viewData()" dark rounded color="#1D0664"
                       ><v-icon dark>mdi-database</v-icon>
                     </v-btn>
                   </div>
@@ -232,109 +233,107 @@
               </v-dialog>
             </v-col>
           </v-row>
-        </v-container>
-      </div>
+        </div>
+      </v-container>
+    </div>
 
-      <!-- THIS IS THE LOGIN DIALOG -->
-      <v-dialog v-model="loginDialog" persistent max-width="600px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">Login</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    label="*Email"
-                    required
-                    v-model="email"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    label="*Password"
-                    required
-                    v-model="password"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small>*indicates required field</small>
-          </v-card-text>
+    <!-- THIS IS THE LOGIN DIALOG -->
+    <v-dialog v-model="loginDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Login</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="*Email"
+                  required
+                  v-model="email"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="*Password"
+                  required
+                  v-model="password"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
 
-          <v-card-actions>
-            <v-btn color="blue darken-1" text @click="openRegistration()">
-              Registration
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="#E62111" text @click="loginDialog = false">
-              Close
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="login()"> Enter </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-card-actions>
+          <v-btn color="blue darken-1" text @click="openRegistration()">
+            Registration
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="#EFB810" text @click="loginDialog = false">
+            Close
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="login()"> Enter </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      <!-- THIS IS THE REGISTRATION DIALOG -->
-      <v-dialog v-model="registrationDialog" persistent max-width="600px">
-        <v-card>
-          <v-card-title>
-            <span class="headline">Registration</span>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    label="*Email"
-                    required
-                    v-model="email"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    label="*Password"
-                    required
-                    v-model="password"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12">
-                  <v-text-field
-                    label="*Name"
-                    required
-                    v-model="name"
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small>*indicates required field</small>
-          </v-card-text>
+    <!-- THIS IS THE REGISTRATION DIALOG -->
+    <v-dialog v-model="registrationDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Registration</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="*Email"
+                  required
+                  v-model="email"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="*Password"
+                  required
+                  v-model="password"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  label="*Name"
+                  required
+                  v-model="name"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
 
-          <v-card-actions>
-            <v-btn color="blue darken-1" text @click="openLogin()">
-              Login
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn color="#E62111" text @click="registrationDialog = false">
-              Close
-            </v-btn>
-            <v-btn color="blue darken-1" text @click="reigster()">
-              Enter
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-card-actions>
+          <v-btn color="blue darken-1" text @click="openLogin()"> Login </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="#E62111" text @click="registrationDialog = false">
+            Close
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="reigster()"> Enter </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-      <!-- THIS IS THE NETWORK VISUALIZATION -->
-      <svg id="viz" class="container-border"></svg>
-    
+    <hr>
+
+    <!-- THIS IS THE NETWORK VISUALIZATION -->
+    <svg id="viz" class="container-border"></svg>
   </div>
 </template>
 
@@ -947,5 +946,9 @@ svg {
 .row-margins-lbls {
   margin-left: 25%;
   margin-right: 25%;
+}
+
+.margin-top{
+  margin-top: 2%;
 }
 </style>

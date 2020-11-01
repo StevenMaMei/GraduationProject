@@ -3,7 +3,7 @@
     <main>
       <div class="app-container">
         <header class="app-header">
-          <v-app-bar fixed dark color="#4511E6"  height="40">
+          <v-app-bar fixed dark color="#1D0664"  height="60">
             <v-toolbar-title >Neural Network</v-toolbar-title>
 
             <v-spacer></v-spacer>
