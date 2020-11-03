@@ -1,188 +1,287 @@
 <template>
   <div>
-    <!-- <transition name="fade"> -->
-    <div v-if="show" class="text-center margin">
-      <h2 class="margin-b" >Network configuration menu</h2>
-      <p class="margin-b" v-if="ready">Hidden Layers: {{selectedNumberOfLayers}} --- Loss Function: {{selectedLossFunction}}</p>
+    <div v-if="configMenu">
+      <div v-if="show" class="text-center margin">
+        <h2 class="margin-b">Network configuration menu</h2>
+        <p class="margin-b" v-if="ready">
+          Hidden Layers: {{ selectedNumberOfLayers }} --- Loss Function:
+          {{ selectedLossFunction }}
+        </p>
 
-      <!-- Loss function selection dropdown -->
+        <v-container>
+          <v-row v-if="!ready" class="rowMargins">
+            <v-col>
+              <p>Loss Function</p>
+            </v-col>
+            <v-col>
+              <!-- Loss function dropdown -->
+              <v-menu>
+                <template v-slot:activator="{ on: menu, attrs }">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on: tooltip }">
+                      <v-btn
+                        color="#1D0664"
+                        dark
+                        v-bind="attrs"
+                        v-on="{ ...tooltip, ...menu }"
+                        >{{ selectedLossFunction }}</v-btn
+                      >
+                    </template>
+                    <span>Loss Function</span>
+                  </v-tooltip>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in allLossFunctions"
+                    :key="index"
+                    @click="changeLossFunction(item.title)"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+          </v-row>
 
-      <v-btn
-        v-if="!ready"
-        @click="changeCustomize()"
-        class="margin-r"
-        color="secondary"
-        dark
-        >{{ customizationMsg }}</v-btn
-      >
+          <v-row v-if="!ready" class="rowMargins">
+            <v-col>
+              <p>Number of hidden layers</p>
+            </v-col>
+            <v-col>
+              <!-- Number of layers dropdown -->
+              <v-menu>
+                <template v-slot:activator="{ on: menu, attrs }">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on: tooltip }">
+                      <v-btn
+                        class="marginLeft"
+                        color="#1D0664"
+                        dark
+                        v-bind="attrs"
+                        v-on="{ ...tooltip, ...menu }"
+                        >{{ selectedNumberOfLayers }}</v-btn
+                      >
+                    </template>
+                    <span>Number of hidden layers</span>
+                  </v-tooltip>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in allNumberOfLayers"
+                    :key="index"
+                    @click="changeNumberOfLayers(item.title)"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-col>
+          </v-row>
 
-      <v-menu v-if="!ready">
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
-              <v-btn
-                color="#4511E6"
-                dark
-                v-bind="attrs"
-                v-on="{ ...tooltip, ...menu }"
-                >{{ selectedLossFunction }}</v-btn
+          <v-row class="rowMargins margin-t">
+            <v-col v-if="!ready">
+              <v-btn @click="changeCustomize()" color="secondary" dark>{{
+                customizationMsg
+              }}</v-btn>
+            </v-col>
+            <v-col v-if="createAvailable">
+              <v-btn @click="createNetwork()" rounded color="#0DBD47" dark
+                >Create Network</v-btn
               >
-            </template>
-            <span>Loss Function</span>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="(item, index) in allLossFunctions"
-            :key="index"
-            @click="changeLossFunction(item.title)"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-
-      <!-- Number layers selection dropdown -->
-      <v-menu v-if="!ready">
-        <template v-slot:activator="{ on: menu, attrs }">
-          <v-tooltip bottom>
-            <template v-slot:activator="{ on: tooltip }">
+            </v-col>
+            <v-col v-if="createAvailable">
               <v-btn
-                class="marginLeft"
-                color="#4511E6"
+                @click="userEmailDialog = true"
+                rounded
+                color="#1D0664"
                 dark
-                v-bind="attrs"
-                v-on="{ ...tooltip, ...menu }"
-                >{{ selectedNumberOfLayers }}</v-btn
+                >Upload Network<v-icon dark right>
+                  mdi-cloud-upload</v-icon
+                ></v-btn
               >
-            </template>
-            <span>Number of hidden layers</span>
-          </v-tooltip>
-        </template>
-        <v-list>
-          <v-list-item
-            v-for="(item, index) in allNumberOfLayers"
-            :key="index"
-            @click="changeNumberOfLayers(item.title)"
-          >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </div>
+              <v-dialog v-model="userEmailDialog" persistent max-width="600px">
+                <v-card>
+                  <v-card-title>
+                    <span class="headline">User's email</span>
+                  </v-card-title>
+                  <v-card-text>
+                    <v-container>
+                      <v-row>
+                        <v-col cols="12">
+                          <v-text-field
+                            label="*Email"
+                            required
+                            v-model="userEmail"
+                          ></v-text-field>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                    <small>*indicates required field</small>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="userEmailDialog = false"
+                    >
+                      Close
+                    </v-btn>
+                    <v-btn color="blue darken-1" text @click="searchNetworks()">
+                      Go
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-col>
+            <v-col v-if="ready">
+              <v-btn @click="backToBeginning()" rounded color="#E62111" dark
+                >Back</v-btn
+              >
+            </v-col>
+            <v-col v-if="ready">
+              <v-btn @click="generateNetwork()" rounded color="#0DBD47" dark
+                >Finish</v-btn
+              >
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
 
-    <v-btn
-      v-if="createAvailable"
-      class="marginLeft"
-      @click="createNetwork()"
-      rounded
-      color="#0DBD47"
-      dark
-      >Create Network</v-btn
-    >
-    <v-btn
-      v-if="ready"
-      class="marginLeft"
-      @click="backToBeginning()"
-      rounded
-      color="#E62111"
-      dark
-      >Back</v-btn
-    >
-    <v-btn
-      v-if="ready"
-      class="marginLeft"
-      @click="generateNetwork()"
-      rounded
-      color="#0DBD47"
-      dark
-      >Finish</v-btn
-    >
-
-    <div v-if="customizingData">
-      <div v-if="!customizingDataPoints">
+      <div v-if="customizingData">
+        <div v-if="!customizingDataPoints">
+          <v-row class="margin">
+            <v-col>
+              <v-text-field
+                v-model="dataPointsNumber"
+                label="Number of datapoints (1-16)"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                v-model="inputSize"
+                label="Input size (1-4)"
+              ></v-text-field>
+            </v-col>
+            <v-col>
+              <v-text-field
+                v-model="outputSize"
+                label="Output size (1-2)"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </div>
         <v-row class="margin">
-          <v-col>
-            <v-text-field
-              v-model="dataPointsNumber"
-              label="Number of datapoints (1-16)"
-            ></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field
-              v-model="inputSize"
-              label="Input size (1-4)"
-            ></v-text-field>
-          </v-col>
-          <v-col>
-            <v-text-field
-              v-model="outputSize"
-              label="Output size (1-2)"
-            ></v-text-field>
-          </v-col>
-        </v-row>
-      </div>
-      <v-row class="margin">
-        <v-btn
-          v-if="!customizingDataPoints"
-          @click="continueCustomizing()"
-          rounded
-          color="#4511E6"
-          dark
-          >Continue</v-btn
-        >
-        <v-btn
-          v-if="customizingDataPoints"
-          @click="finishCustom()"
-          class="marginLeft"
-          rounded
-          color="#0DBD47"
-          dark
-          >Finish Customization</v-btn
-        >
-        <v-btn
-          v-if="customizingDataPoints"
-          @click="backWithinCustoms()"
-          class="marginLeft"
-          rounded
-          color="#E62111"
-          dark
-          >Back</v-btn
-        >
+          <v-btn
+            v-if="!customizingDataPoints"
+            @click="continueCustomizing()"
+            rounded
+            color="#4511E6"
+            dark
+            >Continue</v-btn
+          >
+          <v-btn
+            v-if="customizingDataPoints"
+            @click="finishCustom()"
+            class="marginLeft"
+            rounded
+            color="#0DBD47"
+            dark
+            >Finish Customization</v-btn
+          >
+          <v-btn
+            v-if="customizingDataPoints"
+            @click="backWithinCustoms()"
+            class="marginLeft"
+            rounded
+            color="#E62111"
+            dark
+            >Back</v-btn
+          >
 
-        <v-btn
-          v-if="!customizingDataPoints"
-          @click="cancelDataCustomization()"
-          class="marginLeft"
-          rounded
-          color="#E62111"
-          dark
-          >Cancel Customization</v-btn
-        >
-      </v-row>
-      <div v-if="customizingDataPoints">
-        <v-row
-          align="center"
-          align-content="center"
-          v-for="dataP in customDataPoints"
-          :key="dataP.index"
-        >
-          <v-col cols="12">
-            <app-data-points
-              @updateDP="receiverOfDataPoints"
-              :dataPointInfo="dataP"
-            ></app-data-points>
-          </v-col>
+          <v-btn
+            v-if="!customizingDataPoints"
+            @click="cancelDataCustomization()"
+            class="marginLeft"
+            rounded
+            color="#E62111"
+            dark
+            >Cancel Customization</v-btn
+          >
         </v-row>
+        <div v-if="customizingDataPoints">
+          <v-row
+            align="center"
+            align-content="center"
+            v-for="dataP in customDataPoints"
+            :key="dataP.index"
+          >
+            <v-col cols="12">
+              <app-data-points
+                @updateDP="receiverOfDataPoints"
+                :dataPointInfo="dataP"
+              ></app-data-points>
+            </v-col>
+          </v-row>
+        </div>
       </div>
+
+      <v-row class="margin-t">
+        <v-col v-for="layerP in layers" :key="layerP.number">
+          <app-layers @updateMsg="reciever" :layer="layerP"></app-layers>
+        </v-col>
+      </v-row>
     </div>
-    <v-row class="margin-t">
-      <v-col v-for="layerP in layers" :key="layerP.number">
-        <app-layers @updateMsg="reciever" :layer="layerP"></app-layers>
-      </v-col>
-    </v-row>
+
+    <!-- networks found -->
+
+    <div class="text-center" v-if="networksFoundMenu">
+      <h2 class="margin-b">Networks found</h2>
+      <v-btn
+        class="margin-b"
+        @click="closeNetworksFound()"
+        rounded
+        color="#E62111"
+        dark
+        >Clear</v-btn
+      >
+      <ul>
+        <li class="netInfo" v-for="net in networks" :key="net.networkName">
+          <p><strong> Network Name: </strong> {{ net.networkName }}</p>
+
+          <p>
+            <strong> Number of hidden layers:</strong> {{ net.numOfLayers }}
+          </p>
+
+          <p><strong> Data size:</strong> {{ net.dataSize }}</p>
+
+          <p><strong> Loss Function:</strong> {{ net.lossFunction }}</p>
+          <br />
+          <v-btn color="#1D0664" @click="onChoseNetwork(net)"
+            >Charge network</v-btn
+          >
+        </li>
+      </ul>
+    </div>
+
+    <v-dialog v-model="dataCustomDialog" persistent max-width="290">
+      <v-card>
+        <v-card-title class="headline">
+          Data has alreay been customized
+        </v-card-title>
+        <v-card-text>Do you wish to delete your custom data?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green darken-1" text @click="resetCustomData()">
+            Yes
+          </v-btn>
+          <v-btn color="green darken-1" text @click="dataCustomDialog = false">
+            No
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
-  <!-- </transition> -->
 </template>
 
 
@@ -191,6 +290,7 @@ import { Network } from "../../TheNeuralLibrary/src/neuralNetwork/Network.js";
 import LayerParams from "../components/LayerParameters.vue";
 import DataPointsParams from "../components/DataPointParameters.vue";
 import { EventBus } from "../main.js";
+var axios = require("axios");
 export default {
   name: "ParamsNetwork",
   components: {
@@ -200,6 +300,15 @@ export default {
 
   data() {
     return {
+      dataCustomDialog: false,
+
+      networks: undefined,
+      netToCharge: new Network(),
+      networksFoundMenu: false,
+      configMenu: true,
+
+      userEmailDialog: false,
+      userEmail: undefined,
       show: true,
       customizationMsg: "Customize Data",
       customData: false,
@@ -272,6 +381,59 @@ export default {
   },
 
   methods: {
+    resetCustomData() {
+      this.customizationMsg = "Customize Data";
+      this.customizingDataPoints = false;
+      this.customizingData = false;
+      this.customData = true;
+      this.dataPointsX = [];
+      this.dataPointsY = [];
+      this.customDataPoints = [];
+      this.dataPointsNumber = undefined;
+      this.inputSize = undefined;
+      this.outputSize = undefined;
+      this.dataCustomDialog = false;
+    },
+    closeNetworksFound() {
+      this.configMenu = true;
+      this.networksFoundMenu = false;
+      this.networks = undefined;
+    },
+    async onChoseNetwork(choseNet) {
+      await this.netToCharge.buildCustomNeuralNetwork(
+        choseNet.xTrain,
+        choseNet.yTrain,
+        choseNet.outputSize,
+        choseNet.dataSize,
+        choseNet.numOfLayers,
+        choseNet.activationFunctions,
+        choseNet.lossFunction,
+        choseNet.neuronsPerLayer
+      );
+      this.customizationMsg = "Customize Data";
+      this.configMenu = true;
+      this.networksFoundMenu = false;
+      this.networks = undefined;
+      this.ready = false;
+      this.show = false;
+      this.layers = [];
+
+      await alert("Network uploaded");
+      await EventBus.$emit("giveNetwork", this.netToCharge);
+    },
+    searchNetworks() {
+      axios
+        .get(`http://localhost:3000/neuralNetwork/${this.userEmail}`)
+        .then(async (res) => {
+          this.networks = res.data.networks;
+          this.networksFoundMenu = true;
+          this.configMenu = false;
+          this.userEmailDialog = false;
+        })
+        .catch((err) => {
+          alert(err.response.data.err.message);
+        });
+    },
     finishCustom() {
       let cond = false;
       this.dataPointsX.forEach((element) => {
@@ -283,7 +445,7 @@ export default {
         alert("Finish completing all the data");
       } else {
         alert("Data has been successfully customized!");
-        this.customizationMsg = "Network data has been customized";
+        this.customizationMsg = "Data Customized";
         this.customizingDataPoints = false;
         this.customizingData = false;
         this.customData = true;
@@ -347,7 +509,11 @@ export default {
       }
     },
     changeCustomize() {
-      this.customizingData = !this.customizingData;
+      if (this.customizationMsg == "Data Customized") {
+        this.dataCustomDialog = true;
+      } else {
+        this.customizingData = !this.customizingData;
+      }
     },
     receiverOfDataPoints(xDP, yDP, indexDP) {
       this.dataPointsX[indexDP] = xDP;
@@ -520,5 +686,25 @@ a {
 }
 .margin-t {
   margin-top: 2%;
+}
+.rowMargins {
+  margin-left: 30%;
+  margin-right: 30%;
+}
+.netInfo {
+  width: 30%;
+  font-size: 20px;
+  display: inline-block;
+  border-width: 0.5px;
+  border-color: black;
+  text-align: center;
+  background: #fbfbfb;
+  border-radius: 10px;
+  margin: 3%;
+}
+.netInfo button {
+  border-style: solid;
+  color: white;
+  margin: 5px;
 }
 </style>

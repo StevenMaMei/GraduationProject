@@ -1,9 +1,11 @@
 <template>
   <div class="margin">
-    <h3 class="marginB">Data Point number {{ dataPointInfo.index + 1 }}</h3>
+    <h3 class="marginB text-center">
+      Data Point number {{ dataPointInfo.index + 1 }}
+    </h3>
 
-    <p>X data:</p>
-    <v-row>
+    <p class="text-center">X data:</p>
+    <v-row class="text-center marginRows">
       <v-col v-for="point in xJsonFormat" :key="point.position">
         <v-text-field
           v-model="xDataPoint[point.position]"
@@ -12,8 +14,8 @@
         ></v-text-field>
       </v-col>
     </v-row>
-    <p>Y data:</p>
-    <v-row>
+    <p class="text-center">Y data:</p>
+    <v-row class="text-center marginRows">
       <v-col v-for="point in yJsonFormat" :key="point.position">
         <v-text-field
           v-model="yDataPoint[point.position]"
@@ -22,10 +24,17 @@
         ></v-text-field
       ></v-col>
     </v-row>
-    <v-btn @click="changeParams()" rounded color="#4511E6" dark
-      >Update Data <v-icon v-if="dataUpdated" dark right> mdi-checkbox-marked-circle</v-icon>
-      <v-icon v-if="!dataUpdated" dark right> mdi-cancel </v-icon></v-btn
-    >
+    <v-row>
+      <v-col class="text-center" cols="12">
+        <v-btn @click="changeParams()" rounded color="#4511E6" dark
+          >Update Data
+          <v-icon v-if="dataUpdated" dark right>
+            mdi-checkbox-marked-circle</v-icon
+          >
+          <v-icon v-if="!dataUpdated" dark right> mdi-cancel </v-icon></v-btn
+        >
+      </v-col>
+    </v-row>
   </div>
 </template>
 
@@ -65,7 +74,7 @@ export default {
     changeParams() {
       let cond = false;
       this.xDataPoint.forEach((element) => {
-        element = parseInt(element,10);
+        element = parseInt(element, 10);
         if (element == undefined) {
           cond = true;
         } else if (!Number.isInteger(element)) {
@@ -73,7 +82,7 @@ export default {
         }
       });
       this.yDataPoint.forEach((element) => {
-        element = parseInt(element,10);
+        element = parseInt(element, 10);
         if (element == undefined) {
           cond = true;
         } else if (!Number.isInteger(element)) {
@@ -102,5 +111,9 @@ export default {
 }
 .marginB {
   margin-bottom: 2%;
+}
+.marginRows {
+  margin-right: 25%;
+  margin-left: 25%;
 }
 </style>

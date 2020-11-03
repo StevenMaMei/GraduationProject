@@ -272,7 +272,7 @@
             Registration
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="#EFB810" text @click="loginDialog = false">
+          <v-btn color="#E62111" text @click="loginDialog = false">
             Close
           </v-btn>
           <v-btn color="blue darken-1" text @click="login()"> Enter </v-btn>
@@ -419,6 +419,9 @@ export default {
         .then((res) => {
           this.$cookie.set("userEmail", res.data.user.email);
           this.$cookie.set("token", res.data.token);
+          EventBus.$emit("changeToLogged", "user logged");
+          alert("You've been logged in")
+          this.loginDialog = false;
         })
         .catch((err) => {
           alert(err.response.data.err.message);
@@ -476,7 +479,7 @@ export default {
       if (!this.$cookie.get("userEmail")) {
         alert("You need to be logged in");
       } else {
-        this.dialog = true;
+        this.saveNetworkDialog = true;
       }
     },
     saveNetwork() {

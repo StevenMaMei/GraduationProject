@@ -3,63 +3,66 @@
     <main>
       <div class="app-container">
         <header class="app-header">
-          <v-app-bar fixed dark color="#1D0664"  height="60">
-            <v-toolbar-title >Neural Network</v-toolbar-title>
+          <v-app-bar fixed dark color="#1D0664" height="60">
+            <v-toolbar-title>Neural Network</v-toolbar-title>
 
             <v-spacer></v-spacer>
 
-            <v-text-field dark v-model="searchEmail" label="Email of the user you want to search"></v-text-field>
-            <v-btn dark  @click="searchNetworks" text>search</v-btn>
-            <v-btn dark  @click="loginUser()" text>Login</v-btn>
-            <v-btn dark to="/main" text>Main</v-btn>
-
+            <v-btn v-if="!userLogged" dark @click="loginUser()" text
+              >Login</v-btn
+            >
+            <v-btn v-if="userLogged" dark @click="logout()" text
+              ><v-icon dark right> mdi-logout</v-icon></v-btn
+            >
           </v-app-bar>
         </header>
         <v-content>
           <router-view></router-view>
         </v-content>
-
-        
       </div>
     </main>
   </v-app>
 </template>
 
 <script>
-var axios = require("axios");
 import { EventBus } from "./main.js";
 export default {
   name: "App",
 
-  components: {
-
-  },
+  components: {},
 
   methods: {
-    loginUser(){
+    logout() {
+      this.$cookie.delete("token");
+      this.$cookie.delete("userEmail");
+      this.userLogged = false;
+      alert("You've logged out")
+    },
+    loginUser() {
       EventBus.$emit("loginUser", "Open login dialog");
     },
-    searchNetworks(){
-      axios.get(`http://localhost:3000/neuralNetwork/${this.searchEmail}`)
-        .then(async res=>{
-          await this.$router.push({path:'/search'})
-          EventBus.$emit("foundNetworks", res.data.networks);
-        })
-        .catch(err=>{
-          alert(err.response.data.err.message)
-        });
-    }
   },
 
   data() {
     return {
-      searchEmail: undefined
+      userLogged: false,
+      userName: undefined,
     };
   },
-  created(){
-    /* this.$router.push("/main"); */
-  }
-  
+  created() {
+    this.$router.push("/main");
+    if (this.$cookie.get("userEmail")) {
+      this.userLogged = true;
+      this.userName = this.$cookie.get("userName");
+    } else {
+      this.userLogged = false;
+    }
+
+    EventBus.$on("changeToLogged", (msg) => {
+      console.log(msg);
+      this.userLogged = true;
+    });
+  },
 };
 </script>
 <style>
@@ -109,11 +112,9 @@ img {
   margin-bottom: 3%;
 }
 
-.app-header,
-.app-footer {
+.app-header {
   flex: 0 1 100%;
   text-align: center;
-  /* background-color: #fff; */
   background-color: #ceded1;
 }
 </style>

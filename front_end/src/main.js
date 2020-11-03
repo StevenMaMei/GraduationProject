@@ -3,7 +3,6 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify';
 import VueRouter from 'vue-router';
 import main from './views/MainPage'
-import foundNetworks from './views/FoundNetworks'
 import VueCookie from 'vue-cookie'
 import axios from 'axios'
 
@@ -12,7 +11,6 @@ export const EventBus = new Vue();
 
 const routes = [
   { path: "/main", component: main },
-  { path: "/search", component: foundNetworks},
   
 ]
 Vue.use(axios );
