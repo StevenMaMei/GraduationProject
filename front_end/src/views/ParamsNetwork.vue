@@ -78,6 +78,21 @@
             </v-col>
           </v-row>
 
+          <!-- data information -->
+          <v-row v-if="!ready" class="rowMargins">
+            <v-col>
+              <p>{{ networkDataMsg }}</p>
+            </v-col>
+            <v-col>
+              <v-row>
+                <p>X: {{ xData }}</p>
+              </v-row>
+              <v-row>
+                <p>Y: {{ yData }}</p>
+              </v-row>
+            </v-col>
+          </v-row>
+
           <v-row class="rowMargins margin-t">
             <v-col v-if="!ready">
               <v-btn @click="changeCustomize()" color="secondary" dark>{{
@@ -300,6 +315,9 @@ export default {
 
   data() {
     return {
+      networkDataMsg: "Default Data",
+      xData: "(0,0) (0,1) (1,0) (1,1)",
+      yData: "(0) (1) (1) (0)",
       dataCustomDialog: false,
 
       networks: undefined,
@@ -393,6 +411,9 @@ export default {
       this.inputSize = undefined;
       this.outputSize = undefined;
       this.dataCustomDialog = false;
+      this.networkDataMsg = "Default Data";
+      this.xData = "(0,0) (0,1) (1,0) (1,1)";
+      this.yData = "(0) (1) (1) (0)";
     },
     closeNetworksFound() {
       this.configMenu = true;
@@ -449,6 +470,17 @@ export default {
         this.customizingDataPoints = false;
         this.customizingData = false;
         this.customData = true;
+        this.networkDataMsg = "Custom Data";
+        let newXData = "";
+        let newYData = "";
+        for (let i = 0; i < this.dataPointsX.length; i++) {
+          let currentX = "(" + this.dataPointsX[i] + ") ";
+          let currentY = "(" + this.dataPointsY[i] + ") ";
+          newXData += currentX;
+          newYData += currentY;
+        }
+        this.xData = newXData;
+        this.yData = newYData;
       }
     },
     backWithinCustoms() {
@@ -520,22 +552,11 @@ export default {
       this.dataPointsY[indexDP] = yDP;
     },
     reciever(actF, neuronNumer, layerId) {
-      let encontro = false;
-      this.layerAtributes.forEach((e) => {
-        if (e.layerIdd === layerId) {
-          e.actFF = actF;
-          e.neuronNumber = neuronNumer;
-          encontro = true;
-        }
-      });
-      if (encontro == false) {
-        let aux = {
-          actFF: actF,
-          neuronNumber: neuronNumer,
-          layerIdd: layerId,
-        };
-        this.layerAtributes.push(aux);
-      }
+      this.layerAtributes[layerId] = {
+        actFF: actF,
+        neuronNumber: neuronNumer,
+        layerIdd: layerId,
+      };
     },
     generateNetwork() {
       this.customizationMsg = "Customize Data";

@@ -2,7 +2,7 @@
   <div class="force-base-ii">
     <div v-if="networkStarted">
       <v-container>
-        <div class="margin-top" >
+        <div class="margin-top">
           <!-- FIRST LINE WITH NETWORK INFORMATION -->
 
           <v-row no-gutters class="row-margins-lbls">
@@ -178,13 +178,62 @@
               <v-tooltip bottom>
                 <template v-slot:activator="{ on }">
                   <div v-on="on">
-                    <v-btn @click="viewData()" dark rounded color="#1D0664"
+                    <v-btn
+                      @click="viewDataDialog = true"
+                      dark
+                      rounded
+                      color="#1D0664"
                       ><v-icon dark>mdi-database</v-icon>
                     </v-btn>
                   </div>
                 </template>
                 <span>Show data and network details</span>
               </v-tooltip>
+              <v-dialog v-model="viewDataDialog" persistent max-width="500">
+                <v-card>
+                  <v-card-title class="headline">
+                    This is your Neural network's information
+                  </v-card-title>
+                  <v-card-text>
+                    Total amount of layers: {{ net.layers.length / 2 }}
+                  </v-card-text>
+                  <v-card-text>
+                    Amount of hidden layers: {{ net.layers.length / 2 - 2 }}
+                  </v-card-text>
+                  <v-card-text>
+                    Network's loss function: {{ net.lossFunc }}
+                  </v-card-text>
+                  <v-card-text>
+                    Network's training data (X): {{ xDataInfo }}
+                  </v-card-text>
+                  <v-card-text>
+                    Network's training data (Y): {{ yDataInfo }}
+                  </v-card-text>
+                  <v-row>
+                    <v-col>
+                      <v-card-text>
+                        Network's Activation functions:
+                      </v-card-text>
+                    </v-col>
+                    <v-col>
+                      <v-row v-for="layerAct in layersActFuncInfo" :key="layerAct.index">
+                        <v-card-text>{{layerAct.func}}</v-card-text>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                      color="blue darken-1"
+                      text
+                      @click="viewDataDialog = false"
+                    >
+                      Close
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
             </v-col>
 
             <!-- this option resets completly the network, all of its parameters and data, and then takes you to the config menu again. It asks you for a confirmation first -->
@@ -330,7 +379,7 @@
       </v-card>
     </v-dialog>
 
-    <hr>
+    <hr />
 
     <!-- THIS IS THE NETWORK VISUALIZATION -->
     <svg id="viz" class="container-border"></svg>
@@ -354,6 +403,7 @@ export default {
       resetConfirmationDialog: false,
       saveNetworkDialog: false,
       epochsDialog: false,
+      viewDataDialog: false,
 
       //----------------
 
@@ -364,6 +414,10 @@ export default {
       name: "",
 
       //-------------
+
+      xDataInfo: "",
+      yDataInfo: "",
+      layersActFuncInfo: [],
 
       epochNumber: undefined,
       networkName: undefined,
@@ -420,7 +474,7 @@ export default {
           this.$cookie.set("userEmail", res.data.user.email);
           this.$cookie.set("token", res.data.token);
           EventBus.$emit("changeToLogged", "user logged");
-          alert("You've been logged in")
+          alert("You've been logged in");
           this.loginDialog = false;
         })
         .catch((err) => {
@@ -474,6 +528,7 @@ export default {
       this.svg.selectAll("*").remove();
       EventBus.$emit("resetNetwork", "Network will be reseted");
       this.resetConfirmationDialog = false;
+      this.layersActFuncInfo = [];
     },
     verifyLogin() {
       if (!this.$cookie.get("userEmail")) {
@@ -487,10 +542,6 @@ export default {
         alert("Insert the networkName");
         return;
       }
-      /* if (!this.$cookie.get("userEmail")) {
-        alert("You are not logged in");
-        return;
-      } */
       axios
         .post(
           "http://localhost:3000/neuralNetwork/save",
@@ -916,7 +967,35 @@ export default {
       this.net = data;
       this.networkStarted = true;
       this.updateNodesAndLinks();
+      let newXData = "";
+      let newYData = "";
+      for (let i = 0; i < this.net.x_train.length; i++) {
+        let currentX = "(" + this.net.x_train[i] + ") ";
+        let currentY = "(" + this.net.y_train[i] + ") ";
+        newXData += currentX;
+        newYData += currentY;
+      }
+      this.xDataInfo = newXData;
+      this.yDataInfo = newYData;
+
+      let counter = 1;
+      let funcMsg = "Layer " + counter + ": " + this.net.actFunc[0] + " ";
+      let firstLayer = { index: 0, func: funcMsg };
+      this.layersActFuncInfo.push(firstLayer);
+      for (let j = 0; j < this.net.actFunc.length; j++) {
+        counter++;
+        funcMsg = "Layer " + counter + ": " + this.net.actFunc[j] + " ";
+        let layerInfo = { index: counter - 1, func: funcMsg };
+        this.layersActFuncInfo.push(layerInfo);
+        if (j == this.net.actFunc.length - 1) {
+          counter++;
+          funcMsg = "Layer " + counter + ": " + this.net.actFunc[j];
+          layerInfo = { index: counter - 1, func: funcMsg };
+          this.layersActFuncInfo.push(layerInfo);
+        }
+      }
     });
+    
     EventBus.$on("loginUser", (msg) => {
       console.log(msg);
       this.loginDialog = true;
@@ -951,7 +1030,7 @@ svg {
   margin-right: 25%;
 }
 
-.margin-top{
+.margin-top {
   margin-top: 2%;
 }
 </style>

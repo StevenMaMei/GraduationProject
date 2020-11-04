@@ -102,7 +102,6 @@ img {
 .app-container {
   max-width: 100%;
   margin: 0 auto;
-  /* background-color: #e8e8e8; */
   background-color: #fff;
 }
 
