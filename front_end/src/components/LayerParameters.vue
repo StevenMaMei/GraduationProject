@@ -7,24 +7,25 @@
     </v-card-text>
 
     <v-list-item>
-      <v-list-item-subtitle>Number of neurons:</v-list-item-subtitle>
+      <v-list-item-subtitle class="text-center">Number of neurons:</v-list-item-subtitle>
     </v-list-item>
 
     <!-- Number of neurons slider selector -->
-    <v-slider color="#4511E6" v-model="neuronsNumber" @change="changeNeurons()" :max="3" :tick-labels="labels" class="mx-4" ticks></v-slider>
+    <v-slider color="#1D0664" v-model="neuronsNumber" @change="changeNeurons()" :max="3" :tick-labels="labels" class="mx-4" ticks></v-slider>
 
     <v-list-item>
-      <v-list-item-subtitle>Activation Function:</v-list-item-subtitle>
+      <v-list-item-subtitle class="text-center">Activation Function:</v-list-item-subtitle>
     </v-list-item>
 
     <!-- Activation function selection dropdown -->
-    <v-menu>
+    <v-col class="text-center" cols="12">
+    <v-menu >
       <template v-slot:activator="{ on: menu, attrs }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              class="marginB"
-              color="#4511E6"
+              class="marginB "
+              color="#1D0664"
               dark
               v-bind="attrs"
               v-on="{ ...tooltip, ...menu }"
@@ -33,7 +34,7 @@
           <span>Activation Function</span>
         </v-tooltip>
       </template>
-      <v-list>
+      <v-list >
         <v-list-item
           v-for="(item, index) in allActivationFunctions"
           :key="index"
@@ -43,6 +44,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    </v-col>
   </v-card>
 </template>
 
@@ -60,7 +62,7 @@ export default {
       layerIndex: undefined,
       neuronsNumber: 0,
       labels: null,
-      selectedActivationFunction: "Select",
+      selectedActivationFunction: "TanH",
       allActivationFunctions: [],
 
       neuronsArray: null,

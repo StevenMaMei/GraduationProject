@@ -155,7 +155,6 @@ class Network {
             }
         }
     }
-    //might not work, please check if there is a problem with the switch
     selectFunction(F) {
         let result = new Function;
         switch (F) {
@@ -182,58 +181,6 @@ class Network {
         }
         return result;
     }
-    /* buildCustomNeuralNetwork(dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
-        this.x_train = [[0, 0], [0, 1], [1, 0], [1, 1]];
-        this.y_train = [[0], [1], [1], [0]];
-        this.layers = [];
-        let result = new Network;
-        if (actFunc.length == layersN) {
-            if (layersN == 1) {
-                this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[0]));
-                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-                this.addLayer(new FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
-                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-                this.addLayer(new FullyConectedLayer(neuronPerLayer[0], 1));
-                this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            } else {
-                for (var i = 0; i < layersN; i++) {
-
-                    if (i == 0) {
-
-                        this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[i]));
-                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-
-                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-
-                    } else if (i == layersN - 1) {
-
-
-                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
-                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-
-                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
-                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
-                    } else {
-
-                        this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                        this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-                    }
-                }
-            }
-
-            this.setLossFunction(this.selectFunction(lossFunc), this.getLossFunctionDerivative(lossFunc));
-            return this;
-        } else {
-            alert("juemadre vida");
-            return result;
-
-        }
-    } */
     /**
     *This method creates a new custom neural network speficit values the user
     desires
@@ -312,6 +259,7 @@ class Network {
     fitTo(targetEpoch) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error = 0;
+            error * 1;
             for (let j = 0; j < this.x_train.length; j++) {
                 let output = [];
                 output[0] = this.x_train[j];
