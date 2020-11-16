@@ -27,6 +27,14 @@ class ActivationLayer implements Layer{
         return NumTS.matrixElemtWiseMult(this.activationFunctionDerived(this.input),errorRespectToOutput);
     }
 
+    getWeights():number[][]{
+        return [[0]];
+    }
+
+    getBias():number[][]{
+        return  [[0]];
+    }
+
 
 }
 

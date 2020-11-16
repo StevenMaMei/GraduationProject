@@ -33,5 +33,11 @@ class FullyConectedLayer {
         this.bias = NumTS_1.NumTS.matrixSum(this.bias, NumTS_1.NumTS.matrixMultWithSingleValue(errorRespectToOutput, -learningRate));
         return errorRespectToInput;
     }
+    getWeights() {
+        return this.weights;
+    }
+    getBias() {
+        return this.bias;
+    }
 }
 exports.FullyConectedLayer = FullyConectedLayer;

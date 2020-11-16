@@ -49,6 +49,7 @@ class Network {
         this.actFunc = [];
         this.lossFunc = "";
         this.neuronPerLayer = [];
+        this.step = new Array();
     }
     /**
      * This method will always return the derivative of a certain activation function
@@ -111,26 +112,52 @@ class Network {
             this.isLayerStep = true;
         }
         if (this.direction == 0) { //forward propagation
+            this.step = new Array();
             this.current_output = this.current_outputs[this.current_datapoint_index];
             this.current_output = this.layers[this.current_layer].forwardPropagation(this.current_output); // does the forward propagation for the sample "j" in x_train
+            this.step.push("Forward Propagation");
+            if (this.current_layer % 2 != 0) {
+                for (let i = 0; i < this.layers[this.current_layer].output[0].length; i++) {
+                    let actLayer = this.layers[this.current_layer];
+                    let normLayer = this.layers[this.current_layer - 1];
+                    let weights = normLayer.getWeights();
+                    let line = this.round(actLayer.output[0][i]) + " = " + this.actFunc[Math.floor(this.current_layer / 2)] + "[";
+                    for (let j = 0; j < normLayer.input[0].length; j++) {
+                        line += "(" + this.round(normLayer.input[0][j]) + " * " + this.round(weights[j][i]) + " + " + this.round(normLayer.getBias()[0][i]) + ")";
+                        if (j < normLayer.input[0].length - 1) {
+                            line += " + ";
+                        }
+                    }
+                    line += " ]";
+                    this.step.push(line);
+                }
+            }
             this.current_outputs[this.current_datapoint_index] = this.current_output; // assigns the new values
             this.all_outputs.push(this.current_output);
             if (this.current_layer == this.layers.length - 1) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
+                //   step+="\nCalculate error\n";
                 let targetOutput = [this.y_train[this.current_datapoint_index]]; // calculates the error comparing to the true expected value "j" in y_train
+                // step+="\ntarget Output= "+[this.y_train[this.current_datapoint_index]];
                 this.current_error += this.lossFunction(this.current_output, targetOutput);
+                //   step+="\n Current error\n "+this.lossFunction+"("+this.current_output+ targetOutput+")= "+this.lossFunction(this.current_output, targetOutput);
                 let errorForBackwardProp = this.lossFunctionPrime(this.current_output, targetOutput);
+                //   step+="\n errorForBackwardProp \n "+this.lossFunctionPrime+"("+this.current_output+ targetOutput+")= "+this.lossFunctionPrime(this.current_output, targetOutput);
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
+                //     step+="\n "+this.current_backProp_errors[this.current_datapoint_index]+" \n ="+errorForBackwardProp;
             }
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
+                //    step+="\n Forward propagation over\n"
                 this.direction = 1;
             }
             else {
                 this.current_layer++; // advances one layer
+                //     step+="\n Next Layer\n"
             }
         }
         else if (this.direction == 1) { //backwards propagation
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
             this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
+            // step+="\nbackwards propagation\n"+this.layers[this.current_layer].backPropagationVisual(this.current_backProp_error, this.learningRate);
             if (this.current_layer == 0) {
                 this.direction = 0;
                 this.current_datapoint_index++;
@@ -154,6 +181,7 @@ class Network {
                 this.current_layer--;
             }
         }
+        return this.step;
     }
     selectFunction(F) {
         let result = new Function;
@@ -206,9 +234,11 @@ class Network {
             this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[0], this.output_size));
             if (this.lossFunc == "Mean Square Error") {
                 this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+                this.actFunc.push("Linear");
             }
             else {
                 this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+                this.actFunc.push("Sigmoid");
             }
         }
         else {
@@ -223,9 +253,11 @@ class Network {
                     this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], this.output_size));
                     if (this.lossFunc == "Mean Square Error") {
                         this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+                        this.actFunc.push("Linear");
                     }
                     else {
                         this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+                        this.actFunc.push("Sigmoid");
                     }
                 }
                 else {
@@ -319,6 +351,9 @@ class Network {
             error /= x_train.length;
             console.log("Epoch " + i + " error = " + error);
         }
+    }
+    round(value) {
+        return Number(Math.round(value * 10000) / 10000);
     }
 }
 exports.Network = Network;

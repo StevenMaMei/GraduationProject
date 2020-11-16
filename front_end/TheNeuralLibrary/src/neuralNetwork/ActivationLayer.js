@@ -21,5 +21,11 @@ class ActivationLayer {
     backPropagation(errorRespectToOutput) {
         return NumTS_1.NumTS.matrixElemtWiseMult(this.activationFunctionDerived(this.input), errorRespectToOutput);
     }
+    getWeights() {
+        return [[0]];
+    }
+    getBias() {
+        return [[0]];
+    }
 }
 exports.ActivationLayer = ActivationLayer;

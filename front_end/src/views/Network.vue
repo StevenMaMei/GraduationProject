@@ -390,6 +390,12 @@
 
     <!-- THIS IS THE NETWORK VISUALIZATION -->
     <svg id="viz" class="container-border"></svg>
+    <v-col cols="12"> 
+      <v-row v-for="line in steps" :key="line.index">
+        <v-card-text>{{ line }}</v-card-text>
+      </v-row>
+    </v-col>
+  
   </div>
 </template>
 
@@ -439,6 +445,7 @@ export default {
       epoch: 1,
       currentScreenWidth: window.screen.width,
       currentScreenHeight: window.screen.height,
+      steps: [],
     };
   },
   methods: {
@@ -641,13 +648,13 @@ export default {
     },
     nextLayer() {
       this.net.layerStep();
-      this.net.layerStep();
+      this.steps = this.net.layerStep();
       console.log(this.net);
 
       this.epoch = this.net.currEpoch + 1;
       if (this.net.direction == 0) {
         if (this.typeOfProp == "Backward Propagation") {
-          this.net.layerStep();
+          this.steps = this.net.layerStep();
           this.typeOfProp = "Forward Propagation";
           this.currentLayer++;
         } else {
@@ -657,12 +664,13 @@ export default {
       } else {
         if (this.typeOfProp == "Forward Propagation") {
           this.typeOfProp = "Backward Propagation";
-          this.net.layerStep();
+          this.steps = this.net.layerStep();
         } else {
           this.typeOfProp = "Backward Propagation";
           this.currentLayer--;
         }
       }
+      console.log(this.steps);
       this.svg.selectAll("*").remove();
       this.updateNodesAndLinks();
     },
@@ -831,12 +839,11 @@ export default {
                   return d.neuron * 450;
                 }
               } else {
-                if(d.pastLayerSize == 1){
+                if (d.pastLayerSize == 1) {
                   return d.neuron * 400;
-                }else{
+                } else {
                   return d.neuron * 350;
                 }
-                
               }
             })
             .strength(1)
@@ -979,7 +986,7 @@ export default {
     },
 
     generateLayersActData() {
-      console.log(this.net.actFunc)
+      console.log(this.net.actFunc);
       this.layersActFuncInfo.length = 0;
       let counter = 1;
       let funcMsg = "Layer " + counter + ": None";

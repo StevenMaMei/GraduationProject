@@ -27,6 +27,7 @@ class FullyConectedLayer implements Layer {
         this.output = NumTS.matrixSum(this.output, this.bias);
         return this.output;
     }
+    
     backPropagation(errorRespectToOutput: number[][], learningRate: number): number[][] {
         let errorRespectToInput: number[][] = NumTS.matrixDotProduct(errorRespectToOutput, NumTS.matrixTransposse(this.weights));
         let errorRespectWeights: number[][] = NumTS.matrixDotProduct(NumTS.matrixTransposse(this.input), errorRespectToOutput);
@@ -38,6 +39,13 @@ class FullyConectedLayer implements Layer {
 
         return errorRespectToInput;
     }
+    getWeights():number[][]{
+        return this.weights;
+    }
+    getBias():number[][]{
+        return this.bias;
+    }
+ 
 
 
 }
