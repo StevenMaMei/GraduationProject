@@ -30,7 +30,7 @@ class Network {
     lossFunc: String;
     neuronPerLayer: Array<number>;
     isLayerStep: boolean;
-    step: Array<string> ;
+    step: Array<string>;
 
     /**
      * This map contains the name of all the loss functions and their 
@@ -145,15 +145,15 @@ class Network {
         this.actFunc = [];
         this.lossFunc = "";
         this.neuronPerLayer = [];
-        this.step =new Array<string>();
+        this.step = new Array<string>();
     }
 
 
 
 
 
-    layerStep() :Array<string>{ // this method is in charge of doing a single step on a layer, taking into consideration if its a forward propagation step or a backwards propagation step
-        
+    layerStep(): Array<string> { // this method is in charge of doing a single step on a layer, taking into consideration if its a forward propagation step or a backwards propagation step
+
         if (this.current_outputs.length == 0) { // initializes the first output for every sample in x_train
             for (let j = 0; j < this.x_train.length; j++) {
                 let curr: number[][] = [];
@@ -166,73 +166,79 @@ class Network {
 
 
         if (this.direction == 0) { //forward propagation
-            this.step=new Array<string>(); 
+            this.step = new Array<string>();
             this.current_output = this.current_outputs[this.current_datapoint_index];
 
             this.current_output = this.layers[this.current_layer].forwardPropagation(this.current_output); // does the forward propagation for the sample "j" in x_train
             this.step.push("Forward Propagation");
-            if (this.current_layer%2!=0) {
+            if (this.current_layer % 2 != 0) {
 
                 for (let i = 0; i < this.layers[this.current_layer].output[0].length; i++) {
 
-                    let actLayer=this.layers[this.current_layer];
-                    let normLayer=this.layers[this.current_layer-1];
-                    let weights=normLayer.getWeights();
-                    
+                    let actLayer = this.layers[this.current_layer];
+                    let normLayer = this.layers[this.current_layer - 1];
+                    let weights = normLayer.getWeights();
 
-                    let line=this.round(actLayer.output[0][i])+" = "+ this.actFunc[Math.floor(this.current_layer/2)]+"[";
-                    
-                    
+
+                    let line = this.round(actLayer.output[0][i]) + " = " + this.actFunc[Math.floor(this.current_layer / 2)] + "[";
+
+
                     for (let j = 0; j < normLayer.input[0].length; j++) {
-                      
-                        line+="("+this.round(normLayer.input[0][j])+" * "+this.round(weights[j][i])+" + "+this.round(normLayer.getBias()[0][i])+")";
 
-                        if (j<normLayer.input[0].length-1) {
-                            line+=" + "
+                        line += "(" + this.round(normLayer.input[0][j]) + " * " + this.round(weights[j][i]) + " + " + this.round(normLayer.getBias()[0][i]) + ")";
+
+                        if (j < normLayer.input[0].length - 1) {
+                            line += " + "
                         }
                     }
-                    line+=" ]"
+                    line += " ]"
 
                     this.step.push(line);
- 
+
                 }
-                
+
             }
-           
+
             this.current_outputs[this.current_datapoint_index] = this.current_output; // assigns the new values
             this.all_outputs.push(this.current_output);
 
 
             if (this.current_layer == this.layers.length - 1) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
-             //   step+="\nCalculate error\n";
+                this.step.push(" ");
                 let targetOutput: number[][] = [this.y_train[this.current_datapoint_index]]; // calculates the error comparing to the true expected value "j" in y_train
-               // step+="\ntarget Output= "+[this.y_train[this.current_datapoint_index]];
+                this.step.push("target Output= " + [this.y_train[this.current_datapoint_index]]);
                 this.current_error += this.lossFunction(this.current_output, targetOutput);
-             //   step+="\n Current error\n "+this.lossFunction+"("+this.current_output+ targetOutput+")= "+this.lossFunction(this.current_output, targetOutput);
+                this.step.push("Current error");
+                let a = this.roundMatrix(this.current_output);
+                let b = this.roundMatrix(targetOutput);
+
+                
+
+                this.step.push(this.lossFunction.name + "(" + a + " , " + b + ")= " + this.round(this.lossFunction(this.current_output, targetOutput)));
 
                 let errorForBackwardProp: number[][] = this.lossFunctionPrime(this.current_output, targetOutput);
-
-             //   step+="\n errorForBackwardProp \n "+this.lossFunctionPrime+"("+this.current_output+ targetOutput+")= "+this.lossFunctionPrime(this.current_output, targetOutput);
+                this.step.push("Error For Backward Prop");
+                this.step.push(this.lossFunctionPrime.name + "(" + a + " , " + b + ")= " + this.roundMatrix(this.lossFunctionPrime(this.current_output, targetOutput)));
 
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
-           //     step+="\n "+this.current_backProp_errors[this.current_datapoint_index]+" \n ="+errorForBackwardProp;
+
 
             }
 
 
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
-           //    step+="\n Forward propagation over\n"
+                //    step+="\n Forward propagation over\n"
                 this.direction = 1;
             } else {
                 this.current_layer++; // advances one layer
-           //     step+="\n Next Layer\n"
+                //     step+="\n Next Layer\n"
             }
 
         } else if (this.direction == 1) { //backwards propagation
 
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
             this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
-           // step+="\nbackwards propagation\n"+this.layers[this.current_layer].backPropagationVisual(this.current_backProp_error, this.learningRate);
+            // step+="\nbackwards propagation\n"+this.layers[this.current_layer].backPropagationVisual(this.current_backProp_error, this.learningRate);
 
 
 
@@ -342,7 +348,7 @@ class Network {
 
 
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i+1]), this.getActivationFunctionDerivative(actFunc[i+1])));
+                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i + 1]), this.getActivationFunctionDerivative(actFunc[i + 1])));
 
 
                 } else if (i == layersN - 1) {
@@ -360,7 +366,7 @@ class Network {
                 } else {
 
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i+1]), this.getActivationFunctionDerivative(actFunc[i+1])));
+                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i + 1]), this.getActivationFunctionDerivative(actFunc[i + 1])));
                 }
             }
         }
@@ -465,12 +471,28 @@ class Network {
         }
     }
 
-     round(value:number):number{ 
+    round(value: number): number {
 
-        return Number(Math.round(value*10000)/10000);       
+        return Number(Math.round(value * 10000) / 10000);
     }
 
+    roundMatrix(value: number[][]): number[][] {
+        var x = 0;
+        var y = 0;
+        var len = value.length;
+        var leny = value[0].length;
 
+        while (x < len) {
+            while (y < leny) {
 
+                value[x][y] = this.round(value[x][y]);
+                y++;
+            }
+            x++;
+        }
+
+        return value;
+
+    }
 }
 export { Network }

@@ -135,15 +135,18 @@ class Network {
             this.current_outputs[this.current_datapoint_index] = this.current_output; // assigns the new values
             this.all_outputs.push(this.current_output);
             if (this.current_layer == this.layers.length - 1) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
-                //   step+="\nCalculate error\n";
+                this.step.push(" ");
                 let targetOutput = [this.y_train[this.current_datapoint_index]]; // calculates the error comparing to the true expected value "j" in y_train
-                // step+="\ntarget Output= "+[this.y_train[this.current_datapoint_index]];
+                this.step.push("target Output= " + [this.y_train[this.current_datapoint_index]]);
                 this.current_error += this.lossFunction(this.current_output, targetOutput);
-                //   step+="\n Current error\n "+this.lossFunction+"("+this.current_output+ targetOutput+")= "+this.lossFunction(this.current_output, targetOutput);
+                this.step.push("Current error");
+                let a = this.roundMatrix(this.current_output);
+                let b = this.roundMatrix(targetOutput);
+                this.step.push(this.lossFunction.name + "(" + a + " , " + b + ")= " + this.round(this.lossFunction(this.current_output, targetOutput)));
                 let errorForBackwardProp = this.lossFunctionPrime(this.current_output, targetOutput);
-                //   step+="\n errorForBackwardProp \n "+this.lossFunctionPrime+"("+this.current_output+ targetOutput+")= "+this.lossFunctionPrime(this.current_output, targetOutput);
+                this.step.push("Error For Backward Prop");
+                this.step.push(this.lossFunctionPrime.name + "(" + a + " , " + b + ")= " + this.roundMatrix(this.lossFunctionPrime(this.current_output, targetOutput)));
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
-                //     step+="\n "+this.current_backProp_errors[this.current_datapoint_index]+" \n ="+errorForBackwardProp;
             }
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
                 //    step+="\n Forward propagation over\n"
@@ -354,6 +357,20 @@ class Network {
     }
     round(value) {
         return Number(Math.round(value * 10000) / 10000);
+    }
+    roundMatrix(value) {
+        var x = 0;
+        var y = 0;
+        var len = value.length;
+        var leny = value[0].length;
+        while (x < len) {
+            while (y < leny) {
+                value[x][y] = this.round(value[x][y]);
+                y++;
+            }
+            x++;
+        }
+        return value;
     }
 }
 exports.Network = Network;
