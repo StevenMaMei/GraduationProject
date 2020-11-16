@@ -365,6 +365,8 @@ export default {
     EventBus.$on("resetNetwork", (msg) => {
       console.log(msg);
       this.show = true;
+      this.layers = [];
+      this.layersArray = null;
 
       this.net = new Network();
 
@@ -380,6 +382,9 @@ export default {
       this.dataPointsNumber = undefined;
       this.inputSize = undefined;
       this.outputSize = undefined;
+      this.networkDataMsg = "Default Data";
+      this.xData = "(0,0) (0,1) (1,0) (1,1)";
+      this.yData = "(0) (1) (1) (0)";
     });
 
     this.net = new Network();
@@ -560,8 +565,8 @@ export default {
     },
     generateNetwork() {
       this.customizationMsg = "Customize Data";
-      let layersNueorns = new Array();
-      let layersFunctions = new Array();
+      let layersNueorns = [];
+      let layersFunctions = [];
 
       this.layerAtributes.forEach((x) => {
         layersNueorns.push(x.neuronNumber);
@@ -585,24 +590,46 @@ export default {
           [1, 0],
           [1, 1],
         ];
-        let y_train = [[0], [1], [1], [0]];
-        this.net.buildCustomNeuralNetwork(
-          x_train,
-          y_train,
-          1,
-          2,
-          this.selectedNumberOfLayers,
-          layersFunctions,
-          this.selectedLossFunction,
-          layersNueorns
-        );
+        if ((this.selectedLossFunction == "Binary Cross Entropy")) {
+          //in each y data point, the left number represents the probability of 0 and the right number represents the probability of 1
+          let y_train = [
+            [1, 0],
+            [0, 1],
+            [0, 1],
+            [1, 0],
+          ];
+          this.net.buildCustomNeuralNetwork(
+            x_train,
+            y_train,
+            2,
+            2,
+            this.selectedNumberOfLayers,
+            layersFunctions,
+            this.selectedLossFunction,
+            layersNueorns
+          );
+        } else {
+          let y_train = [[0], [1], [1], [0]];
+          this.net.buildCustomNeuralNetwork(
+            x_train,
+            y_train,
+            1,
+            2,
+            this.selectedNumberOfLayers,
+            layersFunctions,
+            this.selectedLossFunction,
+            layersNueorns
+          );
+        }
       }
 
-      this.emitGlobalClickEvent();
-      alert("Network has been parametrized");
+      this.layerAtributes = [];
       this.ready = false;
       this.show = false;
       this.layers = [];
+      this.layersArray = [];
+      this.emitGlobalClickEvent();
+      alert("Network has been parametrized");
     },
     emitGlobalClickEvent() {
       EventBus.$emit("giveNetwork", this.net);
@@ -709,8 +736,8 @@ a {
   margin-top: 2%;
 }
 .rowMargins {
-  margin-left: 30%;
-  margin-right: 30%;
+  margin-left: 20%;
+  margin-right: 20%;
 }
 .netInfo {
   width: 30%;

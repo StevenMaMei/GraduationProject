@@ -203,10 +203,13 @@ class Network {
         if (layersN == 1) {
             this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[0]));
             this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
-            this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
             this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[0], this.output_size));
-            this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
+            if (this.lossFunc == "Mean Square Error") {
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+            }
+            else {
+                this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+            }
         }
         else {
             for (var i = 0; i < layersN; i++) {
@@ -214,17 +217,20 @@ class Network {
                     this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(dataSize, neuronPerLayer[i]));
                     this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
                     this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i + 1]), this.getActivationFunctionDerivative(actFunc[i + 1])));
                 }
                 else if (i == layersN - 1) {
-                    this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
-                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
                     this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], this.output_size));
-                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    if (this.lossFunc == "Mean Square Error") {
+                        this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+                    }
+                    else {
+                        this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+                    }
                 }
                 else {
                     this.addLayer(new FullyConectedLayer_1.FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    this.addLayer(new ActivationLayer_1.ActivationLayer(this.selectFunction(actFunc[i + 1]), this.getActivationFunctionDerivative(actFunc[i + 1])));
                 }
             }
         }

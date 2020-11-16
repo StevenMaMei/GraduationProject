@@ -24,10 +24,10 @@ class Network {
     current_backProp_errors: number[][][]; //outputs for every sample on x_train
     current_backProp_error: number[][]; // output for a specific sample on x_train
     direction: number; // 0 is forward propagation, 1 is backwards propagation
-    dataSize: number; 
-    layersN: number; 
-    actFunc: Array<String>; 
-    lossFunc: String; 
+    dataSize: number;
+    layersN: number;
+    actFunc: Array<String>;
+    lossFunc: String;
     neuronPerLayer: Array<number>;
     isLayerStep: boolean;
 
@@ -121,7 +121,7 @@ class Network {
 
 
     constructor() {
-        this.isLayerStep=false;
+        this.isLayerStep = false;
         this.all_outputs = [];
         this.layers = [];
         this.lossFunction = NumTS.mse;
@@ -139,11 +139,11 @@ class Network {
         this.current_backProp_errors = [];
         this.current_backProp_error = [];
         this.output_size = 1;
-        this.dataSize = 0; 
-        this.layersN= 0; 
-        this.actFunc= []; 
-        this.lossFunc= ""; 
-        this.neuronPerLayer= [];
+        this.dataSize = 0;
+        this.layersN = 0;
+        this.actFunc = [];
+        this.lossFunc = "";
+        this.neuronPerLayer = [];
     }
 
 
@@ -251,15 +251,15 @@ class Network {
 
 
     }
-    
-    
+
+
 
 
     /**     
     *This method creates a new custom neural network speficit values the user
     desires
      */
-    buildCustomNeuralNetwork(xDataPoints:number[][], yDataPoints:number[][], outputS:number, dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
+    buildCustomNeuralNetwork(xDataPoints: number[][], yDataPoints: number[][], outputS: number, dataSize: number, layersN: number, actFunc: Array<String>, lossFunc: String, neuronPerLayer: Array<number>): Network {
 
         //we store this info, to later save the network config
         this.dataSize = dataSize;
@@ -267,22 +267,25 @@ class Network {
         this.actFunc = actFunc;
         this.lossFunc = lossFunc;
         this.neuronPerLayer = neuronPerLayer;
-        if(layersN == 1){
-            this.neuronPerLayer[1] =0;
+        if (layersN == 1) {
+            this.neuronPerLayer[1] = 0;
         }
         //-------
         this.x_train = xDataPoints;
         this.y_train = yDataPoints;
-        this.output_size= outputS;
+        this.output_size = outputS;
         this.layers = [];
 
         if (layersN == 1) {
             this.addLayer(new FullyConectedLayer(dataSize, neuronPerLayer[0]));
             this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
-            this.addLayer(new FullyConectedLayer(neuronPerLayer[0], neuronPerLayer[0]));
-            this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
             this.addLayer(new FullyConectedLayer(neuronPerLayer[0], this.output_size));
-            this.addLayer(new ActivationLayer(this.selectFunction(actFunc[0]), this.getActivationFunctionDerivative(actFunc[0])));
+            if (this.lossFunc == "Mean Square Error") {
+                this.addLayer(new ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+            } else {
+                this.addLayer(new ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+            }
+
         } else {
             for (var i = 0; i < layersN; i++) {
 
@@ -293,22 +296,23 @@ class Network {
 
 
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i+1]), this.getActivationFunctionDerivative(actFunc[i+1])));
 
 
                 } else if (i == layersN - 1) {
 
-
-                    this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
-
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], this.output_size));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+
+                    if (this.lossFunc == "Mean Square Error") {
+                        this.addLayer(new ActivationLayer(this.selectFunction("Linear"), this.getActivationFunctionDerivative("Linear")));
+                    } else {
+                        this.addLayer(new ActivationLayer(this.selectFunction("Sigmoid"), this.getActivationFunctionDerivative("Sigmoid")));
+                    }
 
                 } else {
 
                     this.addLayer(new FullyConectedLayer(neuronPerLayer[i], neuronPerLayer[i + 1]));
-                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i]), this.getActivationFunctionDerivative(actFunc[i])));
+                    this.addLayer(new ActivationLayer(this.selectFunction(actFunc[i+1]), this.getActivationFunctionDerivative(actFunc[i+1])));
                 }
             }
         }
@@ -353,7 +357,7 @@ class Network {
     fitTo(targetEpoch: number) {
         for (; this.currEpoch < targetEpoch; ++this.currEpoch) {
             let error: number = 0;
-            error*1
+            error * 1
             for (let j = 0; j < this.x_train.length; j++) {
                 let output: number[][] = [];
                 output[0] = this.x_train[j];
@@ -393,7 +397,7 @@ class Network {
     fit(x_train: number[][], y_train: number[][], epochs: number, learningRate: number) {
         for (let i = 0; i < epochs; i++) {
             let error: number = 0;
-            error*1;
+            error * 1;
             for (let j = 0; j < x_train.length; j++) {
                 let output: number[][] = [];
                 output[0] = x_train[j];

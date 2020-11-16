@@ -189,16 +189,16 @@
                 </template>
                 <span>Show data and network details</span>
               </v-tooltip>
-              <v-dialog v-model="viewDataDialog" persistent max-width="500">
+              <v-dialog v-model="viewDataDialog" persistent max-width="600">
                 <v-card>
                   <v-card-title class="headline">
                     This is your Neural network's information
                   </v-card-title>
                   <v-card-text>
-                    Total amount of layers: {{ net.layers.length / 2 }}
+                    Total amount of layers: {{ net.layers.length / 2 + 1 }}
                   </v-card-text>
                   <v-card-text>
-                    Amount of hidden layers: {{ net.layers.length / 2 - 2 }}
+                    Amount of hidden layers: {{ net.layers.length / 2 - 1 }}
                   </v-card-text>
                   <v-card-text>
                     Network's loss function: {{ net.lossFunc }}
@@ -216,8 +216,11 @@
                       </v-card-text>
                     </v-col>
                     <v-col>
-                      <v-row v-for="layerAct in layersActFuncInfo" :key="layerAct.index">
-                        <v-card-text>{{layerAct.func}}</v-card-text>
+                      <v-row
+                        v-for="layerAct in layersActFuncInfo"
+                        :key="layerAct.index"
+                      >
+                        <v-card-text>{{ layerAct.func }}</v-card-text>
                       </v-row>
                     </v-col>
                   </v-row>
@@ -306,6 +309,7 @@
             <v-row>
               <v-col cols="12">
                 <v-text-field
+                  :type="'password'"
                   label="*Password"
                   required
                   v-model="password"
@@ -351,6 +355,7 @@
                 <v-text-field
                   label="*Password"
                   required
+                  :type="'password'"
                   v-model="password"
                 ></v-text-field>
               </v-col>
@@ -374,12 +379,14 @@
           <v-btn color="#E62111" text @click="registrationDialog = false">
             Close
           </v-btn>
-          <v-btn color="blue darken-1" text @click="reigster()"> Enter </v-btn>
+          <v-btn color="blue darken-1" text @click="register()"> Enter </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <hr />
+
+    <div class="marginNetwork"></div>
 
     <!-- THIS IS THE NETWORK VISUALIZATION -->
     <svg id="viz" class="container-border"></svg>
@@ -455,7 +462,11 @@ export default {
         })
         .then((res) => {
           res;
-          alert("User created");
+          alert("User created. Please now login");
+          this.email = "";
+          this.password = "";
+          this.name = "";
+          this.registrationDialog = false;
         })
         .catch((err) => {
           console.log(err.response);
@@ -476,6 +487,9 @@ export default {
           EventBus.$emit("changeToLogged", "user logged");
           alert("You've been logged in");
           this.loginDialog = false;
+          this.email = "";
+          this.password = "";
+          this.name = "";
         })
         .catch((err) => {
           alert(err.response.data.err.message);
@@ -521,14 +535,14 @@ export default {
         (this.theGraph = []),
         (this.links = []),
         (this.height = this.currentScreenHeight * 0.09);
+      this.resetConfirmationDialog = false;
+      this.layersActFuncInfo.length = 0;
       this.svg = d3
         .select("#viz")
         .attr("width", this.width)
         .attr("height", this.height);
       this.svg.selectAll("*").remove();
       EventBus.$emit("resetNetwork", "Network will be reseted");
-      this.resetConfirmationDialog = false;
-      this.layersActFuncInfo = [];
     },
     verifyLogin() {
       if (!this.$cookie.get("userEmail")) {
@@ -758,7 +772,7 @@ export default {
     },
 
     generateGraph() {
-      this.height = this.currentScreenHeight * 0.55;
+      this.height = this.currentScreenHeight * 0.75;
       let graph = this.theGraph;
 
       let label = {
@@ -794,7 +808,7 @@ export default {
                 } else if (d.pastLayerSize == 3) {
                   return d.group * 300;
                 } else {
-                  return d.group * 400;
+                  return d.group * 300;
                 }
               }
             })
@@ -806,18 +820,23 @@ export default {
             .forceY(function (d) {
               if (d.layerSize == 1) {
                 if (d.pastLayerSize >= 2) {
-                  return d.neuron * 600;
+                  return d.neuron * 800;
                 } else {
-                  return d.neuron * 500;
+                  return d.neuron * 700;
                 }
               } else if (d.layerSize == 2) {
                 if (d.pastLayerSize >= 3) {
-                  return d.neuron * 400;
+                  return d.neuron * 350;
                 } else {
-                  return d.neuron * 500;
+                  return d.neuron * 450;
                 }
               } else {
-                return d.neuron * 350;
+                if(d.pastLayerSize == 1){
+                  return d.neuron * 400;
+                }else{
+                  return d.neuron * 350;
+                }
+                
               }
             })
             .strength(1)
@@ -958,6 +977,33 @@ export default {
         });
       }
     },
+
+    generateLayersActData() {
+      console.log(this.net.actFunc)
+      this.layersActFuncInfo.length = 0;
+      let counter = 1;
+      let funcMsg = "Layer " + counter + ": None";
+      let firstLayer = { index: 0, func: funcMsg };
+      this.layersActFuncInfo.push(firstLayer);
+      for (let j = 0; j < this.net.actFunc.length; j++) {
+        counter++;
+        funcMsg = "Layer " + counter + ": " + this.net.actFunc[j] + " ";
+        let layerInfo = { index: counter - 1, func: funcMsg };
+        this.layersActFuncInfo.push(layerInfo);
+        if (j == this.net.actFunc.length - 1) {
+          counter++;
+          if (this.net.lossFunc == "Mean Square Error") {
+            funcMsg = "Layer " + counter + ": Linear";
+          } else {
+            funcMsg = "Layer " + counter + ": Sigmoid";
+          }
+
+          layerInfo = { index: counter - 1, func: funcMsg };
+          this.layersActFuncInfo.push(layerInfo);
+        }
+      }
+      console.log(this.layersActFuncInfo);
+    },
   },
 
   created() {
@@ -977,25 +1023,9 @@ export default {
       }
       this.xDataInfo = newXData;
       this.yDataInfo = newYData;
-
-      let counter = 1;
-      let funcMsg = "Layer " + counter + ": " + this.net.actFunc[0] + " ";
-      let firstLayer = { index: 0, func: funcMsg };
-      this.layersActFuncInfo.push(firstLayer);
-      for (let j = 0; j < this.net.actFunc.length; j++) {
-        counter++;
-        funcMsg = "Layer " + counter + ": " + this.net.actFunc[j] + " ";
-        let layerInfo = { index: counter - 1, func: funcMsg };
-        this.layersActFuncInfo.push(layerInfo);
-        if (j == this.net.actFunc.length - 1) {
-          counter++;
-          funcMsg = "Layer " + counter + ": " + this.net.actFunc[j];
-          layerInfo = { index: counter - 1, func: funcMsg };
-          this.layersActFuncInfo.push(layerInfo);
-        }
-      }
+      this.generateLayersActData();
     });
-    
+
     EventBus.$on("loginUser", (msg) => {
       console.log(msg);
       this.loginDialog = true;
@@ -1021,16 +1051,20 @@ svg {
 }
 .row-margins-btns {
   margin-top: 1%;
-  margin-left: 30%;
-  margin-right: 30%;
+  margin-left: 23%;
+  margin-right: 23%;
 }
 
 .row-margins-lbls {
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 22%;
+  margin-right: 22%;
 }
 
 .margin-top {
   margin-top: 2%;
+}
+
+.marginNetwork {
+  margin-bottom: 2%;
 }
 </style>
