@@ -39,5 +39,8 @@ class FullyConectedLayer {
     getBias() {
         return this.bias;
     }
+    getInput() {
+        return this.input;
+    }
 }
 exports.FullyConectedLayer = FullyConectedLayer;

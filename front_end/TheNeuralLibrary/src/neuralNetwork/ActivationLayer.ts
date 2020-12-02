@@ -34,6 +34,11 @@ class ActivationLayer implements Layer{
     getBias():number[][]{
         return  [[0]];
     }
+    getInput():number[][]{
+        return  [[0]];
+    }
+
+ 
 
 
 }

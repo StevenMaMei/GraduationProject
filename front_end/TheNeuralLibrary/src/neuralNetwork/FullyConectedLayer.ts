@@ -39,11 +39,17 @@ class FullyConectedLayer implements Layer {
 
         return errorRespectToInput;
     }
+
+
     getWeights():number[][]{
         return this.weights;
     }
     getBias():number[][]{
         return this.bias;
+    }
+
+    getInput():number[][]{
+        return  this.input;
     }
  
 
