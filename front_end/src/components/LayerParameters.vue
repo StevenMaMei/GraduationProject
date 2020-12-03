@@ -78,6 +78,7 @@ export default {
       let actF = { title: element };
       this.allActivationFunctions.push(actF);
     });
+    this.update(this.selectedActivationFunction, this.neuronsNumber);
   },
   methods: {
     setLimimtArrays() {

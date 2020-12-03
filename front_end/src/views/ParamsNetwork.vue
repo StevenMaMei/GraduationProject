@@ -572,6 +572,7 @@ export default {
         layersNueorns.push(x.neuronNumber);
         layersFunctions.push(x.actFF);
       });
+      
       if (this.customData) {
         this.net.buildCustomNeuralNetwork(
           this.dataPointsX,

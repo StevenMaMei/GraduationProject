@@ -390,12 +390,12 @@
 
     <!-- THIS IS THE NETWORK VISUALIZATION -->
     <svg id="viz" class="container-border"></svg>
-    <v-col cols="12"> 
+
+    <v-col cols="12">
       <v-row v-for="line in steps" :key="line.index">
-        <v-card-text>{{ line }}</v-card-text>
+        <v-card-text align="center">{{ line }}</v-card-text>
       </v-row>
     </v-col>
-  
   </div>
 </template>
 
@@ -476,7 +476,6 @@ export default {
           this.registrationDialog = false;
         })
         .catch((err) => {
-          console.log(err.response);
           alert(err.response.data.message);
         });
     },
@@ -538,6 +537,7 @@ export default {
       this.net = undefined;
       this.networkStarted = false;
       this.currentLayer = 1;
+      this.steps = [];
       (this.epoch = 1),
         (this.theGraph = []),
         (this.links = []),
@@ -670,7 +670,7 @@ export default {
           this.currentLayer--;
         }
       }
-      console.log(this.steps);
+
       this.svg.selectAll("*").remove();
       this.updateNodesAndLinks();
     },
@@ -800,6 +800,16 @@ export default {
         .force("charge", d3.forceManyBody().strength(-10))
         .force("link", d3.forceLink(label.links).distance(0).strength(2));
 
+      let cond = false;
+      if (this.net.layers.length == 8) {
+        if (
+          this.net.neuronPerLayer[1] >= 3 &&
+          this.net.neuronPerLayer[2] <= 2
+        ) {
+          cond = true;
+        }
+      }
+
       d3.forceSimulation(graph.nodes)
         .force("center", d3.forceCenter(this.width / 2, this.height / 2 - 50))
         .force(
@@ -809,14 +819,30 @@ export default {
               if (d.group == 1) {
                 return d.group * 50;
               } else {
-                if (d.pastLayerSize == 1) {
-                  return d.group * 200;
-                } else if (d.pastLayerSize == 2) {
-                  return d.group * 250;
-                } else if (d.pastLayerSize == 3) {
-                  return d.group * 300;
+                if (cond == true) {
+                  if (d.group == 5) {
+                    return d.group * 250;
+                  } else {
+                    if (d.pastLayerSize == 1) {
+                      return d.group * 200;
+                    } else if (d.pastLayerSize == 2) {
+                      return d.group * 250;
+                    } else if (d.pastLayerSize == 3) {
+                      return d.group * 300;
+                    } else {
+                      return d.group * 300;
+                    }
+                  }
                 } else {
-                  return d.group * 300;
+                  if (d.pastLayerSize == 1) {
+                    return d.group * 200;
+                  } else if (d.pastLayerSize == 2) {
+                    return d.group * 250;
+                  } else if (d.pastLayerSize == 3) {
+                    return d.group * 300;
+                  } else {
+                    return d.group * 300;
+                  }
                 }
               }
             })
@@ -909,7 +935,15 @@ export default {
         .enter()
         .append("text")
         .text(function (d, i) {
-          return i % 2 === 0 ? "" : d.node.label;
+          if (i % 2 == 0) {
+            if (isNaN(d.node.label)) {
+              return "0";
+            } else {
+              return d.node.label;
+            }
+          } else {
+            return "";
+          }
         })
         .style("fill", "#555")
         .style("font-family", "Arial")
@@ -986,7 +1020,6 @@ export default {
     },
 
     generateLayersActData() {
-      console.log(this.net.actFunc);
       this.layersActFuncInfo.length = 0;
       let counter = 1;
       let funcMsg = "Layer " + counter + ": None";
@@ -997,7 +1030,7 @@ export default {
         funcMsg = "Layer " + counter + ": " + this.net.actFunc[j] + " ";
         let layerInfo = { index: counter - 1, func: funcMsg };
         this.layersActFuncInfo.push(layerInfo);
-        if (j == this.net.actFunc.length - 1) {
+        /* if (j == this.net.actFunc.length - 1) {
           counter++;
           if (this.net.lossFunc == "Mean Square Error") {
             funcMsg = "Layer " + counter + ": Linear";
@@ -1007,9 +1040,8 @@ export default {
 
           layerInfo = { index: counter - 1, func: funcMsg };
           this.layersActFuncInfo.push(layerInfo);
-        }
+        } */
       }
-      console.log(this.layersActFuncInfo);
     },
   },
 
