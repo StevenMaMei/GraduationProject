@@ -10,6 +10,9 @@ interface Layer{
     getWeights():number[][];
 
     getBias():number[][];
+
+    getInput():number[][];
+  
 }
 
 export{Layer};

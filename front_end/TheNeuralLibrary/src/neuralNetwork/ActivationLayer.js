@@ -27,5 +27,8 @@ class ActivationLayer {
     getBias() {
         return [[0]];
     }
+    getInput() {
+        return [[0]];
+    }
 }
 exports.ActivationLayer = ActivationLayer;
