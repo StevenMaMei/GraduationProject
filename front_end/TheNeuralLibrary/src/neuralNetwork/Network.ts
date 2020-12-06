@@ -237,7 +237,7 @@ class Network {
             }
 
         } else if (this.direction == 1) { //back propagation
-            this.step =  new Array<string>();
+           
 
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
 
@@ -245,25 +245,29 @@ class Network {
            // let errorRespectToOutput=this.current_backProp_error;
             let learningRate=this.learningRate;
             if (this.current_layer % 2 != 0) {
-                
-
-                for (let i = 0; i < this.layers[this.current_layer].output[0].length; i++) {
+            this.step =  new Array<string>();
+            let normLayer = this.layers[this.current_layer - 1];
+                for (let i = 0; i < normLayer.input[0].length; i++) {
 
                    // let actLayer = this.layers[this.current_layer];
-                    let normLayer = this.layers[this.current_layer - 1];
+                    
                     let weights = normLayer.getWeights();
                     let bias = normLayer.getBias();
                     let input=normLayer.getInput();
 
+                    console.log("i");
+                    console.log(this.layers[this.current_layer].output[0].length);
+                    console.log("j");
+                    console.log(normLayer.input[0].length);
                     this.step.push("Error Respect to Weights:");
-                    for (let j = 0; j < normLayer.input[0].length; j++) {
-                        let aux1=NumTS.matrixTransposse(input)[0][j]*this.current_backProp_error[0][0];
+                    for (let j = 0; j < this.layers[this.current_layer].output[0].length; j++) {
+                        let aux1=NumTS.matrixTransposse(input)[0][i]*this.current_backProp_error[0][0];
                         let res=aux1*-learningRate;
 
                         this.step.push(this.round(res) + " ={ trasnpose( "+input +" ) * "+this.current_backProp_error[0][0]  + "} * "+-learningRate)+" ]";
                     
 
-                        if (j < normLayer.input[0].length - 1) {
+                        if (j < this.layers[this.current_layer].output[0].length - 1) {
                             this.step.push(" ");
                         }
                        
@@ -272,36 +276,29 @@ class Network {
                     this.step.push("Weights:");
                     
 
-                    for (let j = 0; j < normLayer.input[0].length; j++) {
-                        let aux1=NumTS.matrixTransposse(input)[0][j]*this.current_backProp_error[0][0];
+                    for (let j = 0; j < this.layers[this.current_layer].output[0].length; j++) {
+                        let aux1=NumTS.matrixTransposse(input)[0][i]*this.current_backProp_error[0][0];
                         let aux2=aux1*-learningRate;
-                        let res=aux2+weights[j][i];
+                        let res=aux2+weights[i][j];
                         
-                        this.step.push(this.round(res) + " = Error Respect to Weights + " +weights[j][i]);
+                        this.step.push(this.round(res) + " = Error Respect to Weights + " +weights[i][j])+" ]";
                     
 
-                        if (j < normLayer.input[0].length - 1) {
+                        if (j < this.layers[this.current_layer].output[0].length - 1) {
                             this.step.push(" ");
                         }
                        
                     }
                     this.step.push("Bias:");
-
-                    console.log(("hereeeee"));
-                    console.log((bias));
-                    console.log( this.layers[this.current_layer].output[0].length);
-                    console.log( normLayer.input[0].length);
-                  
-
-                    for (let j = 0; j < normLayer.input[0].length; j++) {
+                    for (let j = 0; j < this.layers[this.current_layer].output[0].length; j++) {
 
                        let fist=this.current_backProp_error[0][0]*(-this.learningRate); 
-                       let result=bias[0][i]+fist;
+                       let result=bias[0][j]+fist;
                         
-                        this.step.push(this.round(result) + " = " +this.round(bias[0][1])+" + "+" [" + this.round(this.current_backProp_error[0][0])+" X "+ -this.round(this.learningRate));
+                        this.step.push(this.round(result) + " = " +this.round(bias[0][1])+" + "+" [" + this.round(this.current_backProp_error[0][0])+" X "+ -this.round(this.learningRate))+" ]";
                     
 
-                        if (j < normLayer.input[0].length - 1) {
+                        if (j < this.layers[this.current_layer].output[0].length - 1) {
                             this.step.push(" ");
                         }
                         
