@@ -325,7 +325,7 @@
             Registration
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="#E62111" text @click="loginDialog = false">
+          <v-btn color="#E62111" text @click="closeLogin()">
             Close
           </v-btn>
           <v-btn color="blue darken-1" text @click="login()"> Enter </v-btn>
@@ -376,7 +376,7 @@
         <v-card-actions>
           <v-btn color="blue darken-1" text @click="openLogin()"> Login </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="#E62111" text @click="registrationDialog = false">
+          <v-btn color="#E62111" text @click="closeRegister()">
             Close
           </v-btn>
           <v-btn color="blue darken-1" text @click="register()"> Enter </v-btn>
@@ -449,6 +449,18 @@ export default {
     };
   },
   methods: {
+    closeLogin(){
+      this.loginDialog = false;
+      this.email ="";
+      this.password = "";
+      this.name="";
+    },
+    closeRegister(){
+      this.registrationDialog = false;
+      this.email ="";
+      this.password = "";
+      this.name="";
+    },
     openRegistration() {
       this.loginDialog = false;
       this.registrationDialog = true;
@@ -542,7 +554,7 @@ export default {
       this.currentLayer = 1;
       this.steps = [];
       (this.epoch = 1),
-        (this.theGraph = []),
+        (this.theGraph = {nodes:[], links:[]}),
         (this.links = []),
         (this.height = this.currentScreenHeight * 0.09);
       this.resetConfirmationDialog = false;
@@ -588,7 +600,8 @@ export default {
           }
         )
         .then((res) => {
-          alert("Saved");
+          alert("Network saved");
+          this.saveNetworkDialog = false;
           res;
         })
         .catch((err) => {
@@ -1055,7 +1068,42 @@ export default {
     EventBus.$on("giveNetwork", (data) => {
       this.net = data;
       this.networkStarted = true;
+     
+      
+      //--------------------------
+      
+      let x_train = this.net.x_train;
+      let y_train = this.net.y_train;
+      let outputS = this.net.output_size;
+      let dataS = this.net.dataSize;
+      let layersN = this.net.layersN;
+      let actF = this.net.actFunc;
+      let lossF = this.net.lossFunc;
+      let neuronPL = this.net.neuronPerLayer;
+      
+
+      this.steps = [];
+
+      this.net = new Network();
+
+      this.currentLayer = 1;
+      this.epoch = 1;
+      this.typeOfProp = "Forward Propagation";
+
+      this.net.buildCustomNeuralNetwork(
+        x_train,
+        y_train,
+        outputS,
+        dataS,
+        layersN,
+        actF,
+        lossF,
+        neuronPL
+      );
       this.updateNodesAndLinks();
+
+      //----------------
+
       let newXData = "";
       let newYData = "";
       for (let i = 0; i < this.net.x_train.length; i++) {
@@ -1067,6 +1115,7 @@ export default {
       this.xDataInfo = newXData;
       this.yDataInfo = newYData;
       this.generateLayersActData();
+      
     });
 
     EventBus.$on("loginUser", (msg) => {
