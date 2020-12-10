@@ -205,8 +205,8 @@ class Network {
 
 
             if (this.current_layer == this.layers.length - 1) { // in case forward its over, then it calculates the error in order to start backwards propagation in the next step
-                this.step =  new Array<string>();
-                this.step.push(" ");
+                /* this.step =  new Array<string>(); */
+                this.step.push(" -------------------------------------------------------- ");
                 let targetOutput: number[][] = [this.y_train[this.current_datapoint_index]]; // calculates the error comparing to the true expected value "j" in y_train
                 this.step.push("target Output= " + [this.y_train[this.current_datapoint_index]]);
                 this.current_error += this.lossFunction(this.current_output, targetOutput);
@@ -214,7 +214,7 @@ class Network {
                 let a = this.roundMatrix(this.current_output);
                 let b = this.roundMatrix(targetOutput);
 
-                
+
 
                 this.step.push(this.lossFunction.name + "(" + a + " , " + b + ")= " + this.round(this.lossFunction(this.current_output, targetOutput)));
 
@@ -223,89 +223,91 @@ class Network {
                 this.step.push(this.lossFunctionPrime.name + "(" + a + " , " + b + ")= " + this.roundMatrix(this.lossFunctionPrime(this.current_output, targetOutput)));
 
                 this.current_backProp_errors[this.current_datapoint_index] = errorForBackwardProp;
-                
+
 
             }
 
 
             if (this.current_layer == this.layers.length - 1) { // in case the forward prop is over, it changes the direction of the propagation to backwards propagation
-                //    step+="\n Forward propagation over\n"
+
                 this.direction = 1;
             } else {
                 this.current_layer++; // advances one layer
-                //     step+="\n Next Layer\n"
+
             }
 
         } else if (this.direction == 1) { //back propagation
-           
+
 
             this.current_backProp_error = this.current_backProp_errors[this.current_datapoint_index];
+            this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
 
-          
-           // let errorRespectToOutput=this.current_backProp_error;
-            let learningRate=this.learningRate;
+
+            let learningRate = this.learningRate;
             if (this.current_layer % 2 != 0) {
-            this.step =  new Array<string>();
-            let normLayer = this.layers[this.current_layer - 1];
+                this.step = new Array<string>();
+                let normLayer = this.layers[this.current_layer - 1];
                 for (let i = 0; i < normLayer.input[0].length; i++) {
 
-                   // let actLayer = this.layers[this.current_layer];
-                    
+
+
                     let weights = normLayer.getWeights();
                     let bias = normLayer.getBias();
-                    let input=normLayer.getInput();
+                    let input = normLayer.getInput();
 
-                    this.step.push("--------Neuron number "+i+1+"--------");
+                    let index = i + 1;
+
+                    this.step.push("-------------------- Neuron number " + index + " --------------------");
 
                     this.step.push("Error Respect to Weights:");
-                    
-                        let aux1:number=NumTS.matrixTransposse(input)[i][0]*this.current_backProp_error[0][0];
-                        
-                        let res:number=aux1*(-learningRate);
 
-                        
+                    let aux1: number = NumTS.matrixTransposse(input)[i][0] * this.current_backProp_error[0][0];
 
-                        this.step.push(" ["+this.round(res) + " ={ trasnpose( "+this.roundMatrix(input) +" ) * "+this.round(this.current_backProp_error[0][0])  + "} * "+-this.round(learningRate)+" ]");
-                        this.step.push(" ");
+                    let res: number = aux1 * (-learningRate);
+
+
+
+                    this.step.push(" [" + this.round(res) + " ={ transpose( " + this.roundMatrix(input) + " ) * " + this.round(this.current_backProp_error[0][0]) + "} * " + -this.round(learningRate) + " ]");
+                    this.step.push(" ");
 
                     this.step.push("Weights:");
                     for (let j = 0; j < this.layers[this.current_layer].output[0].length; j++) {
-                        let aux1=NumTS.matrixTransposse(input)[i][0]*this.current_backProp_error[0][0];
-                        let aux2=aux1*-learningRate;
-                        let res=aux2+weights[i][j];
-                        
-                        this.step.push(" ["+this.round(res) + " = Error Respect to Weights + " +this.round(weights[i][j])+" ]");
-                    
+                        let aux1 = NumTS.matrixTransposse(input)[i][0] * this.current_backProp_error[0][0];
+                        let aux2 = aux1 * -learningRate;
+                        let res = aux2 + weights[i][j];
+
+                        this.step.push(" [" + this.round(res) + " = Error Respect to Weights + " + this.round(weights[i][j]) + " ]");
+
 
                         if (j < this.layers[this.current_layer].output[0].length - 1) {
                             this.step.push(" ");
                         }
-                       
+
                     }
                     this.step.push("Bias:");
                     for (let j = 0; j < this.layers[this.current_layer].output[0].length; j++) {
 
-                       let fist=this.current_backProp_error[0][0]*(-this.learningRate); 
-                       let result=bias[0][j]+fist;
+                        let fist = this.current_backProp_error[0][0] * (-this.learningRate);
+                        let result = bias[0][j] + fist;
 
-                       console.log(bias);
 
-                        this.step.push(" ["+this.round(result) + " = " +this.round(bias[0][j])+" + "+" [" + this.round(this.current_backProp_error[0][0])+" X "+ -this.round(this.learningRate)+" ]");
-                    
+
+                        this.step.push(" [" + this.round(result) + " = " + this.round(bias[0][j]) + " + " + " [" + this.round(this.current_backProp_error[0][0]) + " X " + -this.round(this.learningRate) + " ]");
+
 
                         if (j < this.layers[this.current_layer].output[0].length - 1) {
                             this.step.push(" ");
                         }
-                        
+
 
                     }
-                    
-                   
 
-                
+
+
+
                 }
             }
-            this.current_backProp_errors[this.current_datapoint_index] = this.layers[this.current_layer].backPropagation(this.current_backProp_error, this.learningRate); // does the backwards propagation for the sample "j" in current_backProp_errors
+
 
             if (this.current_layer == 0) {
                 this.direction = 0;
@@ -316,7 +318,7 @@ class Network {
                 if (this.current_datapoint_index == this.x_train.length) {
                     this.currEpoch++;
                     this.current_error /= this.x_train.length;
-                    console.log("Epoch " + this.currEpoch + " error = " + this.current_error);
+
                     this.current_outputs = [];
                     this.current_output = [];
                     this.current_backProp_errors = [];
@@ -531,7 +533,7 @@ class Network {
                 }
             }
             error /= x_train.length;
-            console.log("Epoch " + i + " error = " + error);
+
         }
     }
 

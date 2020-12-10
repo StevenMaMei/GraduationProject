@@ -510,6 +510,9 @@ export default {
       let actF = this.net.actFunc;
       let lossF = this.net.lossFunc;
       let neuronPL = this.net.neuronPerLayer;
+      
+
+      this.steps = [];
 
       this.net = new Network();
 
@@ -654,9 +657,9 @@ export default {
       this.epoch = this.net.currEpoch + 1;
       if (this.net.direction == 0) {
         if (this.typeOfProp == "Backward Propagation") {
-          this.steps = this.net.layerStep();
+          /* this.steps = this.net.layerStep(); */
           this.typeOfProp = "Forward Propagation";
-          this.currentLayer++;
+          this.currentLayer--;
         } else {
           this.typeOfProp = "Forward Propagation";
           this.currentLayer++;
@@ -664,7 +667,8 @@ export default {
       } else {
         if (this.typeOfProp == "Forward Propagation") {
           this.typeOfProp = "Backward Propagation";
-          this.steps = this.net.layerStep();
+          this.currentLayer++;
+          /* this.steps = this.net.layerStep(); */
         } else {
           this.typeOfProp = "Backward Propagation";
           this.currentLayer--;
